@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>24. 状态码 Status | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列命名常量, 使用这些常量会让代码更加清晰可读.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="24. 状态码 Status">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/24. 状态码/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列命名常量, 使用这些常量会让代码更加清晰可读.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-12T04:03:26.177Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="24. 状态码 Status">
+<meta name="twitter:description" content="在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列命名常量, 使用这些常量会让代码更加清晰可读.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-24. 状态码" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/24. 状态码/" class="article-date">
+  <time datetime="2019-10-03T10:09:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      24. 状态码 Status
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列<strong>命名常量</strong>, 使用这些常量会让代码更加清晰可读.</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> status</span><br><span class="line"><span class="keyword">from</span> rest_framework.response <span class="keyword">import</span> Response</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">empty_view</span><span class="params">(self)</span>:</span></span><br><span class="line">    content = &#123;<span class="string">'please move along'</span>: <span class="string">'nothing to see here'</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> Response(content, status=status.HTTP_404_NOT_FOUND)</span><br></pre></td></tr></table></figure>
+
+<p>包含在<code>status</code>模块中的所有状态码会在下面列出.</p>
+<p>该模块同样包含了一个辅助函数用以测试一个状态码是否在某一个区间内.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> status</span><br><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> APITestCase</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleTestCase</span><span class="params">(APITestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_url_root</span><span class="params">(self)</span>:</span></span><br><span class="line">        url = reverse(<span class="string">'index'</span>)</span><br><span class="line">        response = self.client.get(url)</span><br><span class="line">        self.assertTrue(status.is_success(response.status_code))</span><br></pre></td></tr></table></figure>
+
+<p>HTTP状态码的合适使用方式请参考<a href>RFC 2616</a> 和<a href>RFC 6585</a>.</p>
+<hr>
+<h3 id="信息提示-1xx"><a href="#信息提示-1xx" class="headerlink" title="信息提示 - 1xx"></a>信息提示 - 1xx</h3><p>这类响应码代表了临时响应. rest-framework默认未使用该类状态码.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HTTP_100_CONTINUE</span><br><span class="line">HTTP_101_SWITCHING_PROTOCOLS</span><br></pre></td></tr></table></figure>
+
+<h3 id="成功-2xx"><a href="#成功-2xx" class="headerlink" title="成功 - 2xx"></a>成功 - 2xx</h3><p>这类响应码代表着客户端请求被成功收到, 理解并接收.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HTTP_200_OK</span><br><span class="line">HTTP_201_CREATED</span><br><span class="line">HTTP_202_ACCEPTED</span><br><span class="line">HTTP_203_NON_AUTHORITATIVE_INFORMATION</span><br><span class="line">HTTP_204_NO_CONTENT</span><br><span class="line">HTTP_205_RESET_CONTENT</span><br><span class="line">HTTP_206_PARTIAL_CONTENT</span><br><span class="line">HTTP_207_MULTI_STATUS</span><br><span class="line">HTTP_208_ALREADY_REPORTED</span><br><span class="line">HTTP_226_IM_USED</span><br></pre></td></tr></table></figure>
+
+<h3 id="重定向-3xx"><a href="#重定向-3xx" class="headerlink" title="重定向 - 3xx"></a>重定向 - 3xx</h3><p>这类响应码代表着用户代理必须采取进一步的行动才能满足请求.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP_300_MULTIPLE_CHOICES</span><br><span class="line">HTTP_301_MOVED_PERMANENTLY</span><br><span class="line">HTTP_302_FOUND</span><br><span class="line">HTTP_303_SEE_OTHER</span><br><span class="line">HTTP_304_NOT_MODIFIED</span><br><span class="line">HTTP_305_USE_PROXY</span><br><span class="line">HTTP_306_RESERVED</span><br><span class="line">HTTP_307_TEMPORARY_REDIRECT</span><br><span class="line">HTTP_308_PERMANENT_REDIRECT</span><br></pre></td></tr></table></figure>
+
+<h3 id="客户端错误-4xx"><a href="#客户端错误-4xx" class="headerlink" title="客户端错误 - 4xx"></a>客户端错误 - 4xx</h3><p>这类状态码代表着(可能是)客户端错误. 在使用该类状态码的时候响应<strong>应当</strong>包含一个实体用以说明该错误状况的解释, 以及该错误是暂时的还是永久的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">HTTP_400_BAD_REQUEST</span><br><span class="line">HTTP_401_UNAUTHORIZED</span><br><span class="line">HTTP_402_PAYMENT_REQUIRED</span><br><span class="line">HTTP_403_FORBIDDEN</span><br><span class="line">HTTP_404_NOT_FOUND</span><br><span class="line">HTTP_405_METHOD_NOT_ALLOWED</span><br><span class="line">HTTP_406_NOT_ACCEPTABLE</span><br><span class="line">HTTP_407_PROXY_AUTHENTICATION_REQUIRED</span><br><span class="line">HTTP_408_REQUEST_TIMEOUT</span><br><span class="line">HTTP_409_CONFLICT</span><br><span class="line">HTTP_410_GONE</span><br><span class="line">HTTP_411_LENGTH_REQUIRED</span><br><span class="line">HTTP_412_PRECONDITION_FAILED</span><br><span class="line">HTTP_413_REQUEST_ENTITY_TOO_LARGE</span><br><span class="line">HTTP_414_REQUEST_URI_TOO_LONG</span><br><span class="line">HTTP_415_UNSUPPORTED_MEDIA_TYPE</span><br><span class="line">HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE</span><br><span class="line">HTTP_417_EXPECTATION_FAILED</span><br><span class="line">HTTP_422_UNPROCESSABLE_ENTITY</span><br><span class="line">HTTP_423_LOCKED</span><br><span class="line">HTTP_424_FAILED_DEPENDENCY</span><br><span class="line">HTTP_426_UPGRADE_REQUIRED</span><br><span class="line">HTTP_428_PRECONDITION_REQUIRED</span><br><span class="line">HTTP_429_TOO_MANY_REQUESTS</span><br><span class="line">HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE</span><br><span class="line">HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务器错误-5xx"><a href="#服务器错误-5xx" class="headerlink" title="服务器错误 - 5xx"></a>服务器错误 - 5xx</h3><p>这类响应码代表着服务端出错或无法执行该请求. 响应应当包含一个实体, 该实体中<strong>应当</strong>有对错误情况的说明, 以及该情况是暂时的或永久的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP_500_INTERNAL_SERVER_ERROR</span><br><span class="line">HTTP_501_NOT_IMPLEMENTED</span><br><span class="line">HTTP_502_BAD_GATEWAY</span><br><span class="line">HTTP_503_SERVICE_UNAVAILABLE</span><br><span class="line">HTTP_504_GATEWAY_TIMEOUT</span><br><span class="line">HTTP_505_HTTP_VERSION_NOT_SUPPORTED</span><br><span class="line">HTTP_506_VARIANT_ALSO_NEGOTIATES</span><br><span class="line">HTTP_507_INSUFFICIENT_STORAGE</span><br><span class="line">HTTP_508_LOOP_DETECTED</span><br><span class="line">HTTP_509_BANDWIDTH_LIMIT_EXCEEDED</span><br><span class="line">HTTP_510_NOT_EXTENDED</span><br><span class="line">HTTP_511_NETWORK_AUTHENTICATION_REQUIRED</span><br></pre></td></tr></table></figure>
+
+<h3 id="辅助函数"><a href="#辅助函数" class="headerlink" title="辅助函数"></a>辅助函数</h3><p>以下辅助函数用以判断响应码属于哪一类.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">is_informational()  <span class="comment"># 1xx</span></span><br><span class="line">is_success()        <span class="comment"># 2xx</span></span><br><span class="line">is_redirect()       <span class="comment"># 3xx</span></span><br><span class="line">is_client_error()   <span class="comment"># 4xx</span></span><br><span class="line">is_server_error()   <span class="comment"># 5xx</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/24. 状态码/" data-id="ck1kjuhr8000hngplowp8voy9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/25. 测试/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          25. 测试 Testing
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/23. 异常处理/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">23. 异常处理 Exception</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

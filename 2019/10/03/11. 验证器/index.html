@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>11. 序列化器 Validator | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定.  如果使用的是ModelSerializer, 那么会自动根据Model的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器. 可以使用repr函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="11. 序列化器 Validator">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/11. 验证器/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定.  如果使用的是ModelSerializer, 那么会自动根据Model的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器. 可以使用repr函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:21:38.860Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="11. 序列化器 Validator">
+<meta name="twitter:description" content="验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定.  如果使用的是ModelSerializer, 那么会自动根据Model的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器. 可以使用repr函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-11. 验证器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/11. 验证器/" class="article-date">
+  <time datetime="2019-10-03T09:55:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      11. 序列化器 Validator
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
+<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
+<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
+
+<p>运行 python manage.py shell</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset：划定唯一约束的范围</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset: 用于验证的查询集</li>
+<li>fields: 联合唯一约束的字段列表</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
+<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
+<p>实例化时的参数</p>
+<ol>
+<li>queryset： 用于验证的查询集</li>
+<li>field： 字段名, 必须为序列化器中的字段</li>
+<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
+<li>message:可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
+<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
+<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
+<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
+<hr>
+<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
+<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
+<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
+<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
+<hr>
+<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
+<hr>
+<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
+<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
+<hr>
+<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>set_context()</code></p>
+<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/11. 验证器/" data-id="ck1kjuhrw000mngplwbtv0dvu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/10.2 序列化器字段-关系字段/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          10.2 序列化器字段:关系字段 Serializer Field
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/10.1 序列化器字段/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">10.1 序列化器字段:非关系字段 Serializer Field</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

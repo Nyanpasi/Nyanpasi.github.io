@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>21. 格式后缀 Format suffixes | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Web API的常见方式是在URL上使用文件拓展名用以指定所期望获得响应的媒体类型, 例如http://example.com/api/users.json用于请求JSON格式的数据. 如果要在API的URLconf中为每个单独的条目添加格式后缀容易出错且违背DRY原则, 因此REST框架提供了将这些模式添加到URLConf的快捷方式.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="21. 格式后缀 Format suffixes">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/21. 格式后缀/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="Web API的常见方式是在URL上使用文件拓展名用以指定所期望获得响应的媒体类型, 例如http://example.com/api/users.json用于请求JSON格式的数据. 如果要在API的URLconf中为每个单独的条目添加格式后缀容易出错且违背DRY原则, 因此REST框架提供了将这些模式添加到URLConf的快捷方式.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T17:25:40.369Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="21. 格式后缀 Format suffixes">
+<meta name="twitter:description" content="Web API的常见方式是在URL上使用文件拓展名用以指定所期望获得响应的媒体类型, 例如http://example.com/api/users.json用于请求JSON格式的数据. 如果要在API的URLconf中为每个单独的条目添加格式后缀容易出错且违背DRY原则, 因此REST框架提供了将这些模式添加到URLConf的快捷方式.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-21. 格式后缀" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/21. 格式后缀/" class="article-date">
+  <time datetime="2019-10-03T10:06:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      21. 格式后缀 Format suffixes
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Web API的常见方式是在URL上使用文件拓展名用以指定所期望获得响应的媒体类型, 例如<code>http://example.com/api/users.json</code>用于请求<code>JSON</code>格式的数据.</p>
+<p>如果要在API的URLconf中为每个单独的条目添加格式后缀容易出错且违背DRY原则, 因此REST框架提供了将这些模式添加到URLConf的快捷方式.</p>
+<a id="more"></a>
+
+<hr>
+<h2 id="format-suffix-patterns"><a href="#format-suffix-patterns" class="headerlink" title="format_suffix_patterns"></a><code>format_suffix_patterns</code></h2><p>签名: <code>format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None)</code></p>
+<p>该函数接收一个urlpatterns参数, 并为其中每个urlpattern都提供了后缀的新的urlpatterns作为返回结果</p>
+<p><code>urlpatterns</code>: 必要参数, 一个URL pattern 列表<br><code>suffix_required</code>: 可选参数, 布尔型, 用来指定请求url是否<strong>必须</strong>包含后缀. 默认为<code>False</code><br><code>allowed</code>：可选参数, 合法的后缀列表或元组, 如果不提供, 则会使用通配符格式后缀</p>
+<p>示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.urlpatterns <span class="keyword">import</span> format_suffix_patterns</span><br><span class="line"><span class="keyword">from</span> blog <span class="keyword">import</span> views</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^/$'</span>, views.apt_root), </span><br><span class="line">    url(<span class="string">r'^comments/$'</span>, views.comment_list), </span><br><span class="line">    url(<span class="string">r'^comments/(?P&lt;pk&gt;[0-9]+)/$'</span>, views.comment_detail)</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">urlpatterns = format_suffix_patterns(urlpatterns, allowed=[<span class="string">'json'</span>, <span class="string">'html'</span>])</span><br></pre></td></tr></table></figure>
+
+<p>当使用<code>format_suffix_patterns</code>的时候, 必须确保在对应的视图中的请求处理函数中接收<code>format</code>关键字参数(通用视图中的处理方法默认已包含<code>format</code>参数).</p>
+<p>例如:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@api_view(('GET', 'POST'))</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">comment_list</span><span class="params">(request, format=None)</span>:</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentList</span><span class="params">(APIView)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, format=None)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span><span class="params">(self, request, format=None)</span>:</span></span><br><span class="line">        ...</span><br></pre></td></tr></table></figure>
+
+<p>这个参数名(<code>&#39;farmat&#39;</code>)可以使用<code>FORMAT_SUFFIX_KWARG</code>设置项来改变</p>
+<p>同时需要注意, <code>format_suffix_patterns</code> 不支持在其patterns中使用<code>include</code>来包含下级<code>urlpattern</code>, 所以该函数的使用位置为底层的urlconf</p>
+<hr>
+<h3 id="同时使用-i18n-patterns"><a href="#同时使用-i18n-patterns" class="headerlink" title="同时使用 i18n_patterns"></a>同时使用 <code>i18n_patterns</code></h3><p>如果使用django提供的<code>i18n_patterns</code>函数, 确保其在最外层调用, 即返回的urlpattern需要为最终的urlpattern</p>
+<p>使用示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns = [</span><br><span class="line">    …</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">urlpatterns = i18n_patterns(</span><br><span class="line">    format_suffix_patterns(urlpatterns, allowed=[<span class="string">'json'</span>, <span class="string">'html'</span>])</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="通过查询参数来指定格式"><a href="#通过查询参数来指定格式" class="headerlink" title="通过查询参数来指定格式"></a>通过查询参数来指定格式</h2><p>另一个指定格式的方法是使用查询参数来指定格式, rest_framework默认提供这个特性.</p>
+<p>使用的查询参数名默认为<code>format</code>, 例如: <code>http://example.com/organizations/?format=csv</code>.</p>
+<p>查询参数的名字(<code>format</code>), 可以通过 <code>URL_FORMAT_OVERRIDE</code> 进行设置, 设置为<code>None</code>则禁止使用查询参数的方式来指定格式.</p>
+<hr>
+<h2 id="Accept头和格式后缀的比较"><a href="#Accept头和格式后缀的比较" class="headerlink" title="Accept头和格式后缀的比较"></a>Accept头和格式后缀的比较</h2><p>在某些Web社区中似乎有一种观点认为文件扩展名不是RESTful模式, 而且应始终使用HTTP Accept标头. </p>
+<p>这实际上是一种误解. 例如, 请参阅Roy Fielding的以下引用, 讨论查询参数媒体类型指标与文件扩展媒体类型指标的相对优点：</p>
+<blockquote>
+<p>“这就是为什麽我总是喜欢扩展名, 这两种选择都与REST无关. “ -  Roy Fielding, REST讨论邮件列表</p>
+</blockquote>
+<p>引用中没有提到<code>Accept</code>标头, 但它确实清楚地表明格式后缀应该被认为是可接受的模式. </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/21. 格式后缀/" data-id="ck1kjuhr1000bngplhi0oalmw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/22. 返回URL/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          22. 返回URL Return URL
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/20. API概览/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">20. API概览 Schemas</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>16. 分页 Pagination | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="分页器可以将较多的数据分为若干页，并在每一页上给出上一页/下一页的链接. DRF支持自定义分页风格，并允许改变每页包含的数据的数量.  分页API应当支持:  分页对象的链接，作为响应内容的一部分 分页对象的链接，作为响应头的一部分 (Content-Range或者Link)">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="16. 分页 Pagination">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/16. 分页器 Paginator/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="分页器可以将较多的数据分为若干页，并在每一页上给出上一页/下一页的链接. DRF支持自定义分页风格，并允许改变每页包含的数据的数量.  分页API应当支持:  分页对象的链接，作为响应内容的一部分 分页对象的链接，作为响应头的一部分 (Content-Range或者Link)">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://www.django-rest-framework.org/img/link-header-pagination.png">
+<meta property="og:updated_time" content="2019-10-10T10:22:14.293Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="16. 分页 Pagination">
+<meta name="twitter:description" content="分页器可以将较多的数据分为若干页，并在每一页上给出上一页/下一页的链接. DRF支持自定义分页风格，并允许改变每页包含的数据的数量.  分页API应当支持:  分页对象的链接，作为响应内容的一部分 分页对象的链接，作为响应头的一部分 (Content-Range或者Link)">
+<meta name="twitter:image" content="https://www.django-rest-framework.org/img/link-header-pagination.png">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-16. 分页器 Paginator" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/16. 分页器 Paginator/" class="article-date">
+  <time datetime="2019-10-03T10:01:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      16. 分页 Pagination
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>分页器可以将较多的数据分为若干页，并在每一页上给出上一页/下一页的链接. DRF支持自定义分页风格，并允许改变每页包含的数据的数量. </p>
+<p>分页API应当支持:</p>
+<ol>
+<li>分页对象的链接，作为响应内容的一部分</li>
+<li>分页对象的链接，作为响应头的一部分 (Content-Range或者Link)</li>
+</ol>
+<a id="more"></a>
+
+<p>当前DRF内置分页器的分页风格都是将链接包含至内容中. </p>
+<p>分页器仅会在使用通用视图或视图集时自动应用, 如果使用<code>APIView</code>, 需要自行调用分页接口来保证返回分页响应. 可以查看<code>mixins.ListModelMixin</code>和<code>generics.GenericAPIView</code>来查看示例代码.</p>
+<p>将视图的<code>pagination_class</code>设为<code>None</code>可以关闭分页器.</p>
+<hr>
+<h3 id="设置使用分页器"><a href="#设置使用分页器" class="headerlink" title="设置使用分页器"></a>设置使用分页器</h3><p>全局设置</p>
+<p>使用<code>DEFAULT_PAGINATION_CLASS</code>和<code>PAGE_SIZE</code>关键字来设置全局的分页风格</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_PAGINATION_CLASS'</span>: <span class="string">'rest_framework.pagination.LimitOffsetPagination'</span>,</span><br><span class="line">    <span class="string">'PAGE_SIZE'</span>: <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意这两项都必须进行设置.</p>
+<p>在view/viewset中则使用<code>pagination_class</code>属性指定分页类.</p>
+<hr>
+<h3 id="分页器在何处被应用"><a href="#分页器在何处被应用" class="headerlink" title="分页器在何处被应用?"></a>分页器在何处被应用?</h3><p><code>list</code>行为中需要对数量较大的查询集进行分页.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mixins.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListModelMixin</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    List a queryset.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">list</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        queryset = self.filter_queryset(self.get_queryset())</span><br><span class="line"></span><br><span class="line">        page = self.paginate_queryset(queryset)</span><br><span class="line">        <span class="keyword">if</span> page <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            serializer = self.get_serializer(page, many=<span class="literal">True</span>)</span><br><span class="line">            <span class="keyword">return</span> self.get_paginated_response(serializer.data)</span><br><span class="line"></span><br><span class="line">        serializer = self.get_serializer(queryset, many=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="改变分页风格"><a href="#改变分页风格" class="headerlink" title="改变分页风格"></a>改变分页风格</h3><p>继承<code>PageNumberPagination</code>并重写相关属性来自定义分页器类.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LargeResultsSetPagination</span><span class="params">(PageNumberPagination)</span>:</span></span><br><span class="line">    page_size = <span class="number">1000</span></span><br><span class="line">    page_size_query_param = <span class="string">'page_size'</span></span><br><span class="line">    max_page_size = <span class="number">10000</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StandardResultsSetPagination</span><span class="params">(PageNumberPagination)</span>:</span></span><br><span class="line">    page_size = <span class="number">100</span></span><br><span class="line">    page_size_query_param = <span class="string">'page_size'</span></span><br><span class="line">    max_page_size = <span class="number">1000</span></span><br></pre></td></tr></table></figure>
+
+<p>如果指定<code>page_size_query_param</code>,则允许客户端来指定每页的大小.</p>
+<p>然后在视图中使用自定义分页类.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordsView</span><span class="params">(generics.ListAPIView)</span>:</span></span><br><span class="line">    queryset = Billing.objects.all()</span><br><span class="line">    serializer_class = BillingRecordsSerializer</span><br><span class="line">    pagination_class = StandardResultsSetPagination</span><br></pre></td></tr></table></figure>
+
+<p>或者设置为全局默认分页类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_PAGINATION_CLASS'</span>: <span class="string">'apps.core.pagination.StandardResultsSetPagination'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="PageNumberPagination"><a href="#PageNumberPagination" class="headerlink" title="PageNumberPagination"></a>PageNumberPagination</h3><p>路径:<code>rest_framework.pagination.PageNumberPagination</code></p>
+<p>只接受<code>page</code>作为查询参数</p>
+<p>请求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET https://api.example.org/accounts/?page=4</span><br></pre></td></tr></table></figure>
+
+<p>响应</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP <span class="number">200</span> OK</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"count"</span>: <span class="number">1023</span></span><br><span class="line">    <span class="string">"next"</span>: <span class="string">"https://api.example.org/accounts/?page=5"</span>,</span><br><span class="line">    <span class="string">"previous"</span>: <span class="string">"https://api.example.org/accounts/?page=3"</span>,</span><br><span class="line">    <span class="string">"results"</span>: [</span><br><span class="line">       …</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可重写属性如下</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>django_paginator_class</code></td>
+<td>使用的Django中的分页器 默认为<code>django.core.paginator.Paginator</code></td>
+</tr>
+<tr>
+<td><code>page_size</code></td>
+<td>数字型，该属性会覆盖<code>PAGE_SIZE</code>，默认为与<code>PAGE_SIZE</code>等值</td>
+</tr>
+<tr>
+<td><code>page_query_param</code></td>
+<td>查询参数的关键字，默认为<code>&#39;page&#39;</code></td>
+</tr>
+<tr>
+<td><code>page_size_query_param</code></td>
+<td>查询参数中控制每页大小的关键字, 默认为<code>None</code>，即不受客户端控制，仅由服务器端控制.</td>
+</tr>
+<tr>
+<td><code>max_page_size</code></td>
+<td>如果设置该项，意味着可请求的最大分页数，该项只有在<code>page_query_param</code>已存在时合法</td>
+</tr>
+<tr>
+<td><code>last_page_strings</code></td>
+<td>字符串列表，当查询的<code>page_query_param</code>为其中的值时，返回最后一页，默认为<code>(&#39;last&#39;,)</code></td>
+</tr>
+<tr>
+<td><code>template</code></td>
+<td>返回时用来渲染的模板，默认为<code>rest_framework/pagination/numbers.html</code>，可设为<code>None</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="LimitOffsetPagination"><a href="#LimitOffsetPagination" class="headerlink" title="LimitOffsetPagination"></a>LimitOffsetPagination</h3><p>路径: <code>rest_framework.pagination.LimitOffsetPagination</code></p>
+<p>支持<code>limit</code>和<code>offset</code>查询参数，较之<code>page</code>更为灵活，因为可以从任意处开始截取指定数量的数据. </p>
+<p>请求:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET https://api.example.org/accounts/?limit=100&amp;offset=400</span><br></pre></td></tr></table></figure>
+
+<p>响应:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP <span class="number">200</span> OK</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"count"</span>: <span class="number">1023</span></span><br><span class="line">    <span class="string">"next"</span>: <span class="string">"https://api.example.org/accounts/?limit=100&amp;offset=500"</span>,</span><br><span class="line">    <span class="string">"previous"</span>: <span class="string">"https://api.example.org/accounts/?limit=100&amp;offset=300"</span>,</span><br><span class="line">    <span class="string">"results"</span>: [</span><br><span class="line">       …</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果设置了<code>PAGE_SIZE</code>,那么<code>URL</code>中的<code>limit</code>查询参数就是可选的，如果URL中不包含<code>limit</code>，直接从<code>offset</code>处截取出<code>PAGE_SIZE</code>条数据. </p>
+<p><code>LimitOffsetPagination</code>可重写的属性如下</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>数据类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>default_limit</code></td>
+<td>INT</td>
+<td>与<code>PAGE_SIZE</code>的意义相同，如果设置，limit参数将为可选</td>
+</tr>
+<tr>
+<td><code>limit_query_param</code></td>
+<td>string</td>
+<td>用来代表<code>limit</code>含义的关键字，默认就是<code>&#39;limit&#39;</code></td>
+</tr>
+<tr>
+<td><code>offset_query_param</code></td>
+<td>string</td>
+<td>用来代表<code>offset</code>含义的关键字，默认就是<code>&#39;offset&#39;</code></td>
+</tr>
+<tr>
+<td><code>max_limit</code></td>
+<td>INT</td>
+<td>用来控制可指定的最大限制条数，默认为<code>None</code></td>
+</tr>
+<tr>
+<td><code>template</code></td>
+<td>string</td>
+<td>返回时使用的模板，默认为<code>rest_framework/pagination/numbers.html</code>，可以设为<code>None</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="CursorPagination-游标分页器"><a href="#CursorPagination-游标分页器" class="headerlink" title="CursorPagination 游标分页器"></a>CursorPagination 游标分页器</h3><p>不允许直接指定开始位置，页面大小或者请求页数，而只能从开始处逐渐进行偏移</p>
+<p>基于光标的分页呈现不透明(无表义)的游标指示符，客户端可以使用该指示符来翻阅结果集. 此分页样式仅显示前向和后退控件，并且不允许客户端导航到任意位置. </p>
+<p>基于游标的分页要求结果集中的项具有唯一且不变的排, 排序依据通常可能是记录上的创建时间戳，因为可以提供一致的分页排序. </p>
+<p>优势如下:</p>
+<ul>
+<li>提供一致的分页视图. 正确使用CursorPagination可确保客户端在分页记录时永远不会看到相同的项目，即使在分页过程中其他客户端插入新项目时也是如此. </li>
+<li>支持使用非常大的数据集. 对于极大的数据集，使用基于偏移的分页样式的分页可能变得低效或无法使用. 基于游标的分页方案具有固定时间属性，并且不会随著数据集大小的增加而减慢. </li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_PAGINATION_CLASS'</span>: <span class="string">'rest_framework.pagination.CursorPagination'</span>,</span><br><span class="line">    <span class="string">'PAGE_SIZE'</span>: <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>默认排序字段名为<code>&#39;created&#39;</code>，如果你的模型中不包含该字段，则必须子类化<code>CursorPagination</code>并重写该属性，然后应用该子类作为排序器</p>
+<p>可重写的属性如下：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>数据类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>page_size</code></td>
+<td>INT</td>
+<td>每页的数据量，同<code>PAGE_SIZE</code></td>
+</tr>
+<tr>
+<td><code>cursor_query_param</code></td>
+<td>string</td>
+<td>代表cursor含义的查询参数，默认为<code>&#39;cursor&#39;</code></td>
+</tr>
+<tr>
+<td><code>ordering</code></td>
+<td>string|listofstring</td>
+<td>用来进行后台排序的字段，默认为<code>&#39;-created&#39;</code>,该项会被OrderingFilter的设置所覆盖</td>
+</tr>
+<tr>
+<td><code>template</code></td>
+<td>string</td>
+<td>返回数据时使用的模板，默认为<code>&quot;rest_framework/pagination/previous_and_next.html&quot;</code>，可以设为<code>None</code></td>
+</tr>
+</tbody></table>
+<p>注意，ordering字段必须指定为该模型中的字段，该字段默认为<code>-created</code>，如果模型没有这个字段就会报错，因此需要为其指定一个存在的，可以用来排序的字段. </p>
+<p>使用游标分页器的结果集必须为有序的，所以该字段是必需的.</p>
+<p>该参数无法通过配置项实现，必须子类化然后覆盖该属性, 示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#blog/paginations.py</span></span><br><span class="line"><span class="keyword">from</span> rest_framework.pagination <span class="keyword">import</span> CursorPagination</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mycursorpagnitor</span><span class="params">(CursorPagination)</span>:</span></span><br><span class="line">    ordering = <span class="string">'date_created'</span></span><br></pre></td></tr></table></figure>
+
+<p>settings.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_PAGINATION_CLASS'</span>: <span class="string">'blog.paginations.MyCursorPagination'</span>,</span><br><span class="line">    <span class="string">'PAGE_SIZE'</span>: <span class="number">3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>响应体</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">HTTP <span class="number">200</span> OK</span><br><span class="line">Allow: GET, POST, HEAD, OPTIONS</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Vary: Accept</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"next"</span>: <span class="string">"http://127.0.0.1:8000/blog/api/blog/?cursor=bz0xJnA9MjAxOS0wNC0xMSsyMCUzQTAwJTNBMDAlMkIwMCUzQTAw"</span>,</span><br><span class="line">    <span class="string">"previous"</span>: <span class="string">"http://127.0.0.1:8000/blog/api/blog/?cursor=cj0xJnA9MjAxOS0wNC0wOSsxOSUzQTQ2JTNBMzglMkIwMCUzQTAw"</span>,</span><br><span class="line">    <span class="string">"results"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"title"</span>: <span class="string">"多标签测试用"</span>,</span><br><span class="line">            <span class="string">"category"</span>: <span class="string">"http://127.0.0.1:8000/blog/api/category/4/"</span>,</span><br><span class="line">            <span class="string">"date_created"</span>: <span class="string">"2019-04-09T19:46:38Z"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"title"</span>: <span class="string">"测试用例4 ，储存"</span>,</span><br><span class="line">            <span class="string">"category"</span>: <span class="string">"http://127.0.0.1:8000/blog/api/category/1/"</span>,</span><br><span class="line">            <span class="string">"date_created"</span>: <span class="string">"2019-04-11T20:00:00Z"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"title"</span>: <span class="string">"测试用例2 ，储存"</span>,</span><br><span class="line">            <span class="string">"category"</span>: <span class="string">"http://127.0.0.1:8000/blog/api/category/2/"</span>,</span><br><span class="line">            <span class="string">"date_created"</span>: <span class="string">"2019-04-29T03:50:51.522801Z"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="自定义分页器"><a href="#自定义分页器" class="headerlink" title="自定义分页器"></a>自定义分页器</h3><p>子类化<code>pagination.BasePagination</code>并重写</p>
+<ol>
+<li><code>paginate_queryset(self, queryset, request, view=None)</code>方法</li>
+<li><code>get_paginated_response(self, data)</code>方法</li>
+</ol>
+<p><code>paginate_queryset</code>方法接收一个初始的查询集并返回一个只包含请求数据的可迭代对象(获取部分查询集并将其序列化,并返回序列化结果data)<br><code>get_paginated_response</code>方法接收已序列化的数据并返回一个<code>Response</code>实例 (简单地将数据嵌入某些格式中,并作为响应体的内容,返回一个Response) </p>
+<p>注意<code>paginate_queryset</code>方法在分页器实例中设置状态，并可能随后被<code>get_paginated_response</code>方法所使用. </p>
+<p>示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomPagination</span><span class="params">(pagination.PageNumberPagination)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_paginated_response</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> Response(&#123;</span><br><span class="line">            <span class="string">'links'</span>: &#123;</span><br><span class="line">                <span class="string">'next'</span>: self.get_next_link(),</span><br><span class="line">                <span class="string">'previous'</span>: self.get_previous_link()</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">'count'</span>: self.page.paginator.count,</span><br><span class="line">            <span class="string">'results'</span>: data</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># settings.py</span></span><br><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_PAGINATION_CLASS'</span>: <span class="string">'my_project.apps.core.pagination.CustomPagination'</span>,</span><br><span class="line">    <span class="string">'PAGE_SIZE'</span>: <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，如果如果想更改默认排序字段，当构造分页响应的body部分时应当使用<code>OrderedDict</code>，这是可选的</p>
+<hr>
+<h3 id="分页-amp-概要"><a href="#分页-amp-概要" class="headerlink" title="分页 &amp; 概要"></a>分页 &amp; 概要</h3><p>还可以通过实现<code>get_chema_fields()</code>方法来使REST框架自动生成的概要能够使用分页控件. </p>
+<p>该函数的签名 <code>get_schema_fields(self, view)</code>, 返回值为一个<code>coreapi.Field</code>实例的列表. </p>
+<p><img src="https://www.django-rest-framework.org/img/link-header-pagination.png" alt></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/16. 分页器 Paginator/" data-id="ck1kjuhs4000nngpl6v5xg73o" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/17. 版本控制/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          17. 版本控制 Versioning
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/15. 过滤 Filter/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">15. 过滤 Filter</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

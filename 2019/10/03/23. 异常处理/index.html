@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>23. 异常处理 Exception | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="当视图函数的执行过程中抛出异常, 即转入错误处理阶段. REST framework的视图能够处理各种异常, 并为其返回合适错误响应. 可以被处理的异常包括:  APIException的子类异常 django的Http404异常 django的PermissionDenied异常">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="23. 异常处理 Exception">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/23. 异常处理/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="当视图函数的执行过程中抛出异常, 即转入错误处理阶段. REST framework的视图能够处理各种异常, 并为其返回合适错误响应. 可以被处理的异常包括:  APIException的子类异常 django的Http404异常 django的PermissionDenied异常">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:29:20.574Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="23. 异常处理 Exception">
+<meta name="twitter:description" content="当视图函数的执行过程中抛出异常, 即转入错误处理阶段. REST framework的视图能够处理各种异常, 并为其返回合适错误响应. 可以被处理的异常包括:  APIException的子类异常 django的Http404异常 django的PermissionDenied异常">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-23. 异常处理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/23. 异常处理/" class="article-date">
+  <time datetime="2019-10-03T10:08:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      23. 异常处理 Exception
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>当视图函数的执行过程中抛出异常, 即转入错误处理阶段. REST framework的视图能够处理各种异常, 并为其返回合适错误响应.</p>
+<p>可以被处理的异常包括:</p>
+<ol>
+<li><code>APIException</code>的子类异常</li>
+<li><code>django</code>的<code>Http404</code>异常</li>
+<li><code>django</code>的<code>PermissionDenied</code>异常</li>
+</ol>
+<a id="more"></a>
+
+<p>在各种情况下, rest_framework会返回合适的状态码和<code>content-type</code>头, 响应体部分会包含有关错误特征的更进一步的详细信息.</p>
+<p>大多数错误响应在响应体会包含<code>detail</code>项.</p>
+<p>例如如下请求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DELETE http://api.example.com/foo/bar HTTP/1.1</span><br><span class="line">Accept: application/json</span><br></pre></td></tr></table></figure>
+
+<p>如果对该资源的<code>DELETE</code>操作被禁止, 收到的错误响应可能如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP/<span class="number">1.1</span> <span class="number">405</span> Method Not Allowed</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: <span class="number">42</span></span><br><span class="line"></span><br><span class="line">&#123;<span class="string">"detail"</span>: <span class="string">"Method 'DELETE' not allowed."</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>验证器错误的处理可能稍有不同, 在响应中会包含字段名作为关键字. 如果验证错误并不明确指向某个字段, 会使用<code>non_field_errors</code>关键字, 或者在<code>NON_FIELD_ERRORS_KEY</code>设置的值.</p>
+<p>验证错误响应可能如下所示：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">HTTP/<span class="number">1.1</span> <span class="number">400</span> Bad Request</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: <span class="number">94</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">"amount"</span>: [<span class="string">"A valid integer is required."</span>], </span><br><span class="line">	<span class="string">"description"</span>: [<span class="string">"This field may not be blank."</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="自定义错误处理"><a href="#自定义错误处理" class="headerlink" title="自定义错误处理"></a>自定义错误处理</h2><p>自定义错误处理函数应该包含两个参数<code>exc</code>和<code>context</code>, <code>exc</code>为API视图抛出的异常, 而<code>context</code>则是包含了任何额外上下文的字典, 例如当前正在被调用的视图等.</p>
+<p>异常处理函数应该返回<code>Response</code>对象或者在无法处理该异常时返回<code>None</code>, 如果异常处理函数返回了<code>None</code>, 客户端最终接收到的就是一个<code>HTTP 500 server error</code>响应.</p>
+<p>例如, 要在错误响应的body部分始终包含http状态码, 如下所示:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 405 Method Not Allowed</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 62</span><br><span class="line"></span><br><span class="line">&#123;"status_code": 405, "detail": "Method 'DELETE' not allowed."&#125;</span><br></pre></td></tr></table></figure>
+
+<p>则为了更改响应的风格, 可以这样自定义异常处理函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.views <span class="keyword">import</span> exception_handler</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">custom_exception_handler</span><span class="params">(exc, context)</span>:</span></span><br><span class="line">    <span class="comment"># Call REST framework's default exception handler first, </span></span><br><span class="line">    <span class="comment"># to get the standard error response.</span></span><br><span class="line">    response = exception_handler(exc, context)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Now add the HTTP status code to the response.</span></span><br><span class="line">    <span class="keyword">if</span> response <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        response.data[<span class="string">'status_code'</span>] = response.status_code</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure>
+
+<p><code>context</code>参数不会被默认的异常处理函数所使用, 不过如果想要获得额外信息例如当前使用的视图函数, 则可以用<code>context[&#39;view&#39;]</code>使用</p>
+<p>异常处理函数必须被<code>EXCEPTION_HANDLER</code>设置项指定, 然后才会被应用.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'EXCEPTION_HANDLER'</span>: <span class="string">'my_project.my_app.utils.custom_exception_handler'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果不指定, 则默认使用rest_framework的默认异常处理器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'EXCEPTION_HANDLER'</span>: <span class="string">'rest_framework.views.exception_handler'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意该异常处理函数仅会在抛出异常时调用, 它不会用于视图直接返回的任何响应.</p>
+<p>例如, 当序列化程序验证失败时, 通用视图返回的HTTP_400_BAD_REQUEST响应, 不会引起异常处理函数的调用.</p>
+<hr>
+<h2 id="api-参考"><a href="#api-参考" class="headerlink" title="api 参考"></a>api 参考</h2><h3 id="APIException-异常类"><a href="#APIException-异常类" class="headerlink" title="APIException 异常类"></a>APIException 异常类</h3><p>签名<code>APIException()</code></p>
+<p>所有在APIView类或者使用了<code>@api_view</code>装饰器函数中抛出的异常的基类.</p>
+<p>要提供一个自定义异常, 将<code>APIException</code>子类化并设置 <code>status_code</code>, <code>default_detail</code> 和 <code>default_code</code> 属性</p>
+<p>例如, 如果你的API依赖于某个不稳定的第三方服务, 可能需要为<code>503 Service Unavailable</code>响应码实现一个异常类, 如下所示:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.exceptions <span class="keyword">import</span> APIException</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ServiceUnavailable</span><span class="params">(APIException)</span>:</span></span><br><span class="line">    status_code = <span class="number">503</span></span><br><span class="line">    default_detail = <span class="string">'Service temporarily unavailable, try again later.'</span></span><br><span class="line">    default_code = <span class="string">'service_unavailable'</span></span><br></pre></td></tr></table></figure>
+
+<p>可重写的方法/属性</p>
+<ol>
+<li><code>.detail</code> 该错误的文字描述</li>
+<li><code>.get_codes()</code> 返回该异常的错误代码标识符</li>
+<li><code>.get_full_details()</code> 返回文字描述和代码标识符</li>
+</ol>
+<p>在大多数情况下, 错误的detail项会是一个简单元素.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(exc.detail)</span><br><span class="line">You do <span class="keyword">not</span> have permission to perform this action.</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(exc.get_codes())</span><br><span class="line">permission_denied</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(exc.get_full_details())</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">'message'</span>:<span class="string">'You do not have permission to perform this action.'</span>, </span><br><span class="line">	<span class="string">'code'</span>:<span class="string">'permission_denied'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在验证器错误时, detail会是由字段名和错误提示组成的字典或列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(exc.detail)</span><br><span class="line">&#123;<span class="string">"name"</span>:<span class="string">"This field is required."</span>, <span class="string">"age"</span>:<span class="string">"A valid integer is required."</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(exc.get_codes())</span><br><span class="line">&#123;<span class="string">"name"</span>:<span class="string">"required"</span>, <span class="string">"age"</span>:<span class="string">"invalid"</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(exc.get_full_details())</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">"name"</span>:&#123;<span class="string">"message"</span>:<span class="string">"This field is required."</span>, <span class="string">"code"</span>:<span class="string">"required"</span>&#125;, </span><br><span class="line">	<span class="string">"age"</span>:&#123;</span><br><span class="line">		<span class="string">"message"</span>:<span class="string">"A valid integer is required."</span>, </span><br><span class="line">		<span class="string">"code"</span>:<span class="string">"invalid"</span></span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="ParseError-解析器错误"><a href="#ParseError-解析器错误" class="headerlink" title="ParseError(解析器错误)"></a>ParseError(解析器错误)</h3><p>签名:<code>ParseError(detail=None, code=None)</code></p>
+<p>当访问<code>request.data</code>属性出错时抛出该异常, 默认的处理结果为一个 <code>400 Bad Request</code>响应</p>
+<hr>
+<h3 id="AuthenticationFailed-身份认证失败"><a href="#AuthenticationFailed-身份认证失败" class="headerlink" title="AuthenticationFailed(身份认证失败)"></a>AuthenticationFailed(身份认证失败)</h3><p>签名：<code>AuthenticationFailed(detail=None, code=None</code></p>
+<p>接收到认证身份失败的请求时抛出的错误, 默认为<code>401 Unauthenticated</code>或者<code>403 Forbidden</code>响应, 具体请参看身份验证一节.</p>
+<hr>
+<h3 id="NotAuthenticated-未认证"><a href="#NotAuthenticated-未认证" class="headerlink" title="NotAuthenticated(未认证)"></a>NotAuthenticated(未认证)</h3><p>签名: <code>NotAuthenticated(detail=None, code=None)</code></p>
+<p>接收到认证身份失败的请求时抛出的错误, 默认为<code>401 Unauthenticated</code>或者<code>403 Forbidden</code>响应, 具体请参看身份验证一节.</p>
+<hr>
+<h3 id="PermissionDenied-权限禁止"><a href="#PermissionDenied-权限禁止" class="headerlink" title="PermissionDenied(权限禁止)"></a>PermissionDenied(权限禁止)</h3><p>签名:<code>PermissionDenied(detail=None, code=None)</code></p>
+<p>默认返回结果为<code>403 Forbidden</code></p>
+<hr>
+<h3 id="NotFound-未找到"><a href="#NotFound-未找到" class="headerlink" title="NotFound(未找到)"></a>NotFound(未找到)</h3><p>签名:<code>NotFound(detail=None, code=None)</code></p>
+<p>默认响应状态码为<code>404 Not Found</code>.</p>
+<hr>
+<h3 id="MethodNotAllowed-不被允许的方法"><a href="#MethodNotAllowed-不被允许的方法" class="headerlink" title="MethodNotAllowed(不被允许的方法)"></a>MethodNotAllowed(不被允许的方法)</h3><p>签名:<code>MethodNotAllowed(method, detail=None, code=None)</code></p>
+<p>默认响应状态码为<code>405 Method Not Allowed</code></p>
+<hr>
+<h3 id="NotAcceptable-客户端无法接收响应"><a href="#NotAcceptable-客户端无法接收响应" class="headerlink" title="NotAcceptable(客户端无法接收响应)"></a>NotAcceptable(客户端无法接收响应)</h3><p>签名:<code>UnsupportedMediaType(media_type, detail=None, code=None)</code></p>
+<p>当渲染器列表中的任何渲染器都无法满足客户端请求的Accept头时抛出. </p>
+<p>默认响应状态码为<code>406 Not Acceptable</code></p>
+<hr>
+<h3 id="UnsupportedMediaType-不支持的媒体类型"><a href="#UnsupportedMediaType-不支持的媒体类型" class="headerlink" title="UnsupportedMediaType(不支持的媒体类型)"></a>UnsupportedMediaType(不支持的媒体类型)</h3><p>签名:<code>UnsupportedMediaType(media_type, detail=None, code=None)</code></p>
+<p>当访问<code>request.data</code>时, 没有任何可用的解析器可以处理请求中所携带的数据, 则抛出该异常.</p>
+<p>默认响应状态码为<code>415 Unsupported Media Type</code></p>
+<hr>
+<h3 id="Throttled-被限流"><a href="#Throttled-被限流" class="headerlink" title="Throttled(被限流)"></a>Throttled(被限流)</h3><p>签名:<code>Throttled(wait=None, detail=None, code=None)</code></p>
+<p>该请求未通过限流检测时抛出该异常</p>
+<p>默认响应状态码为<code>429 Too Many Requests</code></p>
+<hr>
+<h3 id="ValidationError-验证错误"><a href="#ValidationError-验证错误" class="headerlink" title="ValidationError(验证错误)"></a>ValidationError(验证错误)</h3><p>签名:<code>ValidationError(detail, code=None)</code></p>
+<p>与<code>APIException</code>的不同之处</p>
+<ol>
+<li><code>detail</code>参数不是可选的, 而是强制的</li>
+<li><code>detail</code>参数可能是一个列表或者错误信息的字典, 或者是一个嵌套的数据结构</li>
+<li>按照惯例, 你应当使用完全限定的<code>ValidationError</code>以区别Djano内置的验证错误</li>
+</ol>
+<p>例如<code>raise serializers.ValidationError(&#39;This field must be an integer value.&#39;)</code></p>
+<p><code>ValidationError</code>应当用被验证器使用在序列化器和字段验证上. 或者当调用<code>raise_execption</code>参数为<code>True</code>的<code>serializer.is_valid()</code>方法时抛出</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serializer.is_valid(raise_exception=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>通用视图使用了<code>raise_execption</code>=<code>True</code>, 所以你可以在全局重写API的验证错误响应的风格, 使用上面所述的自定义异常处理器和描述. </p>
+<p>该异常的默认处理结果是 “400 Bad Request”</p>
+<hr>
+<h2 id="通用错误视图"><a href="#通用错误视图" class="headerlink" title="通用错误视图"></a>通用错误视图</h2><p>鉴于Django的默认错误视图提供HTML响应, 这可能不适用于纯API应用, 因此DRF提供了两个错误视图, 提供通用的JSON形式的5xx和4xx响应.</p>
+<p><code>rest_framework.exceptions.server_error</code></p>
+<p>返回状态码为<code>500</code>和内容类型为<code>application/json</code>的响应</p>
+<p>设置为<code>handler500</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handler500 = <span class="string">'rest_framework.exceptions.server_error'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>rest_framework.exceptions.bad_request</code></p>
+<p>返回状态码为<code>400</code>和内容类型为<code>application/json</code>的响应.</p>
+<p>设置为<code>handler400</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handler400 = <span class="string">'rest_framework.exceptions.bad_request'</span></span><br></pre></td></tr></table></figure>
+
+<p>查看Django的<a href="https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views" target="_blank" rel="noopener">自定义错误视图</a>部分.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/23. 异常处理/" data-id="ck1kjuhsa000tngpl3bc82e3b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/24. 状态码/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          24. 状态码 Status
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/22. 返回URL/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">22. 返回URL Return URL</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

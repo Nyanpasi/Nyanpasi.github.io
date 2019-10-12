@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>10.1 序列化器字段:非关系字段 Serializer Field | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值. 序列化器字段定义在fields.py中, 但为了方便起见, 应该使用from rest_framework import serializers 并用serializers.&amp;lt;FieldName&amp;gt;的形式来使用.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10.1 序列化器字段:非关系字段 Serializer Field">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/10.1 序列化器字段/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值. 序列化器字段定义在fields.py中, 但为了方便起见, 应该使用from rest_framework import serializers 并用serializers.&amp;lt;FieldName&amp;gt;的形式来使用.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:21:12.378Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="10.1 序列化器字段:非关系字段 Serializer Field">
+<meta name="twitter:description" content="序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值. 序列化器字段定义在fields.py中, 但为了方便起见, 应该使用from rest_framework import serializers 并用serializers.&amp;lt;FieldName&amp;gt;的形式来使用.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-10.1 序列化器字段" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/10.1 序列化器字段/" class="article-date">
+  <time datetime="2019-10-03T09:54:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      10.1 序列化器字段:非关系字段 Serializer Field
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值.</p>
+<p>序列化器字段定义在<code>fields.py</code>中, 但为了方便起见, 应该使用<code>from rest_framework import serializers</code> 并用<code>serializers.&lt;FieldName&gt;</code>的形式来使用.</p>
+<a id="more"></a>
+
+
+<hr>
+<h3 id="核心参数："><a href="#核心参数：" class="headerlink" title="核心参数："></a>核心参数：</h3><p>任何序列化器字段在构建时至少可以接收以下参数. 一些字段还可以接收额外的参数, 但以下参数所有字段都会接收. </p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>含义</th>
+<th>数据类型</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>read_only</code></td>
+<td>是否只读</td>
+<td>Boolean</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>write_only</code></td>
+<td>是否只写</td>
+<td>Boolean</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>required</code></td>
+<td>是否需要</td>
+<td>Boolean</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td>字段默认值</td>
+<td>灵活</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>allow_null</code></td>
+<td>是否允许空值</td>
+<td>Boolean</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>设定本字段数据来源</td>
+<td>callable或attribute</td>
+<td>本字段</td>
+</tr>
+<tr>
+<td><code>validators</code></td>
+<td>指定验证器</td>
+<td>list of validator</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>error_message</code></td>
+<td>验证出错信息</td>
+<td>dict</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td>用于html表格字段的描述</td>
+<td>string</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>help_text</code></td>
+<td>用于html本字段的帮助文本</td>
+<td>string</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>initial</code></td>
+<td>用于html本字段的初始值</td>
+<td>callable或值</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>style</code></td>
+<td>用于html本字段的style参数</td>
+<td>dict</td>
+<td>None</td>
+</tr>
+</tbody></table>
+<hr>
+<p>额外说明:</p>
+<h4 id="read-only"><a href="#read-only" class="headerlink" title="read_only"></a><code>read_only</code></h4><p>该参数设为<code>True</code>的字段在<code>create()</code>和<code>update()</code>方法中不会使用</p>
+<h4 id="write-only"><a href="#write-only" class="headerlink" title="write_only"></a><code>write_only</code></h4><p>该参数设为<code>True</code>时, 该字段不会被序列化, 但在<code>create()</code>和<code>update()</code>方法中需要该字段</p>
+<h4 id="required"><a href="#required" class="headerlink" title="required"></a><code>required</code></h4><p>通常在反序列化过程中, 某个序列化器字段未被传入时, 会抛出错误, 如果某字段该参数设为<code>False</code>时, 则反序列化时没有该参数也不会报错. </p>
+<p>设为<code>False</code>还会允许在<strong>序列化过程中</strong>也可以将该字段省略, 如果未传入该字段, 在输出中也就没有该字段. </p>
+<h4 id="allow-null"><a href="#allow-null" class="headerlink" title="allow_null"></a><code>allow_null</code></h4><p>该参数设为<code>True</code>时, 允许该字段接收空值(<code>None</code>)作为合法值(序列化和反序列化过程均适用)</p>
+<h4 id="default"><a href="#default" class="headerlink" title="default"></a><code>default</code></h4><p>如果该字段未接收到输入的时候, 为其提供一个默认值. </p>
+<p>在<strong>部分更新</strong>时, <code>default</code>不会应用, 可指定为某个callable, 在每次使用<code>default</code>时都会进行计算</p>
+<p>如果为函数, 该函数不应该接受任何参数. 如果是一个其他callable, 且该callable有<code>set_context</code>方法, 那么会在每次计算前调用, 并将该字段实例作为唯一参数, 与<code>validators</code>的工作方式相同</p>
+<p>注意在设置默认值时, 意味着该字段无需被传入, 如果同时设定<code>default</code>和<code>required</code>=<code>True</code>则会报错</p>
+<h4 id="source"><a href="#source" class="headerlink" title="source"></a><code>source</code></h4><p>用以填充本字段的属性名(通常为与本字段同名的属性, 但可以通过本参数进行额外指定), 可以为某个只接收<code>self</code>参数的方法, 例如<code>URLField(source=&#39;get_absolute_url&#39;)</code>, 或者某个<strong>圆点记法</strong>的属性值, 例如<code>EmailField(source=&#39;user.email&#39;)</code>.</p>
+<p>如果设为<code>source</code>=<code>*</code>, 则意味着将正在序列化的整个对象传入该字段. </p>
+<h4 id="validators"><a href="#validators" class="headerlink" title="validators"></a><code>validators</code></h4><p>验证器列表, 验证器为一个可以抛出<code>serializers.ValidationError</code>或者Django内置的<code>ValidationError</code>的函数. </p>
+<h4 id="error-messages"><a href="#error-messages" class="headerlink" title="error_messages"></a><code>error_messages</code></h4><p>在验证失败后, 返回一个错误信息的字典, 格式为<code>{&#39;field_name&#39;:&#39;error_info&#39;}</code>.</p>
+<h4 id="label"><a href="#label" class="headerlink" title="label"></a><code>label</code></h4><p>可能在html表格字段中使用的label标签的值</p>
+<h4 id="help-text"><a href="#help-text" class="headerlink" title="help_text"></a><code>help_text</code></h4><p>可能在html表格字段中使用的帮助信息文本</p>
+<h4 id="initial"><a href="#initial" class="headerlink" title="initial"></a><code>initial</code></h4><p>可能在html表格字段中使用的预填充值, 可以传入一个<code>callable</code>如同django的表格字段一样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    day = serializers.DateField(initial=datetime.date.today)</span><br></pre></td></tr></table></figure>
+
+<h4 id="style"><a href="#style" class="headerlink" title="style"></a><code>style</code></h4><p>可能在html表单字段中使用的内嵌样式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Use &lt;input type="password"&gt; for the input.</span></span><br><span class="line">password = serializers.CharField(</span><br><span class="line">    style=&#123;<span class="string">'input_type'</span>: <span class="string">'password'</span>&#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Use a radio input instead of a select input.</span></span><br><span class="line">color_channel = serializers.ChoiceField(</span><br><span class="line">    choices=[<span class="string">'red'</span>, <span class="string">'green'</span>, <span class="string">'blue'</span>], </span><br><span class="line">    style=&#123;<span class="string">'base_template'</span>: <span class="string">'radio.html'</span>&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>查看<a href="https://q1mi.github.io/Django-REST-framework-documentation/topics/html-and-forms/" target="_blank" rel="noopener">HTML &amp; Forms</a>文档以获得更多信息. </p>
+<hr>
+<h2 id="序列化器字段"><a href="#序列化器字段" class="headerlink" title="序列化器字段"></a>序列化器字段</h2><h3 id="布尔型字段"><a href="#布尔型字段" class="headerlink" title="布尔型字段"></a>布尔型字段</h3><h4 id="BooleanField"><a href="#BooleanField" class="headerlink" title="BooleanField"></a>BooleanField</h4><p>布尔型字段, 等同于<code>django.db.models.fields.BooleanField</code></p>
+<h4 id="NullBooleanField"><a href="#NullBooleanField" class="headerlink" title="NullBooleanField"></a>NullBooleanField</h4><p>允许空值的布尔型字段, 等同于<code>django.db.models.fields.NullBooleanField</code></p>
+<hr>
+<h3 id="字符串型字段"><a href="#字符串型字段" class="headerlink" title="字符串型字段"></a>字符串型字段</h3><h4 id="CharField"><a href="#CharField" class="headerlink" title="CharField"></a>CharField</h4><p>签名: <code>CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)</code></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+<th>数据类型</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>max_length</code></td>
+<td>最大长度</td>
+<td>int</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>min_length</code></td>
+<td>最小长度</td>
+<td>int</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>allow_blank</code></td>
+<td>允许空字符串</td>
+<td>Boolean</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>trim_whitespace</code></td>
+<td>缩减空格</td>
+<td>Boolean</td>
+<td><code>True</code></td>
+</tr>
+</tbody></table>
+<h4 id="EmailField"><a href="#EmailField" class="headerlink" title="EmailField"></a>EmailField</h4><p>签名: <code>EmailField(max_length=None, min_length=None, allow_blank=False)</code></p>
+<p>自动附加一个邮件地址验证器, 等同于<code>django.db.models.fields.EmailField</code></p>
+<h4 id="RegexField"><a href="#RegexField" class="headerlink" title="RegexField"></a>RegexField</h4><p>签名: <code>RegexField(regex, max_length=None, min_length=None, allow_blank=False)</code></p>
+<p><code>regex</code>参数为一个代表匹配模式的字符串, 或者python的正则表达式对象</p>
+<p>自动附加一个验证字段值是否匹配regex的验证器, 等同于<code>django.core.validators.RegexValidator</code></p>
+<h4 id="SlugField"><a href="#SlugField" class="headerlink" title="SlugField"></a>SlugField</h4><p>签名: <code>SlugField(max_length=50, min_length=None, allow_blank=False)</code></p>
+<h4 id="URLField"><a href="#URLField" class="headerlink" title="URLField"></a>URLField</h4><p><code>SlugField(max_length=50, min_length=None, allow_blank=False)</code></p>
+<h4 id="UUIDField"><a href="#UUIDField" class="headerlink" title="UUIDField"></a>UUIDField</h4><p><code>URLField(max_length=200, min_length=None, allow_blank=False)</code></p>
+<h4 id="FilePathField"><a href="#FilePathField" class="headerlink" title="FilePathField"></a>FilePathField</h4><p><code>FilePathField(path, match=None, recursive=False, allow_files=True, allow_folders=False, required=None, **kwargs)</code></p>
+<h4 id="IPAddressField"><a href="#IPAddressField" class="headerlink" title="IPAddressField"></a>IPAddressField</h4><p><code>IPAddressField(protocol=&#39;both&#39;, unpack_ipv4=False, **options)</code></p>
+<p><code>protocol</code>: 指定该地址需符合的协议, <code>ipv4</code>、<code>ipv6</code>或者<code>both</code>(两者均可)<br><code>unpack_ipv4</code>: 解压缩ipv4映射地址, 仅在<code>protocol</code>为<code>both</code>时可用, 默认关闭</p>
+<hr>
+<h3 id="数字型字段"><a href="#数字型字段" class="headerlink" title="数字型字段"></a>数字型字段</h3><h4 id="IntegerField"><a href="#IntegerField" class="headerlink" title="IntegerField"></a>IntegerField</h4><p><code>IntegerField(max_value=None, min_value=None)</code></p>
+<h4 id="FloatField"><a href="#FloatField" class="headerlink" title="FloatField"></a>FloatField</h4><p><code>FloatField(max_value=None, min_value=None)</code></p>
+<h4 id="DecimalField"><a href="#DecimalField" class="headerlink" title="DecimalField"></a>DecimalField</h4><p><code>DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)</code></p>
+<hr>
+<h3 id="时间和日期字段"><a href="#时间和日期字段" class="headerlink" title="时间和日期字段"></a>时间和日期字段</h3><h4 id="DateTimeField"><a href="#DateTimeField" class="headerlink" title="DateTimeField"></a>DateTimeField</h4><p><code>DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None, default_timezone=None)</code></p>
+<p><code>format</code>:输出时的格式, 默认为<code>iso-8601</code><br><code>input_formats</code>:输入时的格式列表</p>
+<h4 id="DateField"><a href="#DateField" class="headerlink" title="DateField"></a>DateField</h4><p><code>DateField(format=api_settings.DATE_FORMAT, input_formats=None)</code></p>
+<h4 id="TimeField"><a href="#TimeField" class="headerlink" title="TimeField"></a>TimeField</h4><p><code>TimeField(format=api_settings.TIME_FORMAT, input_formats=None)</code></p>
+<h4 id="DurationField"><a href="#DurationField" class="headerlink" title="DurationField"></a>DurationField</h4><p><code>DurationField()</code></p>
+<hr>
+<h3 id="选择字段"><a href="#选择字段" class="headerlink" title="选择字段"></a>选择字段</h3><h4 id="ChoiceField"><a href="#ChoiceField" class="headerlink" title="ChoiceField"></a>ChoiceField</h4><p>该字段可以接受一个在该字段合法值列表中的值, 对应于mysql中的枚举类</p>
+<p>示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ActApplicant</span><span class="params">(Model)</span>:</span></span><br><span class="line">    status_choices = [</span><br><span class="line">        (<span class="number">0</span>, <span class="string">'未通过'</span>), </span><br><span class="line">        (<span class="number">1</span>, <span class="string">'已通过'</span>), </span><br><span class="line">        (<span class="number">2</span>, <span class="string">'申请中'</span>)</span><br><span class="line">    ]</span><br><span class="line">    act = ForeignKey(Act, verbose_name=<span class="string">'活动'</span>, on_delete=CASCADE)</span><br><span class="line">    applicant = ForeignKey(Applicant, verbose_name=<span class="string">'申请人'</span>, on_delete=CASCADE)</span><br><span class="line">    apply_time = DateTimeField(<span class="string">'申请时间'</span>)</span><br><span class="line">    status = SmallIntegerField(<span class="string">'申请状态'</span>, choices=status_choices, default=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.act.title</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        unique_together = (<span class="string">'act'</span>, <span class="string">'applicant'</span>)</span><br><span class="line">        verbose_name = verbose_name_plural = <span class="string">'活动申请'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>ChoiceField(choices)</code></p>
+<p><code>choices</code>: 该参数需传入一个合法值的列表或者元素为<code>(key, display_name)</code>格式元组的列表</p>
+<h4 id="MultipleChoiceField-choices"><a href="#MultipleChoiceField-choices" class="headerlink" title="MultipleChoiceField(choices)"></a>MultipleChoiceField(choices)</h4><p>多选字段</p>
+<p><code>MultipleChoiceField(choices)</code></p>
+<hr>
+<h3 id="文件上传字段"><a href="#文件上传字段" class="headerlink" title="文件上传字段"></a>文件上传字段</h3><h4 id="FileField"><a href="#FileField" class="headerlink" title="FileField"></a>FileField</h4><p><code>FileField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)</code></p>
+<p><code>max_length</code>: 文件名最大长度<br><code>allow_empty_file</code>: 是否允许空文件<br><code>use_url</code>: 是否使用url用于输出表示, 默认为<code>UPLOADED_FILES_USE_URL</code>的值, 默认为<code>True</code></p>
+<h4 id="ImageField"><a href="#ImageField" class="headerlink" title="ImageField"></a>ImageField</h4><p><code>ImageField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)</code></p>
+<hr>
+<h3 id="组合字段"><a href="#组合字段" class="headerlink" title="组合字段"></a>组合字段</h3><p>组合字段指的是, 该字段中获得的值应该为一个汇集对象, 即其中包含多个元素. 且可以为其中的任意元素的数据格式进行校验. </p>
+<h4 id="ListField"><a href="#ListField" class="headerlink" title="ListField"></a>ListField</h4><p><code>ListField(child=&lt;A_FIELD_INSTANCE&gt;, min_length=None, max_length=None)</code></p>
+<p>该字段接收的数据类型为一个列表, 可以指定一个<code>child</code>参数, 该参数必须为另一个字段(另一个序列化器也是一个字段)的实例</p>
+<p>会验证接收到的列表中的元素都符合参数<code>child</code>所指向的字段形式. </p>
+<p>注意, 该字段接受的数据为一个<code>列表</code>. </p>
+<h4 id="DictField"><a href="#DictField" class="headerlink" title="DictField"></a>DictField</h4><p><code>DictField(child=&lt;A_FIELD_INSTANCE&gt;, allow_empty=True)</code></p>
+<p>同理, 该字段接收的是一个<code>字典</code></p>
+<p>参数:</p>
+<ol>
+<li>child 一个应该用以校验其中单个键值对中的值的field实例, 如果未提供, 则值不会被校验.</li>
+<li>allow_empty 是否允许接收一个空字典.</li>
+</ol>
+<p>例如, 创建一个校验值为字符串类型的字典的字段, 代码可能如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">document = DictField(child=CharField())</span><br></pre></td></tr></table></figure>
+
+<p>或者直接重写DictField类并指定<code>child</code>属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">class DocumentField(DictField):</span><br><span class="line">    child = CharField()</span><br></pre></td></tr></table></figure>
+
+<h4 id="JSONField"><a href="#JSONField" class="headerlink" title="JSONField"></a>JSONField</h4><p><code>JSONField(binary)</code></p>
+<p>该字段接收的是一个<code>JSON</code>结构的数据, 并可以使用<code>child</code>参数来指定验证其数据合理性的字段实例</p>
+<hr>
+<h3 id="其他字段"><a href="#其他字段" class="headerlink" title="其他字段"></a>其他字段</h3><h4 id="ReadOnlyField"><a href="#ReadOnlyField" class="headerlink" title="ReadOnlyField"></a>ReadOnlyField</h4><p><code>ReadOnlyField()</code></p>
+<p>不常用, 简单返回不加修改的数据值</p>
+<h4 id="HiddenField"><a href="#HiddenField" class="headerlink" title="HiddenField"></a>HiddenField</h4><p>不接收用户的输入, 而使用default获得数据</p>
+<p><code>HiddenField()</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">modified = serializers.HiddenField(default=timezone.now)</span><br></pre></td></tr></table></figure>
+
+<p>如果需要基于某些预先提供的字段值运行某些验证, 但是不希望将所有这些字段公开给最终用户, 通常需要HiddenField类, </p>
+<h4 id="ModelField"><a href="#ModelField" class="headerlink" title="ModelField"></a>ModelField</h4><p><code>ModelField(model_field=&lt;Django ModelField instance&gt;)</code></p>
+<p>该字段绑定于一个Django的Model</p>
+<h4 id="SerializerMethodField"><a href="#SerializerMethodField" class="headerlink" title="SerializerMethodField"></a>SerializerMethodField</h4><p><code>SerializerMethodField(method_name=None)</code></p>
+<p>该字段接受的值为定义在该序列化器中的method的返回值, 使用<code>method_name</code>来指定具体是哪个方法, 如果不指定, 则尝试调用<code>get_&lt;filed_name&gt;</code>方法, 如果该方法不存在则报错. 该方法除了<code>self</code>之外, 仅接受一个参数<code>obj</code>, 即正在被序列化的对象本身. </p>
+<p>示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.auth.models <span class="keyword">import</span> User</span><br><span class="line"><span class="keyword">from</span> django.utils.timezone <span class="keyword">import</span> now</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    days_since_joined = serializers.SerializerMethodField()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_days_since_joined</span><span class="params">(self, obj)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (now() - obj.date_joined).days</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="自定义字段"><a href="#自定义字段" class="headerlink" title="自定义字段"></a>自定义字段</h3><p>创建自定义序列化器字段需要子类化<code>Field</code>并重写以下方法中至少一个:</p>
+<p><code>.to_representation()</code><br><code>.to_internal_value()</code></p>
+<p>这两者用以进行从初始数据到原生python数据类型, 可序列化数据的转换. 基本数据类型包括数字, 字符串, 布尔型, <code>data</code>/<code>time</code>/<code>datetime</code>或<code>None</code>, 还可以是只包含基本数据类型元素的列表或者字典, 其他的类型可能也被支持, 取决于渲染器.</p>
+<p>前者用于从初始数据到基本数据类型, 可序列化的数据的转换.<br>后者用于从原始数据到python内部基本类型的转换. 在校验失败时抛出<code>serializers.ValidationError</code></p>
+<hr>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><h4 id="基本自定义字段"><a href="#基本自定义字段" class="headerlink" title="基本自定义字段"></a>基本自定义字段</h4><p>定义一个可用于序列化表示RGB颜色值类的字段. Model和Field定义如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Color</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A color represented in the RGB colorspace.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, red, green, blue)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span>(red &gt;= <span class="number">0</span> <span class="keyword">and</span> green &gt;= <span class="number">0</span> <span class="keyword">and</span> blue &gt;= <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">assert</span>(red &lt; <span class="number">256</span> <span class="keyword">and</span> green &lt; <span class="number">256</span> <span class="keyword">and</span> blue &lt; <span class="number">256</span>)</span><br><span class="line">        self.red, self.green, self.blue = red, green, blue</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ColorField</span><span class="params">(serializers.Field)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Color objects are serialized into 'rgb(#, #, #)' notation.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">"rgb(%d, %d, %d)"</span> % (value.red, value.green, value.blue)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_internal_value</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        data = data.strip(<span class="string">'rgb('</span>).rstrip(<span class="string">')'</span>)</span><br><span class="line">        red, green, blue = [int(col) <span class="keyword">for</span> col <span class="keyword">in</span> data.split(<span class="string">', '</span>)]</span><br><span class="line">        <span class="keyword">return</span> Color(red, green, blue)</span><br></pre></td></tr></table></figure>
+
+<p>默认序列化器字段会映射至Model的<code>同名</code>字段, 如果需要自定义该序列化器字段应该获得Model的非同名字段, 需要重写<code>.get_attribute()</code>和/或<code>.get_value()</code>.</p>
+<p>例如, 创建一个字段用以序列化对象的类名:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassNameField</span><span class="params">(serializers.Field)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_attribute</span><span class="params">(self, instance)</span>:</span></span><br><span class="line">        <span class="comment"># We pass the object instance onto `to_representation`, </span></span><br><span class="line">        <span class="comment"># not just the field attribute.</span></span><br><span class="line">        <span class="keyword">return</span> instance</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Serialize the value's class name.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> value.__class__.__name__</span><br></pre></td></tr></table></figure>
+
+<h4 id="抛出验证错误"><a href="#抛出验证错误" class="headerlink" title="抛出验证错误"></a>抛出验证错误</h4><p>以上的ColorField并无进行任何数据验证, 为了宣示数据是否合法, 在<code>.to_internal_value()</code>方法中添加验证逻辑并在校验失败时抛出<code>serializers.ValidationError</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_internal_value</span><span class="params">(self, data)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(data, str):</span><br><span class="line">        msg = <span class="string">'Incorrect type. Expected a string, but got %s'</span></span><br><span class="line">        <span class="keyword">raise</span> ValidationError(msg % type(data).__name__)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> re.match(<span class="string">r'^rgb\([0-9]+, [0-9]+, [0-9]+\)$'</span>, data):</span><br><span class="line">        <span class="keyword">raise</span> ValidationError(<span class="string">'Incorrect format. Expected `rgb(#, #, #)`.'</span>)</span><br><span class="line"></span><br><span class="line">    data = data.strip(<span class="string">'rgb('</span>).rstrip(<span class="string">')'</span>)</span><br><span class="line">    red, green, blue = [int(col) <span class="keyword">for</span> col <span class="keyword">in</span> data.split(<span class="string">', '</span>)]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> any([col &gt; <span class="number">255</span> <span class="keyword">or</span> col &lt; <span class="number">0</span> <span class="keyword">for</span> col <span class="keyword">in</span> (red, green, blue)]):</span><br><span class="line">        <span class="keyword">raise</span> ValidationError(<span class="string">'Value out of range. Must be between 0 and 255.'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Color(red, green, blue)</span><br></pre></td></tr></table></figure>
+
+<p><code>.fail</code>方法是抛出<code>ValidationError</code>异常的快捷方式, 从<code>error_messages</code>字典中获取信息.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">default_error_messages = &#123;</span><br><span class="line">    <span class="string">'incorrect_type'</span>: <span class="string">'Incorrect type. Expected a string, but got &#123;input_type&#125;'</span>, </span><br><span class="line">    <span class="string">'incorrect_format'</span>: <span class="string">'Incorrect format. Expected `rgb(#, #, #)`.'</span>, </span><br><span class="line">    <span class="string">'out_of_range'</span>: <span class="string">'Value out of range. Must be between 0 and 255.'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_internal_value</span><span class="params">(self, data)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(data, str):</span><br><span class="line">        self.fail(<span class="string">'incorrect_type'</span>, input_type=type(data).__name__)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> re.match(<span class="string">r'^rgb\([0-9]+, [0-9]+, [0-9]+\)$'</span>, data):</span><br><span class="line">        self.fail(<span class="string">'incorrect_format'</span>)</span><br><span class="line"></span><br><span class="line">    data = data.strip(<span class="string">'rgb('</span>).rstrip(<span class="string">')'</span>)</span><br><span class="line">    red, green, blue = [int(col) <span class="keyword">for</span> col <span class="keyword">in</span> data.split(<span class="string">', '</span>)]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> any([col &gt; <span class="number">255</span> <span class="keyword">or</span> col &lt; <span class="number">0</span> <span class="keyword">for</span> col <span class="keyword">in</span> (red, green, blue)]):</span><br><span class="line">        self.fail(<span class="string">'out_of_range'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Color(red, green, blue)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="使用source-quot-quot"><a href="#使用source-quot-quot" class="headerlink" title="使用source=&quot;*&quot;"></a>使用<code>source=&quot;*&quot;</code></h4><p>在实例化一个字段时, source参数可以为<code>*</code>意味着将整个对象传入该字段, 并在其内部使用该对象. </p>
+<p>在自定义字段中可能需要读取不止一个字段的信息用于确定序列化结果, 因此可以使用该参数, 并自定义逻辑.</p>
+<p>例如一个坐标模型定义如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataPoint</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    label = models.CharField(max_length=<span class="number">50</span>)</span><br><span class="line">    x_coordinate = models.SmallIntegerField()</span><br><span class="line">    y_coordinate = models.SmallIntegerField()</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>自定义字段</code>和<code>source=&quot;*&quot;</code>, 我们可以使用多个字段的信息来序列化一个字段, 并返回嵌套数据.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CoordinateField</span><span class="params">(serializers.Field)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        ret = &#123;</span><br><span class="line">            <span class="string">"x"</span>: value.x_coordinate, </span><br><span class="line">            <span class="string">"y"</span>: value.y_coordinate</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ret</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_internal_value</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        ret = &#123;</span><br><span class="line">            <span class="string">"x_coordinate"</span>: data[<span class="string">"x"</span>], </span><br><span class="line">            <span class="string">"y_coordinate"</span>: data[<span class="string">"y"</span>], </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataPointSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    coordinates = CoordinateField(source=<span class="string">'*'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = DataPoint</span><br><span class="line">        fields = [<span class="string">'label'</span>, <span class="string">'coordinates'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>以上例子未提供验证处理. </p>
+<p>这个例子中的关键点在于:</p>
+<ol>
+<li><code>to_presentation</code>必须被传递整个数据并从中获取序列化结果.</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>instance = DataPoint(label=<span class="string">'Example'</span>, x_coordinate=<span class="number">1</span>, y_coordinate=<span class="number">2</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>out_serializer = DataPointSerializer(instance)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>out_serializer.data</span><br><span class="line">ReturnDict([(<span class="string">'label'</span>, <span class="string">'Example'</span>), (<span class="string">'coordinates'</span>, &#123;<span class="string">'x'</span>: <span class="number">1</span>, <span class="string">'y'</span>: <span class="number">2</span>&#125;)])</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>除非该字段被指定为只读, 否则<code>.to_internal_value()</code>必须从原始数据中还原映射关系以用以更新目标对象, 该方法所返回的<code>validated_data</code>用以更新实例对象, 因此该数据必须被拆解为符合原Model字段定义结构的数据.</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>data = &#123;</span><br><span class="line"><span class="meta">... </span>    <span class="string">"label"</span>: <span class="string">"Second Example"</span>, </span><br><span class="line"><span class="meta">... </span>    <span class="string">"coordinates"</span>: &#123;</span><br><span class="line"><span class="meta">... </span>        <span class="string">"x"</span>: <span class="number">3</span>, </span><br><span class="line"><span class="meta">... </span>        <span class="string">"y"</span>: <span class="number">4</span>, </span><br><span class="line"><span class="meta">... </span>    &#125;</span><br><span class="line"><span class="meta">... </span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>in_serializer = DataPointSerializer(data=data)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>in_serializer.is_valid()</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>in_serializer.validated_data</span><br><span class="line">OrderedDict([(<span class="string">'label'</span>, <span class="string">'Second Example'</span>), </span><br><span class="line">             (<span class="string">'y_coordinate'</span>, <span class="number">4</span>), </span><br><span class="line">             (<span class="string">'x_coordinate'</span>, <span class="number">3</span>)])</span><br></pre></td></tr></table></figure>
+
+<p>为了更加完备, 我们尝试使用嵌套序列化器完成相同的功能.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NestedCoordinateSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    x = serializers.IntegerField(source=<span class="string">'x_coordinate'</span>)</span><br><span class="line">    y = serializers.IntegerField(source=<span class="string">'y_coordinate'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataPointSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    coordinates = NestedCoordinateSerializer(source=<span class="string">'*'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = DataPoint</span><br><span class="line">        fields = [<span class="string">'label'</span>, <span class="string">'coordinates'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>我们需要将一个作用于外层序列化器的对象整个传入内层序列化器中, 并由此生成嵌套的序列化结果.</p>
+<p>序列化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>out_serializer = DataPointSerializer(instance)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>out_serializer.data</span><br><span class="line">ReturnDict([(<span class="string">'label'</span>, <span class="string">'testing'</span>), </span><br><span class="line">            (<span class="string">'coordinates'</span>, OrderedDict([(<span class="string">'x'</span>, <span class="number">1</span>), (<span class="string">'y'</span>, <span class="number">2</span>)]))])</span><br></pre></td></tr></table></figure>
+
+<p>反序列化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>in_serializer = DataPointSerializer(data=data)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>in_serializer.is_valid()</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>in_serializer.validated_data</span><br><span class="line">OrderedDict([(<span class="string">'label'</span>, <span class="string">'still testing'</span>), </span><br><span class="line">             (<span class="string">'x_coordinate'</span>, <span class="number">3</span>), </span><br><span class="line">             (<span class="string">'y_coordinate'</span>, <span class="number">4</span>)])</span><br></pre></td></tr></table></figure>
+
+<p><em>注: 嵌套序列化器可以简单地反序列化嵌套数据, 只是在进行<code>create</code>和<code>update</code>时需要手写这些方法.</em></p>
+<p>优点是自动获得了内建的验证器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>invalid_data = &#123;</span><br><span class="line"><span class="meta">... </span>    <span class="string">"label"</span>: <span class="string">"still testing"</span>, </span><br><span class="line"><span class="meta">... </span>    <span class="string">"coordinates"</span>: &#123;</span><br><span class="line"><span class="meta">... </span>        <span class="string">"x"</span>: <span class="string">'a'</span>, </span><br><span class="line"><span class="meta">... </span>        <span class="string">"y"</span>: <span class="string">'b'</span>, </span><br><span class="line"><span class="meta">... </span>    &#125;</span><br><span class="line"><span class="meta">... </span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>invalid_serializer = DataPointSerializer(data=invalid_data)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>invalid_serializer.is_valid()</span><br><span class="line"><span class="literal">False</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>invalid_serializer.errors</span><br><span class="line">ReturnDict([(<span class="string">'coordinates'</span>, </span><br><span class="line">             &#123;<span class="string">'x'</span>: [<span class="string">'A valid integer is required.'</span>], </span><br><span class="line">              <span class="string">'y'</span>: [<span class="string">'A valid integer is required.'</span>]&#125;)])</span><br></pre></td></tr></table></figure>
+
+<p>总结</p>
+<ol>
+<li>Serializer的<code>to_representation()</code>会调用每个Field的<code>to_representation</code>来完成序列化过程.</li>
+<li>Serialzier继承自<code>Field</code>, 是rest_framework.fields中的<code>Field</code>, 并非Django的<code>Field</code></li>
+<li>自定义字段相较于使用<code>SerializerMethodField</code>在于可以复用</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/10.1 序列化器字段/" data-id="ck1hlao800007qgplskk747un" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/11. 验证器/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          11. 序列化器 Validator
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/9.2 序列化器/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">9.2 序列化器:内置序列化器 Serializer</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

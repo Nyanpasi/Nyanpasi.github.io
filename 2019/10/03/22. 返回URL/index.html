@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>22. 返回URL Return URL | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="REST架构跟与其他架构的核心区别就是强调接口之间的统一性— Roy Fielding  通常, 返回url的时候最好是返回绝对url, 而不是返回相对url. 这样做的优势在于：  更明确 减轻客户端的负担 当在诸如JSON之类的结果中找不到原始URL时, 也不会产生歧义 很容易地使用带有超链接的html样式">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="22. 返回URL Return URL">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/22. 返回URL/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="REST架构跟与其他架构的核心区别就是强调接口之间的统一性— Roy Fielding  通常, 返回url的时候最好是返回绝对url, 而不是返回相对url. 这样做的优势在于：  更明确 减轻客户端的负担 当在诸如JSON之类的结果中找不到原始URL时, 也不会产生歧义 很容易地使用带有超链接的html样式">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:23:02.544Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="22. 返回URL Return URL">
+<meta name="twitter:description" content="REST架构跟与其他架构的核心区别就是强调接口之间的统一性— Roy Fielding  通常, 返回url的时候最好是返回绝对url, 而不是返回相对url. 这样做的优势在于：  更明确 减轻客户端的负担 当在诸如JSON之类的结果中找不到原始URL时, 也不会产生歧义 很容易地使用带有超链接的html样式">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-22. 返回URL" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/22. 返回URL/" class="article-date">
+  <time datetime="2019-10-03T10:07:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      22. 返回URL Return URL
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>REST架构跟与其他架构的核心区别就是强调接口之间的统一性<br>— Roy Fielding</p>
+</blockquote>
+<p>通常, 返回url的时候最好是返回绝对url, 而不是返回相对url.</p>
+<p>这样做的优势在于：</p>
+<ol>
+<li>更明确</li>
+<li>减轻客户端的负担</li>
+<li>当在诸如JSON之类的结果中找不到原始URL时, 也不会产生歧义</li>
+<li>很容易地使用带有超链接的html样式</li>
+</ol>
+<a id="more"></a>
+
+<p>rest_framework提供两个工具函数来更简单地使API返回绝对url, 如果有需要, 使用它们能使自描述API能够自动生成超链接, 使浏览api变得更加容易.</p>
+<p>这两个函数是 <code>reverse</code>和 <code>reverse_lazy</code></p>
+<hr>
+<h3 id="reverse"><a href="#reverse" class="headerlink" title="reverse"></a><code>reverse</code></h3><p>签名: <code>reverse(viewname, *args, **kwargs)</code></p>
+<p>与django.urls.reverse的行为相同, 唯一的不同是返回的是<strong>绝对URL</strong>.</p>
+<p>在这个过程中需要使用<code>request</code>来确定主机和端口, 因此在使用reverse()函数的时候, 需要为其传入request关键字参数.</p>
+<p>示例:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.reverse <span class="keyword">import</span> reverse</span><br><span class="line"><span class="keyword">from</span> rest_framework.views <span class="keyword">import</span> APIView</span><br><span class="line"><span class="keyword">from</span> django.utils.timezone <span class="keyword">import</span> now</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">APIRootView</span><span class="params">(APIView)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        year = now().year</span><br><span class="line">        data = &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="string">'year-summary-url'</span>: reverse(<span class="string">'year-summary'</span>, args=[year], request=request)</span><br><span class="line">            <span class="comment">#此处需要传入request</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Response(data)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="reverse-lazy"><a href="#reverse-lazy" class="headerlink" title="reverse_lazy"></a><code>reverse_lazy</code></h3><p>签名: <code>reverse_lazy(viewname, *args, **kwargs)</code></p>
+<p>与<code>django.urls.reverse_lazy</code>相同, 唯一区别是返回<strong>绝对URL</strong>, 使用<code>request</code>来确定主机和端口.</p>
+<p>与reverse一样, 在使用时为其包含request关键字参数.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">api_root = reverse_lazy(<span class="string">'api-root'</span>, request=request)</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/22. 返回URL/" data-id="ck1kjuhqz0009ngplen9prgui" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/23. 异常处理/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          23. 异常处理 Exception
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/21. 格式后缀/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">21. 格式后缀 Format suffixes</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>26. 设置 Settings | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="命名空间是一个很好的主意, 发扬光大吧!– python之禅  REST-framework的设置的命名空间被包含在单个Django设置项中, 即REST_FRAMEWORK. 例如, 在Django项目的settings.py文件中, 可能包含如下内容:">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="26. 设置 Settings">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/26. 设置/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="命名空间是一个很好的主意, 发扬光大吧!– python之禅  REST-framework的设置的命名空间被包含在单个Django设置项中, 即REST_FRAMEWORK. 例如, 在Django项目的settings.py文件中, 可能包含如下内容:">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:23:31.769Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="26. 设置 Settings">
+<meta name="twitter:description" content="命名空间是一个很好的主意, 发扬光大吧!– python之禅  REST-framework的设置的命名空间被包含在单个Django设置项中, 即REST_FRAMEWORK. 例如, 在Django项目的settings.py文件中, 可能包含如下内容:">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-26. 设置" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/26. 设置/" class="article-date">
+  <time datetime="2019-10-03T10:12:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      26. 设置 Settings
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>命名空间是一个很好的主意, 发扬光大吧!<br>– python之禅</p>
+</blockquote>
+<p>REST-framework的设置的命名空间被包含在单个Django设置项中, 即<code>REST_FRAMEWORK</code>.</p>
+<p>例如, 在Django项目的<code>settings.py</code>文件中, 可能包含如下内容:</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_RENDERER_CLASSES'</span>: [</span><br><span class="line">        <span class="string">'rest_framework.renderers.JSONRenderer'</span>,</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">'DEFAULT_PARSER_CLASSES'</span>: [</span><br><span class="line">        <span class="string">'rest_framework.parsers.JSONParser'</span>,</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="访问设置项"><a href="#访问设置项" class="headerlink" title="访问设置项"></a>访问设置项</h3><p>如果需要在项目中访问REST-framework的设置项的值, 需要使用<code>api_settings</code>对象, 例如:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.settings <span class="keyword">import</span> api_settings</span><br><span class="line"></span><br><span class="line">print(api_settings.DEFAULT_AUTHENTICATION_CLASSES)</span><br></pre></td></tr></table></figure>
+
+<p><code>api_settings</code>对象会检查所有用户定义的设置项, 以及未设置项的默认值. </p>
+<p>任何使用字符串表示其导出路径的类会自动返回该类<strong>本身</strong>, 而非字符串. </p>
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="API策略设置"><a href="#API策略设置" class="headerlink" title="API策略设置"></a>API策略设置</h3><hr>
+<h4 id="默认渲染器类"><a href="#默认渲染器类" class="headerlink" title="默认渲染器类"></a>默认渲染器类</h4><p><strong>DEFAULT_RENDERER_CLASSES</strong> </p>
+<p>数据格式: 字符串列表/元组</p>
+<p>默认值:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    <span class="string">'rest_framework.renderers.JSONRenderer'</span>,</span><br><span class="line">    <span class="string">'rest_framework.renderers.BrowsableAPIRenderer'</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="默认解析器类"><a href="#默认解析器类" class="headerlink" title="默认解析器类"></a>默认解析器类</h4><p><strong>DEFAULT_PARSER_CLASSES</strong></p>
+<p>数据格式: 字符串列表/元组</p>
+<p>默认值:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    <span class="string">'rest_framework.authentication.SessionAuthentication'</span>,</span><br><span class="line">    <span class="string">'rest_framework.authentication.BasicAuthentication'</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h4 id="默认权限类"><a href="#默认权限类" class="headerlink" title="默认权限类"></a>默认权限类</h4><p><strong>DEFAULT_PERMISSION_CLASSES</strong></p>
+<p>数据格式: 字符串列表/元组</p>
+<p>默认值:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    <span class="string">'rest_framework.permissions.AllowAny'</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="默认限流类"><a href="#默认限流类" class="headerlink" title="默认限流类"></a>默认限流类</h4><p><strong>DEFAULT_THROTTLE_CLASSES</strong></p>
+<p>数据格式: 字符串列表/元组</p>
+<p>默认值: <code>[]</code></p>
+<hr>
+<h4 id="默认请求协商类"><a href="#默认请求协商类" class="headerlink" title="默认请求协商类"></a>默认请求协商类</h4><p><strong>DEFAULT_CONTENT_NEGOTIATION_CLASS</strong></p>
+<p>数据格式: 字符串</p>
+<p>默认值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'rest_framework.negotiation.DefaultContentNegotiation'</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="默认概要类"><a href="#默认概要类" class="headerlink" title="默认概要类"></a>默认概要类</h3><p><strong>DEFAULT_SCHEMA_CLASS</strong></p>
+<p>数据格式: 字符串</p>
+<p>默认值:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'rest_framework.schemas.AutoSchema'</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="通用视图设置"><a href="#通用视图设置" class="headerlink" title="通用视图设置"></a>通用视图设置</h2><p>以下设置项控制通用CBV的行为.</p>
+<hr>
+<h3 id="默认过滤后端"><a href="#默认过滤后端" class="headerlink" title="默认过滤后端"></a>默认过滤后端</h3><p><strong>DEFAULT_FILTER_BACKENDS</strong></p>
+<p>数据类型: 字符串列表</p>
+<p>默认值: <code>[]</code></p>
+<hr>
+<h3 id="默认分页类"><a href="#默认分页类" class="headerlink" title="默认分页类"></a>默认分页类</h3><p><strong>DEFAULT_PAGINATION_CLASS</strong></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>None</code></p>
+<hr>
+<h3 id="分页大小"><a href="#分页大小" class="headerlink" title="分页大小"></a>分页大小</h3><p><strong>PAGE_SIZE</strong></p>
+<p>数据类型: 整型</p>
+<p>默认值: <code>None</code></p>
+<hr>
+<h3 id="搜索参数名"><a href="#搜索参数名" class="headerlink" title="搜索参数名"></a>搜索参数名</h3><p><strong>SEARCH_PARAM</strong></p>
+<p>用以调用查询后端的查询参数名</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>search</code></p>
+<hr>
+<h3 id="排序参数名"><a href="#排序参数名" class="headerlink" title="排序参数名"></a>排序参数名</h3><p><strong>ORDERING_PARAM</strong></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>ordering</code></p>
+<hr>
+<h2 id="版本设置"><a href="#版本设置" class="headerlink" title="版本设置"></a>版本设置</h2><hr>
+<h3 id="默认版本"><a href="#默认版本" class="headerlink" title="默认版本"></a>默认版本</h3><p><strong>DEFAULT_VERSION</strong></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>None</code></p>
+<hr>
+<h3 id="允许的版本"><a href="#允许的版本" class="headerlink" title="允许的版本"></a>允许的版本</h3><p><strong>ALLOWED_VERSION</strong></p>
+<p>数据类型: 字符串列表</p>
+<p>默认值: <code>None</code></p>
+<hr>
+<h3 id="版本参数名"><a href="#版本参数名" class="headerlink" title="版本参数名"></a>版本参数名</h3><p><strong>VERSION_PARAM</strong></p>
+<p>用以指示版本的查询参数名或url变量名或其他指示版本的相关参数名</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>version</code></p>
+<hr>
+<h2 id="认证设置"><a href="#认证设置" class="headerlink" title="认证设置"></a>认证设置</h2><h3 id="默认未认证用户"><a href="#默认未认证用户" class="headerlink" title="默认未认证用户"></a>默认未认证用户</h3><p><strong>UNAUTHENTICATED_USER</strong></p>
+<p>未经认证的请求中的<code>request.user</code>属性中应当填充的类, 如果完全取消认证时, 该项应当被设为<code>None</code></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>django.contrib.auth.models.AnonymousUser</code></p>
+<hr>
+<h3 id="默认未认证凭证"><a href="#默认未认证凭证" class="headerlink" title="默认未认证凭证"></a>默认未认证凭证</h3><p><strong>UNAUTHENTICATED_TOKEN</strong></p>
+<p>同上, 需要为未认证请求的<code>.auth</code>属性填充的类.</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>None</code></p>
+<hr>
+<h2 id="测试设置"><a href="#测试设置" class="headerlink" title="测试设置"></a>测试设置</h2><p>以下各项控制<code>APIRequestFactory</code>和<code>APIClient</code>的行为.</p>
+<hr>
+<h3 id="默认测试请求的数据格式"><a href="#默认测试请求的数据格式" class="headerlink" title="默认测试请求的数据格式"></a>默认测试请求的数据格式</h3><p><strong>TEST_REQUEST_DEFAULT_FORMAT</strong></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>multipart</code></p>
+<hr>
+<h3 id="测试请求渲染类"><a href="#测试请求渲染类" class="headerlink" title="测试请求渲染类"></a>测试请求渲染类</h3><p><strong>TEST_REQUEST_RENDERER_CLASSES</strong> </p>
+<p>数据类型: 字符串列表</p>
+<p>默认值: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &apos;rest_framework.renderers.MultiPartRenderer&apos;,</span><br><span class="line">    &apos;rest_framework.renderers.JSONRenderer&apos;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API概要生成控制"><a href="#API概要生成控制" class="headerlink" title="API概要生成控制"></a>API概要生成控制</h2><h3 id="概要强制路径主键"><a href="#概要强制路径主键" class="headerlink" title="概要强制路径主键"></a>概要强制路径主键</h3><p><strong>SCHEMA_COERCE_PATH_PK</strong></p>
+<p>是否在生成url时将路径中的<code>PK</code>标识符映射至实际字段名, 通常为<code>id</code>. 这会给出更清晰的概念, 因为主键是一个实现细节, 而标识符则是一个通用概念. </p>
+<p>数据类型: 布尔型</p>
+<p>默认值: <code>True</code></p>
+<hr>
+<h3 id="概要强制方法名"><a href="#概要强制方法名" class="headerlink" title="概要强制方法名"></a>概要强制方法名</h3><p><strong>SCHEMA_COERCE_METHOD_NAMES</strong></p>
+<p>定义一个映射关系, 用以将视图集的方法名映射为表义更清晰的外部操作名.</p>
+<p>数据类型: Dict</p>
+<p>默认值: <code>{&#39;retrieve&#39;: &#39;read&#39;, &#39;destroy&#39;: &#39;delete&#39;}</code></p>
+<hr>
+<h2 id="内容类型控制"><a href="#内容类型控制" class="headerlink" title="内容类型控制"></a>内容类型控制</h2><hr>
+<h3 id="URL格式重写"><a href="#URL格式重写" class="headerlink" title="URL格式重写"></a>URL格式重写</h3><p><strong>URL_FORMAT_OVERRIDE</strong></p>
+<p>用以表示重写默认内容协商<code>Accept</code>结果的URL参数名, 设为<code>None</code>时禁用.</p>
+<p>示例: <code>http://example.com/organizations/?format=csv</code></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>format</code></p>
+<hr>
+<h3 id="格式后缀关键字"><a href="#格式后缀关键字" class="headerlink" title="格式后缀关键字"></a>格式后缀关键字</h3><p><strong>FORMAT_SUFFIX_KWARG</strong></p>
+<p><strong>可能</strong>用以给URL提供格式后缀的关键字参数名, 在使用<code>format_suffix_patterns</code>时会使用该项设置.</p>
+<p>示例: <code>http://example.com/organizations.csv/</code>, <code>.csv</code>会匹配至<code>format</code>变量名</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>format</code></p>
+<hr>
+<h2 id="日期时间格式"><a href="#日期时间格式" class="headerlink" title="日期时间格式"></a>日期时间格式</h2><p>以下设置项控制日期和时间类型被如何解析和渲染.</p>
+<hr>
+<h3 id="DateTime的渲染格式"><a href="#DateTime的渲染格式" class="headerlink" title="DateTime的渲染格式"></a>DateTime的渲染格式</h3><p><strong>DATETIME_FORMAT</strong></p>
+<p>在渲染序列化器<code>DateTimeField</code>字段时为其使用的格式字符串, 如果设为<code>None</code>, 返回的是python中<code>datetime</code>对象, 编码则取决于渲染器.</p>
+<p>可以为 <code>None</code>, <code>iso-8601</code>或python中srtftime format可用的字符串.</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>iso-8601</code></p>
+<hr>
+<h3 id="DateTime的输入解析格式"><a href="#DateTime的输入解析格式" class="headerlink" title="DateTime的输入解析格式"></a>DateTime的输入解析格式</h3><p><strong>DATETIME_INPUT_FORMATS</strong></p>
+<p>可以用以解析原始数据以传入序列化器<code>DateTimeField</code>的格式字符串的列表.</p>
+<p>数据类型: 字符串列表</p>
+<p>默认值: <code>[&#39;iso-8601&#39;]</code></p>
+<hr>
+<h3 id="Date渲染格式"><a href="#Date渲染格式" class="headerlink" title="Date渲染格式"></a>Date渲染格式</h3><p><strong>DATE_FORMAT</strong></p>
+<p>与<code>DATETIME_FORMAT</code>类似, 但作用于<code>DateField</code></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>iso-8601</code></p>
+<hr>
+<h3 id="Date输入解析格式"><a href="#Date输入解析格式" class="headerlink" title="Date输入解析格式"></a>Date输入解析格式</h3><p><strong>DATE_INPUT_FORMATS</strong></p>
+<p>数据类型: 字符串列表</p>
+<p>默认值: <code>[&#39;iso-8601&#39;]</code></p>
+<hr>
+<h3 id="TIME渲染格式"><a href="#TIME渲染格式" class="headerlink" title="TIME渲染格式"></a>TIME渲染格式</h3><p><strong>TIME_FORMAT</strong></p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>iso-8601</code></p>
+<hr>
+<h3 id="Time输入解析格式"><a href="#Time输入解析格式" class="headerlink" title="Time输入解析格式"></a>Time输入解析格式</h3><p><strong>TIME_INPUT_FORMATS</strong></p>
+<p>数据类型: 字符串列表</p>
+<p>默认值: <code>[&#39;iso-8601&#39;]</code></p>
+<hr>
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><h3 id="UNICODE-JSON-允许unicode字符的JSON响应"><a href="#UNICODE-JSON-允许unicode字符的JSON响应" class="headerlink" title="UNICODE_JSON 允许unicode字符的JSON响应"></a>UNICODE_JSON 允许unicode字符的JSON响应</h3><p>设为True时, json响应将允许unicode字符.</p>
+<p>例如: <code>{&quot;unicode black star&quot;:&quot;★&quot;}</code></p>
+<p>当设置为False, json响应将对非ASCII字符进行转义</p>
+<p>例如: <code>{&quot;unicode black star&quot;:&quot;\u2605&quot;}</code></p>
+<p>数据类型: 布尔型</p>
+<p>默认值: <code>True</code></p>
+<hr>
+<h3 id="COMPACT-JSON-紧缩格式的JSON响应"><a href="#COMPACT-JSON-紧缩格式的JSON响应" class="headerlink" title="COMPACT_JSON 紧缩格式的JSON响应"></a>COMPACT_JSON 紧缩格式的JSON响应</h3><p>设为True时, json响应的<code>,</code>和<code>:</code>之后不会有空格, 例如: </p>
+<p><code>{&quot;is_admin&quot;:false,&quot;email&quot;:&quot;jane@example&quot;}</code></p>
+<p>设为False则为略带冗余的格式, 例如: </p>
+<p><code>{&quot;is_admin&quot;: false, &quot;email&quot;: &quot;jane@example&quot;}</code></p>
+<p>默认值: <code>True</code></p>
+<hr>
+<h3 id="STRICT-JSON-严格JSON"><a href="#STRICT-JSON-严格JSON" class="headerlink" title="STRICT_JSON 严格JSON"></a>STRICT_JSON 严格JSON</h3><p>当设为<code>True</code>时, json渲染时会验证检查json语法的正确性, 并确保不会使用不被广泛接受的值.</p>
+<p>默认值: <code>True</code></p>
+<hr>
+<h3 id="COERCE-DECIMAL-TO-STRING-强制将十进制转为字符串"><a href="#COERCE-DECIMAL-TO-STRING-强制将十进制转为字符串" class="headerlink" title="COERCE_DECIMAL_TO_STRING 强制将十进制转为字符串"></a>COERCE_DECIMAL_TO_STRING 强制将十进制转为字符串</h3><p>在不支持本机十进制类型的API表示形式中返回十进制对象时, 通常最好将该值作为字符串返回以避免了二进制浮点实现所带来的精度损失.</p>
+<p>设为True时, 序列化器字段<code>DecimalField</code>会返回字符串而非十进制对象.</p>
+<p>默认值:<code>True</code></p>
+<hr>
+<h2 id="视图命名和描述"><a href="#视图命名和描述" class="headerlink" title="视图命名和描述"></a>视图命名和描述</h2><p>以下选项控制如何生成收到<code>option</code>请求时返回的视图名和描述.</p>
+<hr>
+<h3 id="VIEW-NAME-FUNCTION-生成视图名的函数"><a href="#VIEW-NAME-FUNCTION-生成视图名的函数" class="headerlink" title="VIEW_NAME_FUNCTION 生成视图名的函数"></a>VIEW_NAME_FUNCTION 生成视图名的函数</h3><p>一个用以生成视图名的函数的路径的字符串. </p>
+<p>该函数的签名需为: <code>view_name(self)</code></p>
+<p>self: 该view实例. 通常命名函数会检查<strong>类名</strong>, 通过访问<code>self.__class__.__name__</code>.</p>
+<p>如果视图继承自<code>ViewSet</code>, 可能会在初始化时包含一些可选参数:</p>
+<ol>
+<li>name 明确指定的视图名</li>
+<li>suffix 区分视图集中各个视图时使用的文本, 与<code>name</code>参数互斥</li>
+<li>detail 是否是<code>detail</code>操作视图</li>
+</ol>
+<p>(视图集中每个视图都需要不同的视图名)</p>
+<p>数据类型: 字符串(路径)</p>
+<p>默认值: <code>rest_framework.views.get_view_name</code></p>
+<hr>
+<h3 id="VIEW-DESCRIPTION-FUNCTION-生成视图描述的函数"><a href="#VIEW-DESCRIPTION-FUNCTION-生成视图描述的函数" class="headerlink" title="VIEW_DESCRIPTION_FUNCTION 生成视图描述的函数"></a>VIEW_DESCRIPTION_FUNCTION 生成视图描述的函数</h3><p>一个表示函数路径的字符串, 该函数用以生成视图描述</p>
+<p>该函数签名需为: <code>view_description(self, html=False)</code></p>
+<p>self: 该view实例. 通常应当检查该view的描述性属性, 通过访问<code>self.__class__.__doc__</code><br>html: 是否需要在html输入中包含, 设为True会在browseable API中显示, 设为False会仅在产生<code>OPTION</code>响应时使用.</p>
+<p>如果该视图继承自<code>ViewSet</code>, 可能会在初始化时包含一些可选参数:</p>
+<ol>
+<li>description: 明确指定的描述性文本属性.</li>
+</ol>
+<p>数据类型: 字符串(路径)</p>
+<p>默认值: <code>rest_framework.views.get_view_description</code></p>
+<hr>
+<h2 id="HTML页面选项截断"><a href="#HTML页面选项截断" class="headerlink" title="HTML页面选项截断"></a>HTML页面选项截断</h2><p>在某个关系字段被渲染至browseable API页面时, 对于关系字段会给出可用选项, 需要指定最多展示多少个选项以及截断时的文本.</p>
+<hr>
+<h3 id="HTML-SELECT-CUTOFF-HTML选项截断"><a href="#HTML-SELECT-CUTOFF-HTML选项截断" class="headerlink" title="HTML_SELECT_CUTOFF HTML选项截断"></a>HTML_SELECT_CUTOFF HTML选项截断</h3><p>html页面中, 关系字段最多显示多少个选项. <code>html_cutoff</code>属性的全局设置.</p>
+<p>数据类型: 整型</p>
+<p>默认值: <code>1000</code></p>
+<hr>
+<h3 id="HTML-SELECT-CUTOFF-TEXT-HTML选项截断文本"><a href="#HTML-SELECT-CUTOFF-TEXT-HTML选项截断文本" class="headerlink" title="HTML_SELECT_CUTOFF_TEXT HTML选项截断文本"></a>HTML_SELECT_CUTOFF_TEXT HTML选项截断文本</h3><p>html页面中, 在选项截断处显示的文本. <code>html_cutoff_text</code>属性的全局设置.</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>More than {count} items...</code></p>
+<hr>
+<h2 id="其他设置"><a href="#其他设置" class="headerlink" title="其他设置"></a>其他设置</h2><h3 id="默认异常处理器"><a href="#默认异常处理器" class="headerlink" title="默认异常处理器"></a>默认异常处理器</h3><p><strong>EXCEPTION_HANDLER</strong></p>
+<p>该函数需有签名 <code>exception_handler(exc, context)</code></p>
+<p>数据类型: 字符串(路径)</p>
+<p>默认值: <code>rest_framework.views.exception_handler</code></p>
+<hr>
+<h3 id="字段无关的错误关键字"><a href="#字段无关的错误关键字" class="headerlink" title="字段无关的错误关键字"></a>字段无关的错误关键字</h3><p><strong>NON_FIELD_ERRORS_KEY</strong></p>
+<p>出现在errors中的与任何字段无关的出错信息的关键字.</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>non_field_errors</code></p>
+<hr>
+<h3 id="URL字段名"><a href="#URL字段名" class="headerlink" title="URL字段名"></a>URL字段名</h3><p><strong>URL_FIELD_NAME</strong></p>
+<p>在使用<code>HyperlinkedModelSerializer</code>时, 应用于超链接的字段名.</p>
+<p>数据类型: 字符串</p>
+<p>默认值: <code>url</code></p>
+<hr>
+<h3 id="代理数量"><a href="#代理数量" class="headerlink" title="代理数量"></a>代理数量</h3><p><strong>NUM_PROXIES</strong></p>
+<p>0或更大的整型, 指明API运行在几层代理之后, 允许<strong>限流</strong>功能更准确的判断客户端ip地址. </p>
+<p>如果设置为None, 限流类将会使用不严格匹配来进行限流. </p>
+<p>数据类型: 整型, <code>None</code></p>
+<p>默认值: <code>None</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/26. 设置/" data-id="ck1kjuhs7000pngpld8ayvhfl" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/10/03/25. 测试/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">25. 测试 Testing</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

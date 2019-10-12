@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>10.2 序列化器字段:关系字段 Serializer Field | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段. 所有的关系字段定义在relations.py中, 但出于方便起见, 应该在serializers模块中导出, 然后通过serializers.&amp;lt;FieldName&amp;gt;使用关系字段.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10.2 序列化器字段:关系字段 Serializer Field">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/10.2 序列化器字段-关系字段/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段. 所有的关系字段定义在relations.py中, 但出于方便起见, 应该在serializers模块中导出, 然后通过serializers.&amp;lt;FieldName&amp;gt;使用关系字段.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:21:16.489Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="10.2 序列化器字段:关系字段 Serializer Field">
+<meta name="twitter:description" content="关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段. 所有的关系字段定义在relations.py中, 但出于方便起见, 应该在serializers模块中导出, 然后通过serializers.&amp;lt;FieldName&amp;gt;使用关系字段.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-10.2 序列化器字段-关系字段" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/10.2 序列化器字段-关系字段/" class="article-date">
+  <time datetime="2019-10-03T09:55:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      10.2 序列化器字段:关系字段 Serializer Field
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段.</p>
+<p>所有的关系字段定义在<code>relations.py</code>中, 但出于方便起见, 应该在<code>serializers</code>模块中导出, 然后通过<code>serializers.&lt;FieldName&gt;</code>使用关系字段.</p>
+<a id="more"></a>
+
+<hr>
+<h4 id="查看关系"><a href="#查看关系" class="headerlink" title="查看关系"></a>查看关系</h4><p>当使用<code>ModelSerializer</code>时, 序列化器字段和关系字段都被自动生成, 查看具体定义可以帮助你决定如何自定义关系风格.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python manage.py shell</span></span><br><span class="line">&gt;&gt;&gt; from myapp.serializers import AccountSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = AccountSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">AccountSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    name = CharField(allow_blank=True, max_length=100, required=False)</span><br><span class="line">    owner = PrimaryKeyRelatedField(queryset=User.objects.all())</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><p>为了理解各种类型的关系字段, 我们首先建立几个模型, 用以在我们的示例代码中使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Album</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    album_name = models.CharField(max_length=<span class="number">100</span>)</span><br><span class="line">    artist = models.CharField(max_length=<span class="number">100</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Track</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    album = models.ForeignKey(Album, related_name=<span class="string">'tracks'</span>, on_delete=models.CASCADE)</span><br><span class="line">    order = models.IntegerField()</span><br><span class="line">    title = models.CharField(max_length=<span class="number">100</span>)</span><br><span class="line">    duration = models.IntegerField()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        unique_together = (<span class="string">'album'</span>, <span class="string">'order'</span>)</span><br><span class="line">        ordering = [<span class="string">'order'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__unicode__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'%d: %s'</span> % (self.order, self.title)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="StringRelatedField"><a href="#StringRelatedField" class="headerlink" title="StringRelatedField"></a>StringRelatedField</h3><p>该字段会将外键指向的模型的<code>.__str__()</code>方法的返回值作为展示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.StringRelatedField(many=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>该序列化器将数据序列化为如下格式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">'album_name'</span>: <span class="string">'Things We Lost In The Fire'</span>, </span><br><span class="line">    <span class="string">'artist'</span>: <span class="string">'Low'</span>, </span><br><span class="line">    <span class="string">'tracks'</span>: [</span><br><span class="line">        <span class="string">'1: Sunflower'</span>, </span><br><span class="line">        <span class="string">'2: Whitetail'</span>, </span><br><span class="line">        <span class="string">'3: Dinosaur Act'</span>, </span><br><span class="line">        ...</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该字段固定为<code>只读</code>字段</p>
+<p>参数:</p>
+<p><code>many</code>参数, 如果是*对多字段, 就必须将<code>many</code>设为<code>True</code></p>
+<hr>
+<h3 id="PrimaryKeyRelatedField"><a href="#PrimaryKeyRelatedField" class="headerlink" title="PrimaryKeyRelatedField"></a>PrimaryKeyRelatedField</h3><p>序列化结果为外模型的主键</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.PrimaryKeyRelatedField(many=<span class="literal">True</span>, read_only=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>该字段为读写字段, 可以使用read_only标志来更改为只读.</p>
+<p>参数</p>
+<p><code>queryset</code>: 用指定一个查询集, 传入(序列化或者反序列化时)时作为验证该字段接收到的值是否合法的范围, </p>
+<p><code>many</code>: 对于一个’X对多’字段来说, <code>many</code>必须设为<code>True</code>才能使其接收多个对象(many参数用于关系字段或本身是一个序列器的字段)</p>
+<p><code>allow_null</code>: 指定<code>None</code>值是否是合法的输入, 默认为<code>False</code></p>
+<p><code>pk_field</code>: 指定一个字段以控制主键值的序列化/反序列化, 例如<code>pk_field = UUIDField(format =&#39;hex&#39;)</code>会将UUID主键序列化为其紧凑的十六进制表示. </p>
+<hr>
+<h3 id="HyperlinkedRelatedField"><a href="#HyperlinkedRelatedField" class="headerlink" title="HyperlinkedRelatedField"></a>HyperlinkedRelatedField</h3><p>对外模型的序列化结果为指向该外模型detail页面的超链接.</p>
+<p>示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.HyperlinkedRelatedField(</span><br><span class="line">        many=<span class="literal">True</span>, </span><br><span class="line">        read_only=<span class="literal">True</span>, </span><br><span class="line">        view_name=<span class="string">'track-detail'</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">'album_name'</span>: <span class="string">'Graceland'</span>, </span><br><span class="line">    <span class="string">'artist'</span>: <span class="string">'Paul Simon'</span>, </span><br><span class="line">    <span class="string">'tracks'</span>: [</span><br><span class="line">        <span class="string">'http://www.example.com/api/tracks/45/'</span>, </span><br><span class="line">        <span class="string">'http://www.example.com/api/tracks/46/'</span>, </span><br><span class="line">        <span class="string">'http://www.example.com/api/tracks/47/'</span>, </span><br><span class="line">        ...</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>默认为读写字段, 可以使用read_only标志来更改</p>
+<p><code>view_name</code> 必需参数, 指定关联目标的api-view, 如果使用<code>Router</code>来注册, 则为<code>&lt;modelname&gt;-detail</code><br><code>queryset</code> 用以校验输入是否合法的查询集, 如果不设定参数, 则必须置<code>read_only</code>=<code>True</code><br><code>lookup_field</code> 用以检索的关联目标的字段, 应该对应于引用视图上的URL关键字参数, 默认为<code>pk</code><br><code>lookup_url_kwarg</code> 在url conf中定义的关键字参数名, 默认使用与<code>lookup_field</code>相同的值<br><code>format</code> 如果使用格式后缀, 超链接字段将会为目标模型的url使用同样的后缀, 除非重写<code>format</code>参数</p>
+<p>注: 写操作时传入的外键字段值是目标对象的detial的超链接.</p>
+<hr>
+<h3 id="SlugRelatedField"><a href="#SlugRelatedField" class="headerlink" title="SlugRelatedField"></a>SlugRelatedField</h3><p>使用外模型的某个字段来表示模型</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.SlugRelatedField(</span><br><span class="line">        many=<span class="literal">True</span>, </span><br><span class="line">        read_only=<span class="literal">True</span>, </span><br><span class="line">        slug_field=<span class="string">'title'</span></span><br><span class="line">     )</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">'album_name'</span>: <span class="string">'Dear John'</span>, </span><br><span class="line">    <span class="string">'artist'</span>: <span class="string">'Loney Dear'</span>, </span><br><span class="line">    <span class="string">'tracks'</span>: [</span><br><span class="line">        <span class="string">'Airport Surroundings'</span>, </span><br><span class="line">        <span class="string">'Everything Turns to You'</span>, </span><br><span class="line">        <span class="string">'I Was Only Going Out'</span>, </span><br><span class="line">        ...</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>默认为读写字段</p>
+<p><code>slug_field</code> 指定使用外模型的哪个字段来表示该模型, 注意, <strong>该外模型字段必须受到<code>unique</code>约束</strong></p>
+<hr>
+<h3 id="HyperlinkedIdentityField"><a href="#HyperlinkedIdentityField" class="headerlink" title="HyperlinkedIdentityField"></a>HyperlinkedIdentityField</h3><p>HyperlinkedIdentityField用于自动生成<strong>当前模型</strong>的超链接, 指向<strong>当前模型</strong>的detial接口.</p>
+<p>HyperlinkedModelSerializer中会使用该字段生成指向自身detail界面的<code>url</code>字段以取代<code>id</code>字段. </p>
+<p>该字段会传入整个当前对象, 并将其中某个属性作为生成detail链接的字段, 通常用id作为<code>pk</code>.</p>
+<p>所以:</p>
+<ol>
+<li>使用HyperlinkedIdentityField链接到当前正在序列化的对象.</li>
+<li>使用HyperlinkedRelatedField链接到与序列化的对象相关的对象.</li>
+</ol>
+<p>因此, 对于一对一关系, 外键关系, 多对多关系以及基本上任何其他涉及关系的事物(在Django模型中)都应该使用<code>HyperlinkedRelatedField</code>. </p>
+<p>使用<code>HyperlinkedRelatedField</code>的唯一时间是url字段, 可以在序列化程序中包含该字段以指向当前对象. </p>
+<p>该字段为固化的<code>read_only</code>字段.</p>
+<p>参数:</p>
+<p><code>view_name</code>: 必需参数, 指定关联目标的api-view, 如果使用<code>Router</code>来注册, 则为<code>&lt;modelname&gt;-detail</code><br><code>lookup_field</code>: 默认为<code>pk</code>, 用于查找当前对象的主字段, 需要与url关键字(lookup_url_kwargs)保持一致.<br><code>lookup_url_kwarg</code>: 用于查找对象的url关键字, 需要与lookup_field保持一致.<br><code>format</code>: 需要为超链接添加的后缀.</p>
+<p>请参阅<code>HyperlinkedSerializer</code>一节.</p>
+<hr>
+<h3 id="嵌套关系"><a href="#嵌套关系" class="headerlink" title="嵌套关系"></a>嵌套关系</h3><p>嵌套关系可以使用序列器作为字段来表示</p>
+<p>如果该序列器对应的是*对多关系, 则必须设置<code>many</code>=<code>True</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrackSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Track</span><br><span class="line">        fields = (<span class="string">'order'</span>, <span class="string">'title'</span>, <span class="string">'duration'</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = TrackSerializer(many=<span class="literal">True</span>, read_only=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; album = Album.objects.create(album_name="The Grey Album", artist='Danger Mouse')</span><br><span class="line">&gt;&gt;&gt; Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)</span><br><span class="line">&lt;Track: Track object&gt;</span><br><span class="line">&gt;&gt;&gt; Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)</span><br><span class="line">&lt;Track: Track object&gt;</span><br><span class="line">&gt;&gt;&gt; Track.objects.create(album=album, order=3, title='Encore', duration=159)</span><br><span class="line">&lt;Track: Track object&gt;</span><br><span class="line">&gt;&gt;&gt; serializer = AlbumSerializer(instance=album)</span><br><span class="line">&gt;&gt;&gt; serializer.data</span><br><span class="line">&#123;</span><br><span class="line">    'album_name': 'The Grey Album', </span><br><span class="line">    'artist': 'Danger Mouse', </span><br><span class="line">    'tracks': [</span><br><span class="line">        &#123;'order': 1, 'title': 'Public Service Announcement', 'duration': 245&#125;, </span><br><span class="line">        &#123;'order': 2, 'title': 'What More Can I Say', 'duration': 264&#125;, </span><br><span class="line">        &#123;'order': 3, 'title': 'Encore', 'duration': 159&#125;, </span><br><span class="line">        ...</span><br><span class="line">    ], </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="可写的嵌套序列化器"><a href="#可写的嵌套序列化器" class="headerlink" title="可写的嵌套序列化器"></a>可写的嵌套序列化器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrackSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Track</span><br><span class="line">        fields = (<span class="string">'order'</span>, <span class="string">'title'</span>, <span class="string">'duration'</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = TrackSerializer(many=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        tracks_data = validated_data.pop(<span class="string">'tracks'</span>)</span><br><span class="line">        album = Album.objects.create(**validated_data)</span><br><span class="line">        <span class="keyword">for</span> track_data <span class="keyword">in</span> tracks_data:</span><br><span class="line">            Track.objects.create(album=album, **track_data)</span><br><span class="line">        <span class="keyword">return</span> album</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>data = &#123;</span><br><span class="line">    <span class="string">'album_name'</span>: <span class="string">'The Grey Album'</span>, </span><br><span class="line">    <span class="string">'artist'</span>: <span class="string">'Danger Mouse'</span>, </span><br><span class="line">    <span class="string">'tracks'</span>: [</span><br><span class="line">        &#123;<span class="string">'order'</span>: <span class="number">1</span>, <span class="string">'title'</span>: <span class="string">'Public Service Announcement'</span>, <span class="string">'duration'</span>: <span class="number">245</span>&#125;, </span><br><span class="line">        &#123;<span class="string">'order'</span>: <span class="number">2</span>, <span class="string">'title'</span>: <span class="string">'What More Can I Say'</span>, <span class="string">'duration'</span>: <span class="number">264</span>&#125;, </span><br><span class="line">        &#123;<span class="string">'order'</span>: <span class="number">3</span>, <span class="string">'title'</span>: <span class="string">'Encore'</span>, <span class="string">'duration'</span>: <span class="number">159</span>&#125;, </span><br><span class="line">    ], </span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>serializer = AlbumSerializer(data=data)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>serializer.is_valid()</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>serializer.save()</span><br><span class="line">&lt;Album: Album object&gt;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="自定义关系字段"><a href="#自定义关系字段" class="headerlink" title="自定义关系字段"></a>自定义关系字段</h3><p>子类化<code>RelatedField</code>并实现<code>.to_representation(self, value)</code>方法以实现只读关系字段, 如果要实现读写关系字段, 还要实现<code>.to_internal_value(self, data)</code>方法.</p>
+<p>如果想要动态提供queryset用以限制外键的合法范围, 需要重写<code>.get_queryset(self)</code>方法以获得queryset而非在初始化该字段时通过<code>queryset</code>参数指定.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrackListingField</span><span class="params">(serializers.RelatedField)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        duration = time.strftime(<span class="string">'%M:%S'</span>, time.gmtime(value.duration))</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Track %d: %s (%s)'</span> % (value.order, value.name, duration)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = TrackListingField(many=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = [<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>序列化结果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">'album_name'</span>: <span class="string">'Sometimes I Wish We Were an Eagle'</span>, </span><br><span class="line">    <span class="string">'artist'</span>: <span class="string">'Bill Callahan'</span>, </span><br><span class="line">    <span class="string">'tracks'</span>: [</span><br><span class="line">        <span class="string">'Track 1: Jim Cain (04:39)'</span>, </span><br><span class="line">        <span class="string">'Track 2: Eid Ma Clack Shaw (04:19)'</span>, </span><br><span class="line">        <span class="string">'Track 3: The Wind and the Dove (04:34)'</span>, </span><br><span class="line">        ...</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="自定义超链接字段"><a href="#自定义超链接字段" class="headerlink" title="自定义超链接字段"></a>自定义超链接字段</h3><p>子类化<code>HyperlinkedRelatedField</code>并考虑重写以下两个方法:</p>
+<p><code>get_url(self, obj, view_name, request, format)</code></p>
+<p>通过一个obj生成指向它detial的超链接, 如果<code>view_name</code>或<code>lookup_field</code>属性未提供, 或不匹配, 抛出一个<code>NoReverseMatch</code>异常.</p>
+<p><code>get_object(self, view_name, view_args, view_kwargs)</code></p>
+<p>通过超链接获取对应的实例对象, 如果想要实现可写字段, 则必须重写该方法以在反序列化过程中获得实例对象. 当无法获得对象时, 抛出<code>ObjectDoesNotExist</code>异常.</p>
+<p>示例:</p>
+<p>我们的URL中包含两个关键字参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/api/&lt;organization_slug&gt;/customers/&lt;customer_pk&gt;/</span><br></pre></td></tr></table></figure>
+
+<p>只接收一个url关键字的默认实现无法序列化/反序列化该格式URL, 所以我们需要自定义超链接字段:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"><span class="keyword">from</span> rest_framework.reverse <span class="keyword">import</span> reverse</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerHyperlink</span><span class="params">(serializers.HyperlinkedRelatedField)</span>:</span></span><br><span class="line">    <span class="comment"># We define these as class attributes, so we don't need to pass them as arguments.</span></span><br><span class="line">    view_name = <span class="string">'customer-detail'</span></span><br><span class="line">    queryset = Customer.objects.all()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_url</span><span class="params">(self, obj, view_name, request, format)</span>:</span></span><br><span class="line">        url_kwargs = &#123;</span><br><span class="line">            <span class="string">'organization_slug'</span>: obj.organization.slug, </span><br><span class="line">            <span class="string">'customer_pk'</span>: obj.pk</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> reverse(view_name, kwargs=url_kwargs, request=request, format=format)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_object</span><span class="params">(self, view_name, view_args, view_kwargs)</span>:</span></span><br><span class="line">        lookup_kwargs = &#123;</span><br><span class="line">           <span class="string">'organization__slug'</span>: view_kwargs[<span class="string">'organization_slug'</span>], </span><br><span class="line">           <span class="string">'pk'</span>: view_kwargs[<span class="string">'customer_pk'</span>]</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> self.get_queryset().get(**lookup_kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>注意, 如果想要这种风格与通用视图兼容, 还需要在视图中重写<code>.get_object</code>方法, 以保证查找行为正确. </p>
+<p>通常推荐使用平面风格的url, 但是嵌套风格的url在适度使用时也相当合理.</p>
+<hr>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><hr>
+<h4 id="queryset参数"><a href="#queryset参数" class="headerlink" title="queryset参数"></a>queryset参数</h4><p>在初始化一个字段时传入的queryset用以验证传入的外键是否符合约束, 所以只有在<strong>可写</strong>字段中才需要该参数.</p>
+<hr>
+<h4 id="自定义HTML展示项"><a href="#自定义HTML展示项" class="headerlink" title="自定义HTML展示项"></a>自定义HTML展示项</h4><p>使用序列化器生成的表格中, 外键字段通常提供可选项来确保用户选择合法的字段值, 任何一个外模型的展示名都是其<code>__str__</code>函数的返回值, 但是可以通过重写<code>display_value</code>方法更改该值.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrackPrimaryKeyRelatedField</span><span class="params">(serializers.PrimaryKeyRelatedField)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">display_value</span><span class="params">(self, instance)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Track: %s'</span> % (instance.title)</span><br></pre></td></tr></table></figure>
+
+<p><strong>选项截断</strong></p>
+<p>在可选项过多时, 限制选项的截断数量.</p>
+<p><code>html_cutoff</code>: 最大截断数量, 超过该数量的选项不会被展示, 默认为1000, 设为None意味着无限制.<br><code>html_cutoff_text</code> 如果截断, 截断处显示的文本. 默认为<code>&quot;More than {count} items…&quot;</code></p>
+<p>可以通过<code>HTML_SELECT_CUTOFF</code>和<code>HTML_SELECT_CUTOFF_TEXT</code>设置项来进行更改.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">assigned_to = serializers.SlugRelatedField(</span><br><span class="line">   queryset=User.objects.all(),</span><br><span class="line">   slug_field=<span class="string">'username'</span>,</span><br><span class="line">   style=&#123;<span class="string">'base_template'</span>: <span class="string">'input.html'</span>&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="反向关联字段"><a href="#反向关联字段" class="headerlink" title="反向关联字段"></a>反向关联字段</h4><p>反向关联字段并非定义在当前的模型中, 因此在使用ModelSerializer时不会自动包含该字段.</p>
+<p>如果想要包含该字段, 直接将反向关联字段名添加至<code>Meta</code>的<code>fields</code>属性中即可.</p>
+<p>模型定义:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Track</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    album = models.ForeignKey(Album, related_name=<span class="string">'tracks'</span>, on_delete=models.CASCADE)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>反向关联名为<code>tracks</code>, 所以直接包含该字段即可:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'tracks'</span>, ...]</span><br></pre></td></tr></table></figure>
+
+<p>如果未定义反向关联名, 使用默认的反向关联名<code>&lt;modelname&gt;_set</code>即可</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'track_set'</span>, ...]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="通用关系字段"><a href="#通用关系字段" class="headerlink" title="通用关系字段"></a>通用关系字段</h4><p>如果使用了<a href="https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/" target="_blank" rel="noopener">通用关系字段</a>, 则需要自定义字段, 以明确目标字段应当如何被序列化.</p>
+<p>例如, 给出如下Tag模型, 可以与其他任意模型建立通用关系.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Tags arbitrary model instances using a generic relation.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    See: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    tag_name = models.SlugField()</span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    tagged_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag_name</span><br></pre></td></tr></table></figure>
+
+<p>以下两个模型, 均与Tag联系. </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bookmark</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A bookmark consists of a URL, and 0 or more descriptive tags.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    url = models.URLField()</span><br><span class="line">    tags = GenericRelation(TaggedItem)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Note</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A note consists of some text, and 0 or more descriptive tags.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    text = models.CharField(max_length=<span class="number">1000</span>)</span><br><span class="line">    tags = GenericRelation(TaggedItem)</span><br></pre></td></tr></table></figure>
+
+<p>通过自定义字段, 用以实例化添加标签的外模型实例, 使用类型来判断究竟该如何序列化外模型.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedObjectRelatedField</span><span class="params">(serializers.RelatedField)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A custom field to use for the `tagged_object` generic relationship.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Serialize tagged objects to a simple textual representation.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(value, Bookmark):</span><br><span class="line">            <span class="keyword">return</span> <span class="string">'Bookmark: '</span> + value.url</span><br><span class="line">        <span class="keyword">elif</span> isinstance(value, Note):</span><br><span class="line">            <span class="keyword">return</span> <span class="string">'Note: '</span> + value.text</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'Unexpected type of tagged object'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果需要嵌套序列化结果, 可以在内部使用另一个序列化器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Serialize bookmark instances using a bookmark serializer,</span></span><br><span class="line"><span class="string">    and note instances using a note serializer.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(value, Bookmark):</span><br><span class="line">        serializer = BookmarkSerializer(value)</span><br><span class="line">    <span class="keyword">elif</span> isinstance(value, Note):</span><br><span class="line">        serializer = NoteSerializer(value)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'Unexpected type of tagged object'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> serializer.data</span><br></pre></td></tr></table></figure>
+
+<p>注意, 在序列化包含<code>Generic Relation</code>字段(即反向关联的通用关系字段)的模型时, 常规的关系字段即可完成, 因为此时外模型的类型总是确定的.</p>
+<hr>
+<h3 id="通过中间模型关联的多对多-M2M-字段"><a href="#通过中间模型关联的多对多-M2M-字段" class="headerlink" title="通过中间模型关联的多对多(M2M)字段"></a>通过中间模型关联的多对多(M2M)字段</h3><p>默认情况下, 指向通过中间模型建立的多对多关系的序列化器关系字段通常是只读的. </p>
+<p>如果要声明一个指向使用了中间模型的<code>ManyToManyField</code>字段的序列化器关系字段, 确保设置<code>read_only=True</code>.</p>
+<p>如果想序列化包含在中间模型的额外字段的序列化结果, 可以将中间模型作为<a href="https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects" target="_blank" rel="noopener">嵌套对象</a>进行序列化. </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/10.2 序列化器字段-关系字段/" data-id="ck1kjuhsp000wngplrnkx0uq7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/12. 权限/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          12. 权限 Permissions
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/11. 验证器/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">11. 序列化器 Validator</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

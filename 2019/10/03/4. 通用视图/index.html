@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>4. 通用视图 Generic views | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="API的构建总是与Model打交道,所以如何抽象与之相关的重复代码是设计rest-framework的重中之重. CBV最大的好处在于可以组合一些可复用的行为.例如常用的混入(Mixin)就是极佳的设计思路. rest-framework提供了很多预置的view用以提供常规功能.  当然也可以使用最基本的APIView, 或是使用genericView以及混入(mixins)来进行组合.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4. 通用视图 Generic views">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/4. 通用视图/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="API的构建总是与Model打交道,所以如何抽象与之相关的重复代码是设计rest-framework的重中之重. CBV最大的好处在于可以组合一些可复用的行为.例如常用的混入(Mixin)就是极佳的设计思路. rest-framework提供了很多预置的view用以提供常规功能.  当然也可以使用最基本的APIView, 或是使用genericView以及混入(mixins)来进行组合.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:20:32.447Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="4. 通用视图 Generic views">
+<meta name="twitter:description" content="API的构建总是与Model打交道,所以如何抽象与之相关的重复代码是设计rest-framework的重中之重. CBV最大的好处在于可以组合一些可复用的行为.例如常用的混入(Mixin)就是极佳的设计思路. rest-framework提供了很多预置的view用以提供常规功能.  当然也可以使用最基本的APIView, 或是使用genericView以及混入(mixins)来进行组合.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-4. 通用视图" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/4. 通用视图/" class="article-date">
+  <time datetime="2019-10-03T09:47:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      4. 通用视图 Generic views
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>API的构建总是与Model打交道,所以如何抽象与之相关的重复代码是设计rest-framework的重中之重.</p>
+<p>CBV最大的好处在于可以组合一些可复用的行为.例如常用的<code>混入</code>(Mixin)就是极佳的设计思路.</p>
+<p>rest-framework提供了很多预置的view用以提供常规功能. </p>
+<p>当然也可以使用最基本的APIView, 或是使用genericView以及<code>混入</code>(mixins)来进行组合.</p>
+<a id="more"></a>
+
+<p>示例: </p>
+<p>通常在使用通用视图的时候,需要重写一些属性:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django`.contrib.auth.models`<span class="keyword">import</span> User</span><br><span class="line"><span class="keyword">from</span> myapp`.serializers`<span class="keyword">import</span> UserSerializer</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> generics</span><br><span class="line"><span class="keyword">from</span> rest_framework`.permissions`<span class="keyword">import</span> IsAdminUser</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserList</span><span class="params">(generics.ListCreateAPIView)</span>:</span></span><br><span class="line">    queryset = User.objects.all()</span><br><span class="line">    serializer_class = UserSerializer</span><br><span class="line">    permission_classes = [IsAdminUser]</span><br></pre></td></tr></table></figure>
+
+<p>或者在复杂的情况下,需要重写一些<code>方法</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserList</span><span class="params">(generics.ListCreateAPIView)</span>:</span></span><br><span class="line">    queryset = User.objects.all()</span><br><span class="line">    serializer_class = UserSerializer</span><br><span class="line">    permission_classes = (IsAdminUser, )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">list</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="comment"># Note the use of `get_queryset()` instead of `self.queryset`</span></span><br><span class="line">        queryset = self.get_queryset()</span><br><span class="line">        serializer = UserSerializer(queryset, many=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure>
+
+<p>而对于最简单的一些情况,直接在<code>.as_view</code>方法中添加参数即可</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">url(<span class="string">r'^/users/'</span>, </span><br><span class="line">	ListCreateAPIView.as_view(</span><br><span class="line">		queryset=User`.objects.all(),`</span><br><span class="line">		serializer_class=UserSerializer</span><br><span class="line">		), </span><br><span class="line">	name=<span class="string">'user-list'</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>API参考</p>
+<p><code>GenericAPIView</code> 继承自APIView, 提供了list的detil的基本行为前提: 获得查询集和获得某一个对象</p>
+<p>属性</p>
+<ul>
+<li><code>.queryset</code> 用于从视图返回对象的查询结果集, 设置此属性或者重写get_queryset()来取得结果集。结果会<code>缓存</code>, 以供后续请求的调用。</li>
+<li><code>.serializer_class</code> 用于验证和反序列化输入以及序列化输出的Serializer类, 设置此属性或者重写get_serializer_class()方法</li>
+<li><code>.lookup_field</code> 用于执行各个model实例的对象查找时使用的字段, 默认是’pk’, 如果使用超链接api的时候, 需要改动这一项, 必须在api视图和序列化类都设置查找字段</li>
+<li><code>.lookup_url_kwarg</code> 应用对象查找的url关键字参数, 默认情况下使用与lookup_field相同的值</li>
+<li><code>.pagination_class</code> 指定分页类, 默认为settings中的DEFAULT_PAGINATION_CLASS, 该项的默认值为rest_framework.pagination.PageNumberPagination</li>
+<li><code>.filter_backends</code> 用于过滤查询集的过滤器后端类的列表。默认值取决于DEFAULT_FILTER_BACKENDS设置项.</li>
+</ul>
+<p>方法</p>
+<ul>
+<li><code>.get_queryset(self)</code> 获得查询集.</li>
+<li><code>.get_object(self)</code> 获得实例对象(指某条记录构建的Model实例).</li>
+<li><code>.get_serializer_class(self)</code> 获得用于序列化的类.</li>
+<li><code>.filter_queryset(self,</code>queryset) 进行过滤操作.</li>
+</ul>
+<p>其他钩子函数:</p>
+<p>以下钩子函数由相应的混入类提供, 并可以简单地重写以改变保存或删除时地行为.</p>
+<p><code>perform_create(self, serializer)</code> 在创建一个新的对象之前被<code>CreateModelMixin</code>调用<br><code>perform_update(self, serializer)</code> 在更新一个已存对象之前由<code>UpdateModelMixin</code>调用<br><code>perform_destroy(self, instance)</code> 在删除一个现存对象之前由<code>DestroyModelMixin</code>调用</p>
+<p>其他方法</p>
+<ul>
+<li><code>get_serializer_context(self)</code> 获取为序列化器提供的上下文,返回值须为Dict类型.默认<code>已包含&#39;request&#39;</code>,’view’和’format’.</li>
+<li><code>get_serializer(self, instance=None, data=None, many=False, partial=False)</code> 获取已被传入数据的序列化器实例.</li>
+<li><code>get_paginated_response(self, data)</code> 获得应用分页风格后的Response实例.</li>
+<li><code>paginate_queryset(self, queryset)</code> 将查询集进行分页,返回一个分页对象或是在无分页器时返回None.</li>
+<li><code>filter_queryset(self, queryset)</code> 需求一个查询集,并返回一个新的过滤后的查询集.</li>
+</ul>
+<p>建立一个API的两个基本要素为<code>查询集</code>和<code>序列化器</code>,因此在以上属性或方法中</p>
+<ol>
+<li>必须设置<code>.queryset</code>属性或重写<code>get_queryset</code>来给定<code>查询集</code></li>
+<li>必须设置<code>serializer_class</code>属性或重写<code>get_serializer_class</code>来给定<code>序列化器</code></li>
+</ol>
+<p>其他所有的属性和方法因为已有默认值或默认实现,因此都是可选的.</p>
+<p>示例代码:</p>
+<p>通过重写<code>get_queryset</code>获得查询集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_queryset</span><span class="params">(self)</span>:</span></span><br><span class="line">    user = self.request.user</span><br><span class="line">    <span class="keyword">return</span> user.accounts.all()</span><br></pre></td></tr></table></figure>
+
+<p>通过重写<code>get_object</code>获得某个对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_object</span><span class="params">(self)</span>:</span></span><br><span class="line">    queryset = self.get_queryset()</span><br><span class="line">    filter = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> field <span class="keyword">in</span> self.multiple_lookup_fields:</span><br><span class="line">        filter[field] = self.kwargs[field]</span><br><span class="line"></span><br><span class="line">    obj = get_object_or_404(queryset, **filter)</span><br><span class="line">    self.check_object_permissions(self.request, obj)</span><br><span class="line">    <span class="keyword">return</span> obj</span><br></pre></td></tr></table></figure>
+
+<p>重写<code>filter_queryset</code>过滤查询集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">filter_queryset</span><span class="params">(self, queryset)</span>:</span></span><br><span class="line">    filter_backends = [CategoryFilter]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="string">'geo_route'</span> <span class="keyword">in</span> self.request.query_params:</span><br><span class="line">        filter_backends = [GeoRouteFilter, CategoryFilter]</span><br><span class="line">    <span class="keyword">elif</span> <span class="string">'geo_point'</span> <span class="keyword">in</span> self.request.query_params:</span><br><span class="line">        filter_backends = [GeoPointFilter, CategoryFilter]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> backend <span class="keyword">in</span> list(filter_backends):</span><br><span class="line">        queryset = backend().filter_queryset(self.request, queryset, view=self)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> queryset</span><br></pre></td></tr></table></figure>
+
+<p>重写<code>get_serializer_class</code>为不同状态的请求动态提供序列化器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_serializer_class</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> self.request.user.is_staff:</span><br><span class="line">        <span class="keyword">return</span> FullAccountSerializer</span><br><span class="line">    <span class="keyword">return</span> BasicAccountSerializer</span><br></pre></td></tr></table></figure>
+
+<p>使用钩子函数,在创建一条记录前为其添加属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perform_create</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">    serializer.save(user=self.request.user)</span><br></pre></td></tr></table></figure>
+
+<p>使用钩子函数,在创建一条记录后进行邮件通知</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perform_update</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">    instance = serializer.save()</span><br><span class="line">    send_email_confirmation(user=self.request.user, modified=instance)</span><br></pre></td></tr></table></figure>
+
+<p>使用钩子函数,为其进行额外的数据合法性检查</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perform_create</span><span class="params">(self, serializer)</span>:</span></span><br><span class="line">    queryset = SignupRequest.objects.filter(user=self.request.user)</span><br><span class="line">    <span class="keyword">if</span> queryset.exists():</span><br><span class="line">        <span class="keyword">raise</span> ValidationError(<span class="string">'You have already signed up'</span>)</span><br><span class="line">    serializer.save(user=self.request.user)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="混入-Mixins"><a href="#混入-Mixins" class="headerlink" title="混入(Mixins)"></a>混入(Mixins)</h2><p>GenericAPIView无法被作为视图类直接使用,因为它没有实现任何与HTTP METHOD同名的处理函数, 例如<code>get</code>或是<code>post</code>等,因此GenericAPIView不能处理任何请求.</p>
+<p>GenericAPIView仅仅是提供了基本架构, 以及获取数据的接口,而如何将获取的查询集或是对象转为响应,这些<code>行为</code>都由以下的混入类完成.</p>
+<p>(导出路径均为<code>rest_framework.mixins</code>)</p>
+<ul>
+<li><code>ListModelMixin</code> 提供 <code>list</code>行为,可以将查询集列出.</li>
+<li><code>CreateModelMixin</code> 提供<code>create</code>行为, 可以创建一个新的model实例。</li>
+<li><code>etrieveModelMixin</code> 提供<code>retrieve</code>行为, 可以取回一个现有的model实例。</li>
+<li><code>UpdateModelMixin</code> 提供 <code>.update</code>和<code>partial_update</code>行为, 可以更新/部分更新现有模型实例</li>
+<li><code>DestroyModelMixin</code> 提供一个 <code>.destroy</code>行为, 可以删除现有模型实例。</li>
+</ul>
+<p>当我们谈<code>行为</code>(action)的时候,指的是:<code>list</code> <code>detail</code> <code>update</code> <code>retrieve</code> <code>destory</code>这些对数据的操作,而非<code>get</code>,<code>post</code>, <code>update</code>这些真正执行的<code>视图函数</code>, 这些视图函数当然会调用这些已实现的行为,但不能将他们混为一谈.</p>
+<p>使用多重继承的方式来构建我们的视图函数,首先根据需求酌情继承混入类, 最后继承GenericAPIView</p>
+<p>示例代码: 实现一个列出数据的视图类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> mixins</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListAPIView</span><span class="params">(mixins.ListModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                  GenericAPIView)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Concrete view for listing a queryset.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.list(request, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>或者一个能读取,修改,删除实例的视图类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RetrieveUpdateDestroyAPIView</span><span class="params">(mixins.RetrieveModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                                   mixins.UpdateModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                                   mixins.DestroyModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                                   GenericAPIView)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Concrete view for retrieving, updating or deleting a model instance.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.retrieve(request, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">put</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.update(request, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">patch</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.partial_update(request, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">delete</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.destroy(request, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>以GenericAPIView提供基本架构,以混入类提供<code>行为</code>,并在处理方法调用<code>行为</code>,就形成了可用的视图类.</p>
+<hr>
+<p>已混合的类(Mixined)</p>
+<p>以下类都是根据常用需求,按照以上思路混合好的一些类,这些类都能作为视图类,只要设定好查询集和序列化器就可以直接投入使用.</p>
+<table>
+<thead>
+<tr>
+<th>Mixined</th>
+<th>inherit from</th>
+<th>method</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CreateAPIView</td>
+<td>GenericAPIView, CreateModelMixin</td>
+<td>post</td>
+</tr>
+<tr>
+<td>ListAPIView</td>
+<td>GenericAPIView, ListModelMixin</td>
+<td>get</td>
+</tr>
+<tr>
+<td>RetrieveAPIView</td>
+<td>GenericAPIView, RetrieveModelMixin</td>
+<td>get</td>
+</tr>
+<tr>
+<td>DestroyAPIView</td>
+<td>GenericAPIView, DestroyModelMixin</td>
+<td>delete</td>
+</tr>
+<tr>
+<td>UpdateAPIView</td>
+<td>GenericAPIView, UpdateModelMixin</td>
+<td>update</td>
+</tr>
+<tr>
+<td>ListCreateAPIView</td>
+<td>GenericAPIView, ListModelMixin, CreateModelMixin</td>
+<td>get,post</td>
+</tr>
+<tr>
+<td>RetrieveUpdateAPIView</td>
+<td>GenericAPIView, RetrieveModelMixin, UpdateModelMixin</td>
+<td>get, put,patch</td>
+</tr>
+<tr>
+<td>RetrieveDestroyAPIView</td>
+<td>GenericAPIView, RetrieveModelMixin, DestroyModelMixin</td>
+<td>get, delete</td>
+</tr>
+<tr>
+<td>RetrieveUpdateDestroyAPIView</td>
+<td>GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin</td>
+<td>get,put, patch,delete</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="自定义通用视图"><a href="#自定义通用视图" class="headerlink" title="自定义通用视图"></a>自定义通用视图</h2><p>通常情况下, 应该使用现有通用视图并自定义某些行为. 当然, 如果想要对多个视图作出更改并重用某些行为, 有必要直接重写通用视图.</p>
+<h4 id="创建自定义混合类"><a href="#创建自定义混合类" class="headerlink" title="创建自定义混合类"></a>创建自定义混合类</h4><p>例如, 如果想要基于url中多个字段来查找数据对象, 可以创建如下混合类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleFieldLookupMixin</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Apply this mixin to any view or viewset to get multiple field filtering</span></span><br><span class="line"><span class="string">    based on a `lookup_fields` attribute, instead of the default single field filtering.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_object</span><span class="params">(self)</span>:</span></span><br><span class="line">        queryset = self.get_queryset()             <span class="comment"># Get the base queryset</span></span><br><span class="line">        queryset = self.filter_queryset(queryset)  <span class="comment"># Apply any filter backends</span></span><br><span class="line">        filter = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> field <span class="keyword">in</span> self.lookup_fields:</span><br><span class="line">            <span class="keyword">if</span> self.kwargs[field]: <span class="comment"># Ignore empty fields.</span></span><br><span class="line">                filter[field] = self.kwargs[field]</span><br><span class="line">        obj = get_object_or_404(queryset, **filter)  <span class="comment"># Lookup the object</span></span><br><span class="line">        self.check_object_permissions(self.request, obj)</span><br><span class="line">        <span class="keyword">return</span> obj</span><br></pre></td></tr></table></figure>
+
+<p>然后可以简单地将该混合类混入视图中来应用自定义行为.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RetrieveUserView</span><span class="params">(MultipleFieldLookupMixin, generics.RetrieveAPIView)</span>:</span></span><br><span class="line">    queryset = User.objects.all()</span><br><span class="line">    serializer_class = UserSerializer</span><br><span class="line">    lookup_fields = [<span class="string">'account'</span>, <span class="string">'username'</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建自定义通用视图基类"><a href="#创建自定义通用视图基类" class="headerlink" title="创建自定义通用视图基类"></a>创建自定义通用视图基类</h4><p>如果需要在多个视图函数中混入该类, 则可以更进一步, 直接将该类与现有混合类创建新的基本视图, 并在整个项目中使用.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseRetrieveView</span><span class="params">(MultipleFieldLookupMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                       generics.RetrieveAPIView)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseRetrieveUpdateDestroyView</span><span class="params">(MultipleFieldLookupMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                                    generics.RetrieveUpdateDestroyAPIView)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/4. 通用视图/" data-id="ck1gk77hp00004gplpstxuz2n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/5. 视图集/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          5. 视图集 viewsets
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/3. 基于类的视图 Class-based Views/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">3. 基于类的视图 Class-based Views</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

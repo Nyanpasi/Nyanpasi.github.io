@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>18. 内容协商 Content negotiation | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="内容协商的结果会在选择解析器和渲染器阶段使用. REST使用简单的内容协商方式来确定应该返回给客户端什么媒体类型的响应, 并根据可用的渲染器, 各个渲染器的优先级以及客户端的Accpet标头来选择渲染器, 部分由客户端驱动, 部分由服务端驱动.  在进行内容协商时:">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="18. 内容协商 Content negotiation">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/18. 内容协商/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="内容协商的结果会在选择解析器和渲染器阶段使用. REST使用简单的内容协商方式来确定应该返回给客户端什么媒体类型的响应, 并根据可用的渲染器, 各个渲染器的优先级以及客户端的Accpet标头来选择渲染器, 部分由客户端驱动, 部分由服务端驱动.  在进行内容协商时:">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:22:32.437Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="18. 内容协商 Content negotiation">
+<meta name="twitter:description" content="内容协商的结果会在选择解析器和渲染器阶段使用. REST使用简单的内容协商方式来确定应该返回给客户端什么媒体类型的响应, 并根据可用的渲染器, 各个渲染器的优先级以及客户端的Accpet标头来选择渲染器, 部分由客户端驱动, 部分由服务端驱动.  在进行内容协商时:">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-18. 内容协商" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/18. 内容协商/" class="article-date">
+  <time datetime="2019-10-03T10:03:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      18. 内容协商 Content negotiation
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>内容协商的结果会在选择解析器和渲染器阶段使用.</p>
+<p>REST使用简单的内容协商方式来确定应该返回给客户端什么媒体类型的响应, 并根据可用的渲染器, 各个渲染器的优先级以及客户端的<code>Accpet</code>标头来选择渲染器, 部分由客户端驱动, 部分由服务端驱动. </p>
+<p>在进行内容协商时:</p>
+<a id="more"></a>
+
+<ol>
+<li>更具体的媒体类型优先</li>
+<li>可用渲染器列表的顺序优先</li>
+</ol>
+<p>例如接收到的<code>Accept</code>头如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">application/json; indent=4, application/json, application/yaml, text/html, */*</span><br></pre></td></tr></table></figure>
+
+<p>其优先顺序为</p>
+<ol>
+<li>application/json; indent=4</li>
+<li>application/json, application/yaml and text/html</li>
+<li><em>/</em></li>
+</ol>
+<p>如果视图里定义的渲染器仅有YAML和HTML格式, REST会选择列表中第一个渲染器进行渲染</p>
+<p>注意：q值指定优先级的方式, 不会被rest_framework所采用. </p>
+<hr>
+<h3 id="自定义内容协商"><a href="#自定义内容协商" class="headerlink" title="自定义内容协商"></a>自定义内容协商</h3><p>通常不太可能需要自定义内容协商方案, 不过如果有需要, 可以通过重写<code>BaseContentNegotiation</code>来实现</p>
+<p>内容协商同时处理解析器和渲染器的选择, 所以需要同时实现<code>.select_parser(request, parsers)</code>和<code>.select_renderer(request, renderers, format_suffix)</code>方法</p>
+<ol>
+<li><code>select_parser()</code>方法返回一个在可用解析器列表中的解析器, 如果找不到合适的解析器则返回None. </li>
+<li><code>select_renderer()</code>方法返回一个二元组<code>(renderer instance, media type)</code>, 或者抛出一个<code>NotAcceptable</code>异常.</li>
+</ol>
+<p>示例: 以下自定义内容协商类, 会在内容协商阶段忽略客户端的请求, 而直接选择最靠前的解析器和渲染器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.negotiation <span class="keyword">import</span> BaseContentNegotiation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IgnoreClientContentNegotiation</span><span class="params">(BaseContentNegotiation)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">select_parser</span><span class="params">(self, request, parsers)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Select the first parser in the `.parser_classes` list.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> parsers[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">select_renderer</span><span class="params">(self, request, renderers, format_suffix)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Select the first renderer in the `.renderer_classes` list.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> (renderers[<span class="number">0</span>], renderers[<span class="number">0</span>].media_type)</span><br></pre></td></tr></table></figure>
+
+<p>将其设置为全局默认的内容协商类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_CONTENT_NEGOTIATION_CLASS'</span>: <span class="string">'myapp.negotiation.IgnoreClientContentNegotiation'</span>, </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者指定为某视图使用的内容协商类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> myapp.negotiation <span class="keyword">import</span> IgnoreClientContentNegotiation</span><br><span class="line"><span class="keyword">from</span> rest_framework.response <span class="keyword">import</span> Response</span><br><span class="line"><span class="keyword">from</span> rest_framework.views <span class="keyword">import</span> APIView</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NoNegotiationView</span><span class="params">(APIView)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    An example view that does not perform content negotiation.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    content_negotiation_class = IgnoreClientContentNegotiation</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, format=None)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> Response(&#123;</span><br><span class="line">            <span class="string">'accepted media type'</span>: request.accepted_renderer.media_type</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/18. 内容协商/" data-id="ck1kjuhr4000dngplkf1qnhk2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/19. 元数据/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          19. 元数据 Metadata
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/17. 版本控制/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">17. 版本控制 Versioning</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

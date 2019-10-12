@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>25. 测试 Testing | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="无测试的代码就是设计好的失败.— Jacob Kaplan-Moss  REST-framework 包含了一些辅助类用以拓展Django现存的测试框架, 并加强了对发起API请求的支持.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="25. 测试 Testing">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/25. 测试/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="无测试的代码就是设计好的失败.— Jacob Kaplan-Moss  REST-framework 包含了一些辅助类用以拓展Django现存的测试框架, 并加强了对发起API请求的支持.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:23:23.923Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="25. 测试 Testing">
+<meta name="twitter:description" content="无测试的代码就是设计好的失败.— Jacob Kaplan-Moss  REST-framework 包含了一些辅助类用以拓展Django现存的测试框架, 并加强了对发起API请求的支持.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-25. 测试" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/25. 测试/" class="article-date">
+  <time datetime="2019-10-03T10:11:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      25. 测试 Testing
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>无测试的代码就是设计好的失败.<br>— Jacob Kaplan-Moss</p>
+</blockquote>
+<p>REST-framework 包含了一些辅助类用以拓展Django现存的测试框架, 并加强了对发起API请求的支持.</p>
+<a id="more"></a>
+
+<hr>
+<h2 id="APIRequestFactory"><a href="#APIRequestFactory" class="headerlink" title="APIRequestFactory"></a>APIRequestFactory</h2><p>拓展了Django的<a href="https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory" target="_blank" rel="noopener">RequestFactory</a></p>
+<hr>
+<h3 id="创建测试请求"><a href="#创建测试请求" class="headerlink" title="创建测试请求"></a>创建测试请求</h3><p><code>APIRequestFactory</code>支持与Django的<code>RequestFactory</code>相同的接口, 包括<code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code>和<code>.options()</code>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> APIRequestFactory</span><br><span class="line"></span><br><span class="line"><span class="comment"># Using the standard RequestFactory API to create a form POST request</span></span><br><span class="line">factory = APIRequestFactory()</span><br><span class="line">request = factory.post(<span class="string">'/notes/'</span>, &#123;<span class="string">'title'</span>: <span class="string">'new idea'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用format参数"><a href="#使用format参数" class="headerlink" title="使用format参数"></a>使用<code>format</code>参数</h4><p>附加请求体的方法例如<code>post</code>, <code>put</code>和<code>patch</code>, 会包括一个<code>format</code>参数, 用以简单地生成非multipart form data地内容类型的请求, 例如:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create a JSON POST request</span></span><br><span class="line">factory = APIRequestFactory()</span><br><span class="line">request = factory.post(<span class="string">'/notes/'</span>, &#123;<span class="string">'title'</span>: <span class="string">'new idea'</span>&#125;, format=<span class="string">'json'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下, 可用的格式为<code>multipart</code>和<code>json</code>, 为了兼容Django现存的<code>RequestFactory</code>的默认格式<code>multiparty</code>.</p>
+<p>要支持更多的请求格式, 或更改默认的格式, 查看本节<code>设置</code>部分. </p>
+<hr>
+<h4 id="指定请求体的编码"><a href="#指定请求体的编码" class="headerlink" title="指定请求体的编码"></a>指定请求体的编码</h4><p>如果要明确指明请求体部分的编码, 需要设置<code>content_type</code>标识. 例如:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request = factory.post(<span class="string">'/notes/'</span>, json.dumps(&#123;<span class="string">'title'</span>: <span class="string">'new idea'</span>&#125;), content_type=<span class="string">'application/json'</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="使用form-data进行PUT和PATCH"><a href="#使用form-data进行PUT和PATCH" class="headerlink" title="使用form data进行PUT和PATCH"></a>使用form data进行PUT和PATCH</h3><p>在使用<code>APIRequestFactory</code>时, 除<code>post</code>方法之外的请求会自动编码为multipart form data.</p>
+<p>例如使用<code>APIRequestFactory</code>发起PUT请求:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">factory = APIRequestFactory()</span><br><span class="line">request = factory.put(<span class="string">'/notes/547/'</span>, &#123;<span class="string">'title'</span>: <span class="string">'remember to email dave'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="强制身份认证"><a href="#强制身份认证" class="headerlink" title="强制身份认证"></a>强制身份认证</h3><p>当使用请求工厂测试视图时, 通常能够很方便地对直接请求进行身份验证, 而不必构造正确的身份验证凭据.</p>
+<p>要强制认证一个请求, 使用<code>force_authenticate()</code>方法.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> force_authenticate</span><br><span class="line"></span><br><span class="line">factory = APIRequestFactory()</span><br><span class="line">user = User.objects.get(username=<span class="string">'olivia'</span>)</span><br><span class="line">view = AccountDetail.as_view()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Make an authenticated request to the view...</span></span><br><span class="line">request = factory.get(<span class="string">'/accounts/django-superstars/'</span>)</span><br><span class="line">force_authenticate(request, user=user)</span><br><span class="line">response = view(request)</span><br></pre></td></tr></table></figure>
+
+<p>签名: <code>force_authenticate(request, user=None, token=None)</code></p>
+<p>当调用该方法时, 至少设置user或token其中一项.</p>
+<p>如果要使用token进行认证, 可能需要如下进行:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">user = User.objects.get(username=<span class="string">'olivia'</span>)</span><br><span class="line">request = factory.get(<span class="string">'/accounts/django-superstars/'</span>)</span><br><span class="line">force_authenticate(request, user=user, token=user.auth_token)</span><br></pre></td></tr></table></figure>
+
+<p>注意, <code>force_authenticate</code>方法会直接使用内存中的<code>user</code>实例来设置<code>request.user</code>, 如果需要对同一个<code>user</code>进行多个可能会影响到user状态的测试, 应该在各个测试间调用<code>refresh_from_db()</code>.</p>
+<p>注意, 当使用<code>APIRequestFactory</code>时, 返回的是django标准的<code>HttpRequest</code>, 而非Rest framework的<code>Request</code>对象, 该对象仅会在API视图被调用的时候生成一次.</p>
+<p>这意味着, 直接设置请求对象的属性可能不会如预期一样生效, 例如, 直接设置<code>.token</code>属性无效, 直接设置<code>.user</code>仅在使用session认证时生效.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Request will only authenticate if `SessionAuthentication` is in use.</span></span><br><span class="line">request = factory.get(<span class="string">'/accounts/django-superstars/'</span>)</span><br><span class="line">request.user = user</span><br><span class="line">response = view(request)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="强制CSRF验证"><a href="#强制CSRF验证" class="headerlink" title="强制CSRF验证"></a>强制CSRF验证</h3><p>默认情况下, 由<code>APIRequestFactory</code>生成的请求不会带有合法的csrf, 如果要强制使请求的csrf认证合法, 需要在初始化<code>APIRequestFactory</code>时设置<code>enforce_csrf_checks</code>标识.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">factory = APIRequestFactory(enforce_csrf_checks=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>注意, django的标准<code>RequestFactory</code>不用包含此选项, 因为常规Django的csrf验证发生在中间件中, 该中间件在测试视图时不会运行. 而REST framework的csrf验证发生在视图内部, 所以请求工厂需要将试图级别的csrf验证检查禁用.</p>
+<hr>
+<h2 id="APIClient"><a href="#APIClient" class="headerlink" title="APIClient"></a>APIClient</h2><p>拓展了Django现存的<a href="https://docs.djangoproject.com/en/2.2/topics/testing/tools/#the-test-client" target="_blank" rel="noopener"><code>Client</code></a>类.</p>
+<h3 id="发起请求"><a href="#发起请求" class="headerlink" title="发起请求"></a>发起请求</h3><p><code>APIClient</code>类支持与Django标准的<code>Client</code>类相同的接口, 意味着标准的<code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code>和<code>.options()</code>方法都可以使用. 例如:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> APIClient</span><br><span class="line"></span><br><span class="line">client = APIClient()</span><br><span class="line">client.post(<span class="string">'/notes/'</span>, &#123;<span class="string">'title'</span>: <span class="string">'new idea'</span>&#125;, format=<span class="string">'json'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>要支持更多请求格式, 或更改默认格式, 查看本节<code>设置</code>部分.</p>
+<h3 id="认证"><a href="#认证" class="headerlink" title="认证"></a>认证</h3><hr>
+<h4 id="login-kwargs"><a href="#login-kwargs" class="headerlink" title=".login(**kwargs)"></a><code>.login(**kwargs)</code></h4><p>login方法与其在Django<code>Client</code>中的表现相同, 允许对所有支持<code>SessionAuthentication</code>的视图进行请求认证.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Make all requests in the context of a logged in session.</span></span><br><span class="line">client = APIClient()</span><br><span class="line">client.login(username=<span class="string">'lauren'</span>, password=<span class="string">'secret'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>要注销登陆, 调用<code>logout</code>方法:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Log out</span></span><br><span class="line">client.logout()</span><br></pre></td></tr></table></figure>
+
+<p>login方法对于测试支持会话认证的API非常合适, 例如包含了AJAX交互的网站.</p>
+<hr>
+<h4 id="credentials-kwargs"><a href="#credentials-kwargs" class="headerlink" title=".credentials(**kwargs)"></a><code>.credentials(**kwargs)</code></h4><p><code>credentials</code>方法可以设置被之后所有测试客户端产生的请求共同使用的请求头.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.authtoken.models <span class="keyword">import</span> Token</span><br><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> APIClient</span><br><span class="line"></span><br><span class="line"><span class="comment"># Include an appropriate `Authorization:` header on all requests.</span></span><br><span class="line">token = Token.objects.get(user__username=<span class="string">'lauren'</span>)</span><br><span class="line">client = APIClient()</span><br><span class="line">client.credentials(HTTP_AUTHORIZATION=<span class="string">'Token '</span> + token.key)</span><br></pre></td></tr></table></figure>
+
+<p>注意, 再次调用<code>credentials</code>方法会重写任何现有的credentials, 可以通过不带参数地调用该方法来清空现有地credentials.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Stop including any credentials</span></span><br><span class="line">client.credentials()</span><br></pre></td></tr></table></figure>
+
+<p>该方法适合测试那些需要包含认证头的API, 例如基本认证, OAuth1a和OAuth2认证, 以及简单的token认证方案.</p>
+<hr>
+<p><strong><code>.force_authenticate(user=None, token=None)</code></strong></p>
+<p>有时需要绕过认证, 并让所有请求被自动视为已通过认证.</p>
+<p>如果在测试时不想构造合法的认证凭证, 使用该快捷方式可能相当有用.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">user = User.objects.get(username=<span class="string">'lauren'</span>)</span><br><span class="line">client = APIClient()</span><br><span class="line">client.force_authenticate(user=user)</span><br></pre></td></tr></table></figure>
+
+<p>如果要取消认证, 再次调用该方法将user和/或token设为None即可.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.force_authenticate(user=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="CSRF验证"><a href="#CSRF验证" class="headerlink" title="CSRF验证"></a>CSRF验证</h3><p>默认当使用<code>APIClient</code>时CSRF验证未开启, 如果需要启用CSRF验证, 需要在初始化客户端的时候设置<code>enforce_csrf_checks</code>标识.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client = APIClient(enforce_csrf_checks=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>与正常情况一样, CSRF仅会对使用会话认证的视图生效, 这意味着CSRF验证仅会发生在使用<code>.login()</code>登陆之后.</p>
+<hr>
+<h2 id="RequestClient"><a href="#RequestClient" class="headerlink" title="RequestClient"></a>RequestClient</h2><p>REST framework提供了一个使用python库<code>request</code>与应用进行交互的客户端, 在以下情况下可能很有用:</p>
+<ol>
+<li>期望主要通过另一个python服务与API进行交互, 并想要测试与客户端同级别的结果.</li>
+<li>期望实时测试.(参见本节<strong>实时测试</strong>部分)</li>
+</ol>
+<p>它暴露了与直接使用请求会话完全相同的接口.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> RequestsClient</span><br><span class="line"></span><br><span class="line">client = RequestsClient()</span><br><span class="line">response = client.get(<span class="string">'http://testserver/users/'</span>)</span><br><span class="line"><span class="keyword">assert</span> response.status_code == <span class="number">200</span></span><br></pre></td></tr></table></figure>
+
+<p>注意<code>RequestClient</code>需要传递绝对URL.</p>
+<hr>
+<h3 id="与数据库的交互"><a href="#与数据库的交互" class="headerlink" title="与数据库的交互"></a>与数据库的交互</h3><p>当仅要测试服务接口的<strong>交互</strong>时, <code>ReqeustClient</code>是非常有效的, 比使用标准的Django测试客户端稍加严格, 因此意味着所有的交互都通过API.</p>
+<p>如果使用<code>RequestClient</code>时, 需要确保所有的设置和断言是通过常规API调用进行的, 而非直接与数据库模型进行交互, 例如应该直接列出所有Costumer的实例确保其确实包含三条记录而非直接检查<code>Customer.objects.count() == 3</code>.</p>
+<h3 id="请求头和认证"><a href="#请求头和认证" class="headerlink" title="请求头和认证"></a>请求头和认证</h3><p>需要与使用标准的<code>request.Session</code>实例时相同的方式自定义请求头和认证凭证.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> requests.auth <span class="keyword">import</span> HTTPBasicAuth</span><br><span class="line"></span><br><span class="line">client.auth = HTTPBasicAuth(<span class="string">'user'</span>, <span class="string">'pass'</span>)</span><br><span class="line">client.headers.update(&#123;<span class="string">'x-test'</span>: <span class="string">'true'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h3><p>如果使用基于会话的身份认证, 需要在任何<code>POST</code>, <code>PUT</code>, <code>PATCH</code>或<code>DELETE</code>请求中包含csrf凭证.</p>
+<p>你可以使用基于js的客户端同样的方式, 先发起<code>GET</code>请求获取CSRF凭证, 然后将其包含在请求头中发送:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">client = RequestsClient()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Obtain a CSRF token.</span></span><br><span class="line">response = client.get(<span class="string">'http://testserver/homepage/'</span>)</span><br><span class="line"><span class="keyword">assert</span> response.status_code == <span class="number">200</span></span><br><span class="line">csrftoken = response.cookies[<span class="string">'csrftoken'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Interact with the API.</span></span><br><span class="line">response = client.post(<span class="string">'http://testserver/organisations/'</span>, json=&#123;</span><br><span class="line">    <span class="string">'name'</span>: <span class="string">'MegaCorp'</span>,</span><br><span class="line">    <span class="string">'status'</span>: <span class="string">'active'</span></span><br><span class="line">&#125;, headers=&#123;<span class="string">'X-CSRFToken'</span>: csrftoken&#125;)</span><br><span class="line"><span class="keyword">assert</span> response.status_code == <span class="number">200</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="实时测试"><a href="#实时测试" class="headerlink" title="实时测试"></a>实时测试</h3><p><code>RequestClient</code>和<code>CoreAPIClient</code>都可以编写可以在开发或生产环境直接运行的测试用例.</p>
+<p>使用这种方式创建对少量核心函数的测试, 对于运行中的服务相当有效. 这样做需要谨慎地开始和终止, 以确保测试不会以影响客户数据的方式进行.</p>
+<hr>
+<h2 id="CoreAPIClient"><a href="#CoreAPIClient" class="headerlink" title="CoreAPIClient"></a>CoreAPIClient</h2><p><code>CoreClient</code>可以使用python的<code>coreapi</code>客户端库与API进行交互.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Fetch the API schema</span></span><br><span class="line">client = CoreAPIClient()</span><br><span class="line">schema = client.get(<span class="string">'http://testserver/schema/'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Create a new organisation</span></span><br><span class="line">params = &#123;<span class="string">'name'</span>: <span class="string">'MegaCorp'</span>, <span class="string">'status'</span>: <span class="string">'active'</span>&#125;</span><br><span class="line">client.action(schema, [<span class="string">'organisations'</span>, <span class="string">'create'</span>], params)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ensure that the organisation exists in the listing</span></span><br><span class="line">data = client.action(schema, [<span class="string">'organisations'</span>, <span class="string">'list'</span>])</span><br><span class="line"><span class="keyword">assert</span>(len(data) == <span class="number">1</span>)</span><br><span class="line"><span class="keyword">assert</span>(data == [&#123;<span class="string">'name'</span>: <span class="string">'MegaCorp'</span>, <span class="string">'status'</span>: <span class="string">'active'</span>&#125;])</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="请求头-amp-认证"><a href="#请求头-amp-认证" class="headerlink" title="请求头&amp;认证"></a>请求头&amp;认证</h3><p>使用于<code>RequestClient</code>相似的方式来自定义请求头和认证</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> requests.auth <span class="keyword">import</span> HTTPBasicAuth</span><br><span class="line"></span><br><span class="line">client = CoreAPIClient()</span><br><span class="line">client.session.auth = HTTPBasicAuth(<span class="string">'user'</span>, <span class="string">'pass'</span>)</span><br><span class="line">client.session.headers.update(&#123;<span class="string">'x-test'</span>: <span class="string">'true'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API测试用例"><a href="#API测试用例" class="headerlink" title="API测试用例"></a>API测试用例</h2><p>REST framework包含了以下的测试用例类, 与Django的测试用例类相同, 但使用的是<code>APIClient</code>.而非<code>Client</code>.</p>
+<ul>
+<li>APISimpleTestCase</li>
+<li>APITransactionTestCase</li>
+<li>APITestCase</li>
+<li>APILiveServerTestCase</li>
+</ul>
+<p>示例:</p>
+<p>可以像使用常规Django测试用例类一样使用任何REST framework测试用例类. <code>self.client</code>会是一个<code>APIClient</code>实例.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountTests</span><span class="params">(APITestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_create_account</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Ensure we can create a new account object.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        url = reverse(<span class="string">'account-list'</span>)</span><br><span class="line">        data = &#123;<span class="string">'name'</span>: <span class="string">'DabApps'</span>&#125;</span><br><span class="line">        response = self.client.post(url, data, format=<span class="string">'json'</span>)</span><br><span class="line">        self.assertEqual(response.status_code, status.HTTP_201_CREATED)</span><br><span class="line">        self.assertEqual(Account.objects.count(), <span class="number">1</span>)</span><br><span class="line">        self.assertEqual(Account.objects.get().name, <span class="string">'DabApps'</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="URLPatternsTestCase"><a href="#URLPatternsTestCase" class="headerlink" title="URLPatternsTestCase"></a>URLPatternsTestCase</h3><p>REST-framework还提供了一个测试用例类用以按类隔离url pattern, 继承自Django的SimpleTestCase, 很可能与其他测试用例类混合使用.</p>
+<p>示例:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.urls <span class="keyword">import</span> include, path, reverse</span><br><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> APITestCase, URLPatternsTestCase</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountTests</span><span class="params">(APITestCase, URLPatternsTestCase)</span>:</span></span><br><span class="line">    urlpatterns = [</span><br><span class="line">        path(<span class="string">'api/'</span>, include(<span class="string">'api.urls'</span>)),</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_create_account</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Ensure we can create a new account object.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        url = reverse(<span class="string">'account-list'</span>)</span><br><span class="line">        response = self.client.get(url, format=<span class="string">'json'</span>)</span><br><span class="line">        self.assertEqual(response.status_code, status.HTTP_200_OK)</span><br><span class="line">        self.assertEqual(len(response.data), <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="测试响应"><a href="#测试响应" class="headerlink" title="测试响应"></a>测试响应</h2><hr>
+<h3 id="检查响应数据"><a href="#检查响应数据" class="headerlink" title="检查响应数据"></a>检查响应数据</h3><p>在检查响应的合法性时通常直接检查其包含数据的合法性, 相较于检查完全渲染后的响应更为方便. </p>
+<p>例如, 检查<code>response.data</code>更为方便:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">response = self.client.get(<span class="string">'/users/4/'</span>)</span><br><span class="line">self.assertEqual(response.data, &#123;<span class="string">'id'</span>: <span class="number">4</span>, <span class="string">'username'</span>: <span class="string">'lauren'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>而非检查<code>response.content</code>的解析结果:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">response = self.client.get(<span class="string">'/users/4/'</span>)</span><br><span class="line">self.assertEqual(json.loads(response.content), &#123;<span class="string">'id'</span>: <span class="number">4</span>, <span class="string">'username'</span>: <span class="string">'lauren'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="渲染响应"><a href="#渲染响应" class="headerlink" title="渲染响应"></a>渲染响应</h3><p>如果直接使用<code>APIRequestFactory</code>测试视图, 返回的响应未经渲染, 因为模板响应的呈现是由Django的内部请求-响应周期执行的(TemplateResponse是在中间件中被渲染的), 为了访问response.content, 首先手动进行渲染. </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">view = UserDetail.as_view()</span><br><span class="line">request = factory.get(<span class="string">'/users/4'</span>)</span><br><span class="line">response = view(request, pk=<span class="string">'4'</span>)</span><br><span class="line">response.render()  <span class="comment"># Cannot access `response.content` without this.</span></span><br><span class="line">self.assertEqual(response.content, <span class="string">'&#123;"username": "lauren", "id": 4&#125;'</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><hr>
+<h3 id="设置默认格式"><a href="#设置默认格式" class="headerlink" title="设置默认格式"></a>设置默认格式</h3><p>使用<code>TEST_REQUEST_DEFAULT_FORMAT</code>设置项来设置测试请求的默认格式, 例如, 使用json格式来替换默认的multipartform格式, 如下设置:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="string">'TEST_REQUEST_DEFAULT_FORMAT'</span>: <span class="string">'json'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置可用的格式"><a href="#设置可用的格式" class="headerlink" title="设置可用的格式"></a>设置可用的格式</h3><p>如果要使用json或multipart之外的格式, 可以使用<code>TEST_REQUEST_RENDERER_CLASSES</code>设置项进行设置.</p>
+<p>例如, 为了支持<code>format=&#39;html&#39;</code>的请求, 需要在设置文件中如下设置:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="string">'TEST_REQUEST_RENDERER_CLASSES'</span>: [</span><br><span class="line">        <span class="string">'rest_framework.renderers.MultiPartRenderer'</span>,</span><br><span class="line">        <span class="string">'rest_framework.renderers.JSONRenderer'</span>,</span><br><span class="line">        <span class="string">'rest_framework.renderers.TemplateHTMLRenderer'</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/25. 测试/" data-id="ck1kjuhs9000rngplwvrxhqnn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/26. 设置/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          26. 设置 Settings
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/24. 状态码/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">24. 状态码 Status</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

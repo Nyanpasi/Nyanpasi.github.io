@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="技术">
+<meta property="og:type" content="website">
+<meta property="og:title" content="紫秋的个人博客">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="技术">
+<meta property="og:locale" content="zh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="紫秋的个人博客">
+<meta name="twitter:description" content="技术">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-16. 分页器 Paginator" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/16. 分页器 Paginator/" class="article-date">
+  <time datetime="2019-10-03T10:01:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/16. 分页器 Paginator/">16. 分页 Pagination</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>分页器可以将较多的数据分为若干页，并在每一页上给出上一页/下一页的链接. DRF支持自定义分页风格，并允许改变每页包含的数据的数量. </p>
+<p>分页API应当支持:</p>
+<ol>
+<li>分页对象的链接，作为响应内容的一部分</li>
+<li>分页对象的链接，作为响应头的一部分 (Content-Range或者Link)</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/16. 分页器 Paginator/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/16. 分页器 Paginator/" data-id="ck1kjuhs4000nngpl6v5xg73o" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-15. 过滤 Filter" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/15. 过滤 Filter/" class="article-date">
+  <time datetime="2019-10-03T09:59:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/15. 过滤 Filter/">15. 过滤 Filter</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档</p>
+</blockquote>
+<p>REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分而已.</p>
+<p>分页器解决的是将全部查询集分批次返回的问题, 而过滤则是要获得我们需要的那部分数据.</p>
+<p>最简单的方法就是重写<code>GenericAPIView</code>的子类(例如viewset)的<code>get_queryset</code>方法, 通过重写该方法可以使用各种方式来自定义查询集. </p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/15. 过滤 Filter/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/15. 过滤 Filter/" data-id="ck1kjuhr9000jngpl7kv2xo6t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-14. 限流" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/14. 限流/" class="article-date">
+  <time datetime="2019-10-03T09:58:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/14. 限流/">14. 限流 Throttling</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>限流(Throttling)和权限类似, 用以判断一个请求是否应该被处理. 限流是一种<strong>临时</strong>的状态, 用以限制<strong>一段时间内</strong>客户端可以对API发起请求的速率.</p>
+<p>在rest-framework中, 可以使用多重限制, 以适用不同的请求类型.</p>
+<p>例如定义一个全局的限流策略, 但对已登录的用户施以更少的限制, 或者对一些资源密集型接口施以更严格的限制, 或是施加多重速率限制, 例如将用户的请求限制为每分钟60个请求，但不能多于每天1000个请求.</p>
+<p>跟权限一样, 所有的限流检查会在view被执行<strong>之前</strong>进行, 如果限流认证未通过, 抛出<code>exceptions.Throttled</code>, 主体函数不会被执行.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/14. 限流/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/14. 限流/" data-id="ck1kjuhpj0000ngplu1faow8q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-13. 缓存" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/13. 缓存/" class="article-date">
+  <time datetime="2019-10-03T09:57:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/13. 缓存/">13. 缓存 Cache</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>rest-framework中的缓存行为可以非常简单地使用Django的缓存来实现.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/13. 缓存/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/13. 缓存/" data-id="ck1kjuhqh0004ngplasaz030g" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-12. 权限" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/12. 权限/" class="article-date">
+  <time datetime="2019-10-03T09:56:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/12. 权限/">12. 权限 Permissions</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>权限与身份认证和限流一起决定一个请求是否应该被允许或是拒绝.</p>
+<p>权限检查在视图函数主体运行之前进行, 只有检查通过才会执行函数体, 权限一般使用<code>reuqest.user</code>或者<code>request.auth</code>的信息来进行验证.</p>
+<p>rest-framework 中的权限应当始终指定为一个权限类的列表, 列表所有的权限对象必须<strong>都</strong>通过之后才被视为通过.任意权限类检查失败, 会抛出一个<code>exceptions.PermissionDenied</code>或<code>exceptions.NotAuthenticated</code>异常.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/12. 权限/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/12. 权限/" data-id="ck1kjuhpz0001ngplw9d4ql12" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-10.2 序列化器字段-关系字段" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/10.2 序列化器字段-关系字段/" class="article-date">
+  <time datetime="2019-10-03T09:55:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/10.2 序列化器字段-关系字段/">10.2 序列化器字段:关系字段 Serializer Field</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段.</p>
+<p>所有的关系字段定义在<code>relations.py</code>中, 但出于方便起见, 应该在<code>serializers</code>模块中导出, 然后通过<code>serializers.&lt;FieldName&gt;</code>使用关系字段.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/10.2 序列化器字段-关系字段/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/10.2 序列化器字段-关系字段/" data-id="ck1kjuhsp000wngplrnkx0uq7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-11. 验证器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/11. 验证器/" class="article-date">
+  <time datetime="2019-10-03T09:55:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/11. 验证器/">11. 序列化器 Validator</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
+<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
+<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/11. 验证器/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/11. 验证器/" data-id="ck1kjuhrw000mngplwbtv0dvu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-10.1 序列化器字段" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/10.1 序列化器字段/" class="article-date">
+  <time datetime="2019-10-03T09:54:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/10.1 序列化器字段/">10.1 序列化器字段:非关系字段 Serializer Field</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值.</p>
+<p>序列化器字段定义在<code>fields.py</code>中, 但为了方便起见, 应该使用<code>from rest_framework import serializers</code> 并用<code>serializers.&lt;FieldName&gt;</code>的形式来使用.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/10.1 序列化器字段/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/10.1 序列化器字段/" data-id="ck1hlao800007qgplskk747un" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-9.2 序列化器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/9.2 序列化器/" class="article-date">
+  <time datetime="2019-10-03T09:53:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/9.2 序列化器/">9.2 序列化器:内置序列化器 Serializer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>除了基本的<code>Serializer</code>类, rest-framework内置了几种序列化器类, 以供快速构建可用的序列化器, 或提供更基础的序列化器实现.</p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/9.2 序列化器/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/9.2 序列化器/" data-id="ck1hlao8d000cqgpl0davaenr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-9. 序列化器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/9. 序列化器/" class="article-date">
+  <time datetime="2019-10-03T09:52:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/03/9. 序列化器/">9.1 序列化器:数据验证 Serializer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型. </p>
+<p>rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法来控制响应的输出，ModelSerializer类为创建用于处理模型实例和查询集的序列化程序提供了有用的快捷实现方式. </p>
+        
+          <p class="article-more-link">
+            <a href="/2019/10/03/9. 序列化器/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/9. 序列化器/" data-id="ck1hlao830009qgplnl1kr5su" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

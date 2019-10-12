@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>2. 响应 Responses | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="rest-framework的Response继承自Django的SimpleTemplateResponse Response 初始化时本身只包含纯粹的数据,而在之后被rest-framework通过内容协商确定客户端所需格式后,渲染为真正的HTTP响应. 推荐使用Response而非常规的HttpResponse或StreamingHttpResponse理由是Response提供了更好的接口">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2. 响应 Responses">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/2. 响应 Response/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="rest-framework的Response继承自Django的SimpleTemplateResponse Response 初始化时本身只包含纯粹的数据,而在之后被rest-framework通过内容协商确定客户端所需格式后,渲染为真正的HTTP响应. 推荐使用Response而非常规的HttpResponse或StreamingHttpResponse理由是Response提供了更好的接口">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:20:08.337Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2. 响应 Responses">
+<meta name="twitter:description" content="rest-framework的Response继承自Django的SimpleTemplateResponse Response 初始化时本身只包含纯粹的数据,而在之后被rest-framework通过内容协商确定客户端所需格式后,渲染为真正的HTTP响应. 推荐使用Response而非常规的HttpResponse或StreamingHttpResponse理由是Response提供了更好的接口">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2. 响应 Response" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/2. 响应 Response/" class="article-date">
+  <time datetime="2019-10-03T09:45:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      2. 响应 Responses
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>rest-framework的Response继承自Django的<code>SimpleTemplateResponse</code></p>
+<p>Response 初始化时本身只包含纯粹的数据,而在之后被rest-framework通过内容协商确定客户端所需格式后,渲染为真正的HTTP响应.</p>
+<p>推荐使用Response而非常规的<code>HttpResponse</code>或<code>StreamingHttpResponse</code>理由是Response提供了更好的接口可以根据内容协商以渲染为各种不同的格式.</p>
+<p>除非需要深度化定制, 应当一直使用APIView或者使用同样返回Response的@api_view装饰的view函数,以确保视图可以进行内容协商和渲染不同类型的响应.</p>
+<hr>
+<a id="more"></a>
+
+<p>签名: <code>Response(data, status=None, template_name=None, headers=None, content_type=None)</code></p>
+<p>参数解释:</p>
+<ul>
+<li>data 作为响应主体内容的data, 需要为简单数据类型,例如Dict</li>
+<li>status 响应的状态码, 默认为200</li>
+<li>template_name: 可选,使用<code>HTMLRenderer</code>时要使用的模板名称。</li>
+<li>headers: 额外添加的HTTP响应头的字典</li>
+<li>content_type：通常由renderer自主决定，但也有可能需要明确指定</li>
+</ul>
+<p>属性:</p>
+<ul>
+<li><code>.data</code> 未渲染但应当是序列化过后的简单数据类型的data</li>
+<li><code>.status_code</code> 状态码</li>
+<li><code>.content</code> 渲染后的响应内容,调用该属性等于强制立即渲染.</li>
+<li><code>.template_name</code> 用以渲染的html模板.仅在渲染器为<code>HTMLRenderer</code>(或类似的自定义渲染器)时不为空.</li>
+<li><code>.accepted_renderer</code> 将用于进行渲染的渲染器类</li>
+<li><code>.accepted_media_type</code> 在内容协商阶段确定响应内容的媒体类型</li>
+<li><code>.renderer_context</code> 其他需要被传递给渲染器的额外上下文.</li>
+</ul>
+<p>当然,还包含标准<code>HttpResponse</code>包含的所有属性/方法:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">response = Response()</span><br><span class="line">response[<span class="string">'Cache-Control'</span>] = <span class="string">'no-cache'</span></span><br></pre></td></tr></table></figure>
+
+<p>还包括继承自<code>SimpleTemplateResponse</code>的<code>render()</code>方法, 当然通常并不需要手动调用该方法,因为它是由Django的标准响应周期来处理的。</p>
+<p>注: <code>SimpleTemplateResponse</code>与默认的<code>HttpResponse</code>行为模式不同,包括延迟渲染等特性,可以查阅Django文档了解.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/2. 响应 Response/" data-id="ck1gk0ogi0000mcply90pvd9s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/3. 基于类的视图 Class-based Views/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          3. 基于类的视图 Class-based Views
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/1. 请求 request/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">1. 请求 Requests</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

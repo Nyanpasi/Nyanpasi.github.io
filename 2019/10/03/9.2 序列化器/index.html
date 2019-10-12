@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>9.2 序列化器:内置序列化器 Serializer | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="除了基本的Serializer类, rest-framework内置了几种序列化器类, 以供快速构建可用的序列化器, 或提供更基础的序列化器实现.">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="9.2 序列化器:内置序列化器 Serializer">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/9.2 序列化器/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="除了基本的Serializer类, rest-framework内置了几种序列化器类, 以供快速构建可用的序列化器, 或提供更基础的序列化器实现.">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:21:04.583Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="9.2 序列化器:内置序列化器 Serializer">
+<meta name="twitter:description" content="除了基本的Serializer类, rest-framework内置了几种序列化器类, 以供快速构建可用的序列化器, 或提供更基础的序列化器实现.">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-9.2 序列化器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/9.2 序列化器/" class="article-date">
+  <time datetime="2019-10-03T09:53:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      9.2 序列化器:内置序列化器 Serializer
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>除了基本的<code>Serializer</code>类, rest-framework内置了几种序列化器类, 以供快速构建可用的序列化器, 或提供更基础的序列化器实现.</p>
+<a id="more"></a>
+
+<h3 id="ModelSerializer"><a href="#ModelSerializer" class="headerlink" title="ModelSerializer"></a>ModelSerializer</h3><p>ModelSerializer可以指定一个<code>model</code>属性, 指明根据哪个模型自动生成序列化器, 生成的内容包括</p>
+<ol>
+<li>自动生成与模型相对应的一组字段。</li>
+<li>自动生成与模型字段的默认值和约束条件相对应的默认值和验证器.</li>
+<li>简单地实现了对应该模型的<code>.create()</code>方法和<code>.update()</code>方法。</li>
+</ol>
+<p>示例代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Account</span><br><span class="line">        fields = (<span class="string">'id'</span>, <span class="string">'account_name'</span>, <span class="string">'users'</span>, <span class="string">'created'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>对于外约束字段, 默认使用<code>PrimaryKeyRelatedField</code>字段.(具体参见下一节<strong>序列化器关系字段</strong>)</p>
+<p>注意, 根据Model生成字段时, <strong>不包括</strong>反向关联字段, 因为该字段并没有定义在当前模型中. 如果有需要, 可以手动定义该字段(参见<strong>快速开始</strong>一节).</p>
+<p>可以使用<code>repr</code>查看定义该序列化器的实际代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python manage.py shell</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> myapp.serializers <span class="keyword">import</span> AccountSerializer</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>serializer = AccountSerializer()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(repr(serializer))</span><br><span class="line">AccountSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=<span class="literal">True</span>)</span><br><span class="line">    name = CharField(allow_blank=<span class="literal">True</span>, max_length=<span class="number">100</span>, required=<span class="literal">False</span>)</span><br><span class="line">    owner = PrimaryKeyRelatedField(queryset=User.objects.all())</span><br></pre></td></tr></table></figure>
+
+<h4 id="指定要包含的字段"><a href="#指定要包含的字段" class="headerlink" title="指定要包含的字段"></a>指定要包含的字段</h4><p>序列化器可能只需要包含模型的部分字段. 可通过以下方式指定:</p>
+<ol>
+<li>使用内部类<code>Meta</code>的<code>fields</code>属性指定一个字符串列表, 以指明需要包含的Model字段.</li>
+<li>使用内部类<code>Meta</code>的<code>exclude</code>属性指定一个字符串列表, 以指明不需要包含的Model字段.</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Account</span><br><span class="line">        fields = (<span class="string">'id'</span>, <span class="string">'account_name'</span>, <span class="string">'users'</span>, <span class="string">'created'</span>)</span><br><span class="line">        <span class="comment">#exclude = ('users',)</span></span><br></pre></td></tr></table></figure>
+
+<p> <code>fileds</code>属性可以设定为一个特殊值<code>__all__</code>, 代表包含该模型的所有字段.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Account</span><br><span class="line">        fields = <span class="string">'__all__'</span></span><br></pre></td></tr></table></figure>
+
+<p>注: 必须提供<code>fields</code>或<code>exclude</code>中的一个.</p>
+<hr>
+<h4 id="包含额外的字段和重写某些字段"><a href="#包含额外的字段和重写某些字段" class="headerlink" title="包含额外的字段和重写某些字段"></a>包含额外的字段和重写某些字段</h4><p>使用ModelSerializer仍然可以添加自定义字段或重写默认的字段，与在Serializer类一样直接声明即可:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    url = serializers.CharField(source=<span class="string">'get_absolute_url'</span>, read_only=<span class="literal">True</span>)</span><br><span class="line">    groups = serializers.PrimaryKeyRelatedField(many=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Account</span><br><span class="line">        ...</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="指明只读字段"><a href="#指明只读字段" class="headerlink" title="指明只读字段"></a>指明只读字段</h4><p>在显式定义字段时, 直接传入<code>read_only=True</code>即可将该字段指为只读字段, </p>
+<p>但ModelSerializer的模型相关字段是自动生成的, 因此无法直接修改定义字段的代码.</p>
+<p>可以通过内部类<code>Meta</code>的<code>read_only_fields</code>属性指明一个字符串列表, 其中包含的所有字段被指定为<strong>只读</strong>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Account</span><br><span class="line">        fields = [<span class="string">'id'</span>, <span class="string">'account_name'</span>, <span class="string">'users'</span>, <span class="string">'created'</span>]</span><br><span class="line">        read_only_fields = [<span class="string">'account_name'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>注: 如果声明一个嵌套序列化器字段并期望其只读, 必须在定义该字段时传入<code>read_only=True</code>, 将该字段包含在<code>read_only_fields</code>列表中无效, 原因不明.</p>
+<p>只读字段指的是不允许用户传入的字段, 如果这些字段在存储时是必须的, 通常由内部指定:</p>
+<ol>
+<li>在存储过程中为<code>.save()</code>方法传入对应于只读字段的额外关键字参数, 参见9.1.</li>
+<li>为其指定默认值, 只读字段的默认值在存储时自动被应用.</li>
+</ol>
+<p>另外, 如果一个只读字段要参与验证, 例如<code>unique_together</code>验证, 则必须为其指定默认值.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user = serializers.PrimaryKeyRelatedField(read_only=<span class="literal">True</span>, default=serializers.CurrentUserDefault())</span><br></pre></td></tr></table></figure>
+
+<p><code>CurrentUserDefault</code>具体参见<strong>验证器</strong>一节的<strong>进阶默认值使用</strong>部分.</p>
+<hr>
+<h4 id="添加额外的参数"><a href="#添加额外的参数" class="headerlink" title="添加额外的参数"></a>添加额外的参数</h4><p>如上所述, 为ModelSerializer自动生成的字段进行部分修改较为不方便. </p>
+<p>如果需要修改的内容过多, 可以直接重写该字段以覆盖自动生成的字段.</p>
+<p>如果仅需要少量修改, 则可以通过内部类<code>Meta</code>的<code>extra_kwargs</code>属性为各个字段添加额外的关键字参数.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CreateUserSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        fields = (<span class="string">'email'</span>, <span class="string">'username'</span>, <span class="string">'password'</span>)</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'password'</span>: &#123;<span class="string">'write_only'</span>: <span class="literal">True</span>&#125;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        user = User(</span><br><span class="line">            email=validated_data[<span class="string">'email'</span>],</span><br><span class="line">            username=validated_data[<span class="string">'username'</span>]</span><br><span class="line">        )</span><br><span class="line">        user.set_password(validated_data[<span class="string">'password'</span>])</span><br><span class="line">        user.save()</span><br><span class="line">        <span class="keyword">return</span> user</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="声明嵌套序列化器"><a href="#声明嵌套序列化器" class="headerlink" title="声明嵌套序列化器"></a>声明嵌套序列化器</h4><p>直接通过内部类<code>Meta</code>的<code>depth</code>属性指明需要嵌套的深度, ModelSerializer会自动将所有外键字段替换为与外键模型相对应的ModelSerializer.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Account</span><br><span class="line">        fields = [<span class="string">'id'</span>, <span class="string">'account_name'</span>, <span class="string">'users'</span>, <span class="string">'created'</span>]</span><br><span class="line">        depth = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>使用这种方案生成的内层序列化器, 默认包含该模型的所有字段并且不包含任何额外字段. 如果想要自定义这些内容, 仍需手动嵌套.</p>
+<h4 id="关系字段"><a href="#关系字段" class="headerlink" title="关系字段"></a>关系字段</h4><p>对于外键和多对多字段, ModelSerializer默认使用的是<code>PrimaryKeyRelatedField</code>字段.(具体参见下一节<strong>序列化器字段</strong>), 该字段会将外键字段序列化为相关外模型的<strong>主键</strong>(默认id字段)的值.</p>
+<p>详情参阅下一节<strong>序列化器关系字段</strong></p>
+<hr>
+<h3 id="HyperlinkedModelSerializer"><a href="#HyperlinkedModelSerializer" class="headerlink" title="HyperlinkedModelSerializer"></a>HyperlinkedModelSerializer</h3><p>几乎与<code>ModelSerializer</code>一致, 唯一不同之处是对于id和外键的处理.</p>
+<p><code>HyperlinkedModelSerializer</code>为对象外键使用的字段是<code>HyperlinkedRelatedField</code>, 序列化结果为指向该外模型对象detail的超链接.</p>
+<p>默认不包含自身的id字段, 取而代之的是使用<code>HyperlinkedIdentityField</code>自动生成指向当前对象detial超链接的<code>url</code>字段.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"url"</span>: <span class="string">"http://127.0.0.1:8000/api/books/1/"</span>,</span><br><span class="line">    <span class="string">"name"</span>: <span class="string">"Book"</span>,</span><br><span class="line">    <span class="string">"pages"</span>: <span class="number">100</span>,</span><br><span class="line">    <span class="string">"country"</span>: <span class="string">"http://127.0.0.1:8000/api/countries/1/"</span>,</span><br><span class="line">    <span class="string">"author"</span>: [</span><br><span class="line">        <span class="string">"http://127.0.0.1:8000/api/persons/1/"</span>,</span><br><span class="line">        <span class="string">"http://127.0.0.1:8000/api/persons/2/"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当前, 自身/外模型需要存在detail接口, 也就是说, 此方案需要在打算构建一整套api时使用, 否则一个无效的url只会引起误解.</p>
+<p>该url被期望是一个绝对url而非相对url, 因此需要为序列化器传入额外的关键字参数<code>request</code>, 以确保序列化器能使用当前请求信息.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serializer = AccountSerializer(queryset, context=&#123;<span class="string">'request'</span>: request&#125;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="如何生成超链接"><a href="#如何生成超链接" class="headerlink" title="如何生成超链接"></a>如何生成超链接</h4><p>url需要指向正确的detail接口, 如何确定这个url?</p>
+<p>在定义一个<code>HyperlinkedRelatedField</code>字段时, 需要指定以下四个参数</p>
+<ol>
+<li>view_name 指向的外模型的detail页面的pattern-name</li>
+<li>lookup_field 用以传递给detail页面url用以获取对象的字段, 默认为<code>pk</code>, 通常需要与目标pattern中的url变量名一致.</li>
+<li>lookup_field_kwargs  期望生成的url中与lookup_field所对应的url关键字变量名, 默认与上一参数保持一致值.</li>
+<li>format 如果设定格式后缀, 目标url会附加该后缀.</li>
+</ol>
+<p>这四个参数作为依据生成指向对象detail页面的url.</p>
+<p>示例:</p>
+<p>数据模型如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># book/models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	name = models.CharField(max_length=<span class="number">10</span>)</span><br><span class="line">	age = models.IntegerField(default=<span class="number">30</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Country</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	name = models.CharField(max_length=<span class="number">100</span>)</span><br><span class="line">	population = models.IntegerField(default=<span class="number">100</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	name = models.CharField(max_length=<span class="number">10</span>)</span><br><span class="line">	pages = models.IntegerField(default=<span class="number">100</span>)</span><br><span class="line">	author = models.ManyToManyField(<span class="string">'book.Person'</span>)</span><br><span class="line">	country = models.ForeignKey(<span class="string">'book.Country'</span>, on_delete=models.CASCADE)</span><br></pre></td></tr></table></figure>
+
+<p>序列化器和视图如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># book/views.py</span></span><br><span class="line"><span class="keyword">from</span> django.shortcuts <span class="keyword">import</span> render</span><br><span class="line"><span class="keyword">from</span> .models <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> viewsets, serializers</span><br><span class="line"><span class="comment"># Create your views here.</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookSerializer</span><span class="params">(serializers.HyperlinkedModelSerializer)</span>:</span></span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">		model = Book</span><br><span class="line">		fields = <span class="string">"__all__"</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CountrySerializer</span><span class="params">(serializers.HyperlinkedModelSerializer)</span>:</span></span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">		model = Country</span><br><span class="line">		fields = <span class="string">"__all__"</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PersonSerializer</span><span class="params">(serializers.HyperlinkedModelSerializer)</span>:</span></span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">		model = Person</span><br><span class="line">		fields = <span class="string">"__all__"</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookViewSet</span><span class="params">(viewsets.ModelViewSet)</span>:</span></span><br><span class="line">	queryset = Book.objects.all()</span><br><span class="line">	serializer_class = BookSerializer</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PersonViewSet</span><span class="params">(viewsets.ModelViewSet)</span>:</span></span><br><span class="line">	queryset = Person.objects.all()</span><br><span class="line">	serializer_class = PersonSerializer</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CountryViewSet</span><span class="params">(viewsets.ModelViewSet)</span>:</span></span><br><span class="line">	queryset = Country.objects.all()</span><br><span class="line">	serializer_class = CountrySerializer</span><br></pre></td></tr></table></figure>
+
+<p>使用路由器注册如下, </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># project/urls.py</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> django.urls <span class="keyword">import</span> path, include</span><br><span class="line"><span class="keyword">from</span> book.views <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> routers</span><br><span class="line"></span><br><span class="line">router = routers.DefaultRouter()</span><br><span class="line">router.register(<span class="string">r'books'</span>, BookViewSet)</span><br><span class="line">router.register(<span class="string">r'persons'</span>, PersonViewSet)</span><br><span class="line">router.register(<span class="string">r'countries'</span>, CountryViewSet)</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(<span class="string">'admin/'</span>, admin.site.urls),</span><br><span class="line">    path(<span class="string">'api/'</span>, include(router.urls))</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>在Router中注册时, 对于任意的viewset, 指定的basename会用以生成url-name(或称pattern-name), 该basename默认为viewset的<code>.querset</code>所指定的Model名.</p>
+<p>所以在以上例子中, </p>
+<ul>
+<li>BookViewSet的base-name为<code>book</code>, 生成的book的接口名为 <code>book-detail</code>和<code>book-list</code></li>
+<li>PersonViewSet的base-name为<code>person</code>, 生成的url的pattern-name为<code>person-detail</code>和<code>person-list</code></li>
+<li>CountryViewSet的base-name为<code>country</code>, 生成的url的pattern-name为<code>country-detail</code>和<code>country-list</code></li>
+</ul>
+<p>BookSerializer获取到country和author的外模型名字分别为<code>Country</code>和<code>Person</code>, 生成字段时, 对应字段的<code>view_name</code>参数填充<code>country-detail</code>和<code>person-detail</code>, 然后在序列化过程中, 调用<code>reverse()</code>函数反查真正的url, 然后将外模型对应的<code>pk</code>填入, 获得目标url. </p>
+<p><code>url</code>作为生成的超链接的默认字段名, 可以通过<code>URL_FIELD_NAME</code>设置项修改.</p>
+<hr>
+<h3 id="ListSerializer"><a href="#ListSerializer" class="headerlink" title="ListSerializer"></a>ListSerializer</h3><p>能序列化和一次验证多个对象，通常会作为序列器中的一个字段而不是直接使用作为主序列器。</p>
+<p>你通常不需要直接使用ListSerializer，而是应该在实例化一个序列化器时简单地传递一个many=True参数, 实际返回的实例就不是<code>Serializer</code>而是<code>ListSerializer</code>, 后者使用多个对象实例化多个前者, 并将多个前者实例的序列化结果收集至自己的<code>.data</code>属性.</p>
+<p>当一个序列化器在带有many=True选项被序列化时，将创建一个ListSerializer实例, 该序列化器类将成为ListSerializer类的子类。</p>
+<p>默认多对多约束字段映射的是many=True的PrimaryKeyRelatedField，且allow_empty=True</p>
+<hr>
+<h4 id="自定义ListSerializer行为"><a href="#自定义ListSerializer行为" class="headerlink" title="自定义ListSerializer行为"></a>自定义ListSerializer行为</h4><p>通常一个ListSerializer会将传入的所有对象进行序列化以及反序列化, 以下情况可能需要自定义<code>ListSerializer</code>行为</p>
+<ol>
+<li>希望提供列表的特定验证，例如检查一个元素是否与列表中的另外一个元素冲突。</li>
+<li>自定义多个对象的创建或更新行为。</li>
+</ol>
+<p>在一些嵌套序列化器中, 关于一对多, 多对多 外模型的过滤操作依赖于重写ListSerializer.</p>
+<p>例如某些内容只是逻辑删除, 实际还存在于数据库中, 所以必须避免这些记录的序列化结果出现在最终的序列化结果中.</p>
+<ol>
+<li>子类化ListSerializer, 然后在<code>.to_representation()</code>方法中加入过滤逻辑, 根据逻辑决定是否调用<code>super().to_representation()</code></li>
+<li>将序列化器的内部类<code>Meta</code>的<code>list_serializer_class</code>属性指向新的ListSerializer</li>
+</ol>
+<p>注意指定了新ListSerializer之后, 所有many=true的字段均会应用该新ListSerializer, 因此在完成过滤逻辑时应该考虑多个字段.</p>
+<h5 id="自定义多个对象的创建"><a href="#自定义多个对象的创建" class="headerlink" title="自定义多个对象的创建"></a>自定义多个对象的创建</h5><p>默认情况下，多个对象的创建默认实现是简单地调用列表中每个对象的.create()方法，如果要自定义实现，那么你需要自定义当被传递many=True参数时使用的ListSerializer类中的.create()方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookListSerializer</span><span class="params">(serializers.ListSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        books = [Book(**item) <span class="keyword">for</span> item <span class="keyword">in</span> validated_data]</span><br><span class="line">        <span class="keyword">return</span> Book.objects.bulk_create(books)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        list_serializer_class = BookListSerializer</span><br></pre></td></tr></table></figure>
+
+<h5 id="自定义多对象的更新"><a href="#自定义多对象的更新" class="headerlink" title="自定义多对象的更新"></a>自定义多对象的更新</h5><p>默认情况下，ListSerializer类不支持多对象的更新。这是因为插入和删除的预期行为是不明确的。</p>
+<p>要支持多对象更新的话你需要自己明确地实现。编写多个对象更新的代码时要注意以下几点：</p>
+<ol>
+<li>如何确定数据列表中的每个元素应该对应更新哪个实例？</li>
+<li>如何处理插入？它们是无效的？还是创建新对象？</li>
+<li>移除应该如何处理？它们是要删除对象还是删除关联关系？它们应该被忽略还是提示无效操作？</li>
+<li>排序如何处理？改变两个元素的位置是否意味着任何状态改变或者应该被忽视？</li>
+<li>你需要向实例序列化器中显式添加一个id字段. 默认隐式生成的id字段是read_only, 这会导致它在更新时被删除.一旦你明确地声明它，它将在列表序列化器的update方法中可用。</li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookListSerializer</span><span class="params">(serializers.ListSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(self, instance, validated_data)</span>:</span></span><br><span class="line">        <span class="comment"># Maps for id-&gt;instance and id-&gt;data item.</span></span><br><span class="line">        book_mapping = &#123;book.id: book <span class="keyword">for</span> book <span class="keyword">in</span> instance&#125;</span><br><span class="line">        data_mapping = &#123;item[<span class="string">'id'</span>]: item <span class="keyword">for</span> item <span class="keyword">in</span> validated_data&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Perform creations and updates.</span></span><br><span class="line">        ret = []</span><br><span class="line">        <span class="keyword">for</span> book_id, data <span class="keyword">in</span> data_mapping.items():</span><br><span class="line">            book = book_mapping.get(book_id, <span class="literal">None</span>)</span><br><span class="line">            <span class="keyword">if</span> book <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                ret.append(self.child.create(data))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                ret.append(self.child.update(book, data))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Perform deletions.</span></span><br><span class="line">        <span class="keyword">for</span> book_id, book <span class="keyword">in</span> book_mapping.items():</span><br><span class="line">            <span class="keyword">if</span> book_id <span class="keyword">not</span> <span class="keyword">in</span> data_mapping:</span><br><span class="line">                book.delete()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ret</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># 我们需要使用主键来识别列表中的元素，</span></span><br><span class="line">    <span class="comment"># 所以在这里使用可写的字段，而不是默认的只读字段。</span></span><br><span class="line">    id = serializers.IntegerField()</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        list_serializer_class = BookListSerializer</span><br></pre></td></tr></table></figure>
+
+<h5 id="自定义ListSerializer初始化行为"><a href="#自定义ListSerializer初始化行为" class="headerlink" title="自定义ListSerializer初始化行为"></a>自定义ListSerializer初始化行为</h5><p>当一个many=True的序列化器进行初始化时, 我们需要决定哪个参数和关键字参数应该被传入用以实例化单个对象的<code>child</code>Serializer或作为<code>parent</code>的ListSerializer的<code>__init__()</code>方法</p>
+<p>默认的行为是<code>validateors</code>以及任何自定义关键字参数只传递给<code>child</code>, 除此之外的所有参数由两个类共有.</p>
+<p>有可能需要定义当many=True时子类和父类应当使用那些类, 所以可以重写<code>many_init()</code>方法:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@classmethod</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">many_init</span><span class="params">(cls, *args, **kwargs)</span>:</span></span><br><span class="line">    <span class="comment"># Instantiate the child serializer.</span></span><br><span class="line">    kwargs[<span class="string">'child'</span>] = cls()</span><br><span class="line">    <span class="comment"># Instantiate the parent list serializer.</span></span><br><span class="line">    <span class="keyword">return</span> CustomListSerializer(*args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>注: 该方法最高定义在<code>BaseSerializer</code>中.</p>
+<hr>
+<h3 id="BaseSerializer"><a href="#BaseSerializer" class="headerlink" title="BaseSerializer"></a>BaseSerializer</h3><p>继承关系</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SerializerMetaclass</span><span class="params">(type)</span>:</span> ...</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseSerializer</span><span class="params">(Field)</span>:</span> ...</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListSerializer</span><span class="params">(BaseSerializer)</span>:</span> ...</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Serializer</span><span class="params">(BaseSerializer, metaclass=SerializerMetaclass)</span>:</span> ...</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ModelSerializer</span><span class="params">(Serializer)</span>:</span> ...</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HyperlinkedModelSerializer</span><span class="params">(ModelSerializer)</span>:</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>BaseSerializer</p>
+<p>属性&amp;方法</p>
+<p><code>.data</code><br><code>.is_valid()</code><br><code>.validated_data</code><br><code>.errors</code><br><code>.save()</code></p>
+<p>以及四个可重写的方法, 用以实现额外功能.</p>
+<p><code>.to_representation()</code> 序列化主函数.<br><code>.to_internal_value()</code> 反序列化主函数.<br><code>.create()</code> 存储函数.<br><code>.update()</code> 更新函数.</p>
+<h4 id="实现只读BaseSerializer"><a href="#实现只读BaseSerializer" class="headerlink" title="实现只读BaseSerializer"></a>实现只读BaseSerializer</h4><p>Model定义如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HighScore</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    created = models.DateTimeField(auto_now_add=<span class="literal">True</span>)</span><br><span class="line">    player_name = models.CharField(max_length=<span class="number">10</span>)</span><br><span class="line">    score = models.IntegerField()</span><br></pre></td></tr></table></figure>
+
+<p>序列化器如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HighScoreSerializer</span><span class="params">(serializers.BaseSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, obj)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">'score'</span>: obj.score,</span><br><span class="line">            <span class="string">'player_name'</span>: obj.player_name</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后用其序列化一个对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@api_view(['GET'])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">high_score</span><span class="params">(request, pk)</span>:</span></span><br><span class="line">    instance = HighScore.objects.get(pk=pk)</span><br><span class="line">    serializer = HighScoreSerializer(instance)</span><br><span class="line">    <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure>
+
+<p>或是序列化多个对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@api_view(['GET'])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">all_high_scores</span><span class="params">(request)</span>:</span></span><br><span class="line">    queryset = HighScore.objects.order_by(<span class="string">'-score'</span>)</span><br><span class="line">    serializer = HighScoreSerializer(queryset, many=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure>
+
+<h4 id="实现可读可写的BaseSerializer"><a href="#实现可读可写的BaseSerializer" class="headerlink" title="实现可读可写的BaseSerializer"></a>实现可读可写的BaseSerializer</h4><p>那么,我们还必须实现<code>.to_internal_value()</code>方法, 该方法返回经验证的数据用以构建对象实例, 并在验证失败时抛出<code>serializers.ValidationError</code>异常.</p>
+<p>一旦实现<code>.to_internal_value()</code>方法, 我们就可以使用<code>is_valid()</code>方法, 以及<code>validated_data</code>和<code>errors</code>属性.</p>
+<p>如果还想支持存储操作, 还必须要实现<code>created</code>和<code>update</code>其中之一或两者, 取决于需求.</p>
+<p>以下是可读写的HighScoreSerializer, 上一个例子的增强版:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HighScoreSerializer</span><span class="params">(serializers.BaseSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_internal_value</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        score = data.get(<span class="string">'score'</span>)</span><br><span class="line">        player_name = data.get(<span class="string">'player_name'</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Perform the data validation.</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> score:</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(&#123;</span><br><span class="line">                <span class="string">'score'</span>: <span class="string">'This field is required.'</span></span><br><span class="line">            &#125;)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> player_name:</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(&#123;</span><br><span class="line">                <span class="string">'player_name'</span>: <span class="string">'This field is required.'</span></span><br><span class="line">            &#125;)</span><br><span class="line">        <span class="keyword">if</span> len(player_name) &gt; <span class="number">10</span>:</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(&#123;</span><br><span class="line">                <span class="string">'player_name'</span>: <span class="string">'May not be more than 10 characters.'</span></span><br><span class="line">            &#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Return the validated values. This will be available as</span></span><br><span class="line">        <span class="comment"># the `.validated_data` property.</span></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">'score'</span>: int(score),</span><br><span class="line">            <span class="string">'player_name'</span>: player_name</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, obj)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">'score'</span>: obj.score,</span><br><span class="line">            <span class="string">'player_name'</span>: obj.player_name</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> HighScore.objects.create(**validated_data)</span><br></pre></td></tr></table></figure>
+
+<h4 id="实现新的基本类"><a href="#实现新的基本类" class="headerlink" title="实现新的基本类"></a>实现新的基本类</h4><p>如果想要实现新的通用序列化器类, 为某些特定的序列化风格或者对某些存储后端进行适配, 继承<code>BaseSerializer</code>并重写其中某些方法.</p>
+<p>以下为一个泛型序列化器的例子, 可以将任意复杂类型的对象解构为原始表达(即原生python数据类型).</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ObjectSerializer</span><span class="params">(serializers.BaseSerializer)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A read-only serializer that coerces arbitrary complex objects</span></span><br><span class="line"><span class="string">    into primitive representations.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, obj)</span>:</span></span><br><span class="line">        output = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> attribute_name <span class="keyword">in</span> dir(obj):</span><br><span class="line">            attribute = getattr(obj, attribute_name)</span><br><span class="line">            <span class="keyword">if</span> attribute_name.startswith(<span class="string">'_'</span>):</span><br><span class="line">                <span class="comment"># Ignore private attributes.</span></span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            <span class="keyword">elif</span> hasattr(attribute, <span class="string">'__call__'</span>):</span><br><span class="line">                <span class="comment"># Ignore methods and other callables.</span></span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            <span class="keyword">elif</span> isinstance(attribute, (str, int, bool, float, type(<span class="literal">None</span>))):</span><br><span class="line">                <span class="comment"># Primitive types can be passed through unmodified.</span></span><br><span class="line">                output[attribute_name] = attribute</span><br><span class="line">            <span class="keyword">elif</span> isinstance(attribute, list):</span><br><span class="line">                <span class="comment"># Recursively deal with items in lists.</span></span><br><span class="line">                output[attribute_name] = [</span><br><span class="line">                    self.to_representation(item) <span class="keyword">for</span> item <span class="keyword">in</span> attribute</span><br><span class="line">                ]</span><br><span class="line">            <span class="keyword">elif</span> isinstance(attribute, dict):</span><br><span class="line">                <span class="comment"># Recursively deal with items in dictionaries.</span></span><br><span class="line">                output[attribute_name] = &#123;</span><br><span class="line">                    str(key): self.to_representation(value)</span><br><span class="line">                    <span class="keyword">for</span> key, value <span class="keyword">in</span> attribute.items()</span><br><span class="line">                &#125;</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># Force anything else to its string representation.</span></span><br><span class="line">                output[attribute_name] = str(attribute)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="进阶序列化器用法"><a href="#进阶序列化器用法" class="headerlink" title="进阶序列化器用法"></a>进阶序列化器用法</h3><h4 id="重写序列化和反序列化行为"><a href="#重写序列化和反序列化行为" class="headerlink" title="重写序列化和反序列化行为"></a>重写序列化和反序列化行为</h4><p>重写<code>.to_representation()</code> 或 <code>.to_internal_value()</code>方法即可更改序列化或反序列化过程</p>
+<p><em>这里不得不提一句, 反序列化过程指的是从数据中获得原生python数据类型的<code>validated_data</code>为止.</em><br><em>至于重建对象并存储, 或是使用这些数据更新一个现有实例, 则纯属额外操作, 不能称之为<code>反序列化</code>的一环.</em></p>
+<ol>
+<li>增加新的行为</li>
+<li>更改现有行为</li>
+<li>提高某个频繁被访问且返回大量数据的端点的序列化表现.</li>
+</ol>
+<p>这两个方法的签名如下: </p>
+<p><code>.to_representation(self, obj)</code></p>
+<p>该方法接收一个实例, 并返回原生的表达式, 通常意味着python基本数据类型, 具体是什么类型可能需要考虑渲染器可以处理何种类型.</p>
+<p>(通常就是Dict了.)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, instance)</span>:</span></span><br><span class="line">    <span class="string">"""Convert `username` to lowercase."""</span></span><br><span class="line">    ret = super().to_representation(instance)</span><br><span class="line">    ret[<span class="string">'username'</span>] = ret[<span class="string">'username'</span>].lower()</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
+
+<p><code>.to_internal_value(self, data)</code></p>
+<p>接受未经验证的数据类型, 并返回验证过的原生python数据类型的数据.</p>
+<p>如果调用<code>save()</code>方法的话, 返回值将被作为<code>validated_data</code>传入<code>.create()</code>和<code>.update()</code>方法中.</p>
+<p>如果数据校验失败, 应当抛出<code>serializers.ValidationError(errors)</code>, 并将出错信息存储至<code>.error</code>属性中.</p>
+<p>如果想实现对象级别的验证, 请重写<code>.validate()</code>方法.</p>
+<p>传入的data通常为<code>request.data</code>, 所以具体的数据类型取决于API使用了何种解析器.</p>
+<hr>
+<h4 id="Serializer继承"><a href="#Serializer继承" class="headerlink" title="Serializer继承"></a>Serializer继承</h4><p>可以以提供通用方法或字段为目的定义一个序列化器, 然后供其他多个序列化器继承.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyBaseSerializer</span><span class="params">(Serializer)</span>:</span></span><br><span class="line">    my_field = serializers.CharField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate_my_field</span><span class="params">(self)</span>:</span></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySerializer</span><span class="params">(MyBaseSerializer)</span>:</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的点是Meta并不会自动继承, 如果需要, 手动继承.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountSerializer</span><span class="params">(MyBaseSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span><span class="params">(MyBaseSerializer.Meta)</span>:</span></span><br><span class="line">        model = Account</span><br></pre></td></tr></table></figure>
+
+<p>当然, 继承Meta并不推荐, 绝大多数时候应该显式声明Meta的属性.</p>
+<p>注意: </p>
+<ol>
+<li>如果内部类Meta类继承自多个类，则只使用第一个类</li>
+<li>通过在子类上将名称设置为None，可以显式删除从父类继承的Field</li>
+</ol>
+<hr>
+<h4 id="动态改变序列化器字段"><a href="#动态改变序列化器字段" class="headerlink" title="动态改变序列化器字段"></a>动态改变序列化器字段</h4><p>一旦序列化器被实例化，该序列化器的字段字典就可以通过<code>.fields</code>属性来访问, 通过该属性可以动态改变序列化器.</p>
+<p>示例代码:指定在初始化一个序列化器时可以指定哪些字段应当被使用的动态字段序列化器.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DynamicFieldsModelSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A ModelSerializer that takes an additional `fields` argument that</span></span><br><span class="line"><span class="string">    controls which fields should be displayed.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="comment"># Don't pass the 'fields' arg up to the superclass</span></span><br><span class="line">        fields = kwargs.pop(<span class="string">'fields'</span>, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Instantiate the superclass normally</span></span><br><span class="line">        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> fields <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment"># Drop any fields that are not specified in the `fields` argument.</span></span><br><span class="line">            allowed = set(fields)</span><br><span class="line">            existing = set(self.fields.keys())</span><br><span class="line">            <span class="keyword">for</span> field_name <span class="keyword">in</span> existing - allowed:<span class="comment">#(集合减法)</span></span><br><span class="line">                self.fields.pop(field_name)</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以通过传参来控制序列器实例化时使用的字段</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; class UserSerializer(DynamicFieldsModelSerializer):</span><br><span class="line">&gt;&gt;&gt;     class Meta:</span><br><span class="line">&gt;&gt;&gt;         model = User</span><br><span class="line">&gt;&gt;&gt;         fields = (<span class="string">'id'</span>, <span class="string">'username'</span>, <span class="string">'email'</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span> UserSerializer(user)</span><br><span class="line">&#123;<span class="string">'id'</span>: 2, <span class="string">'username'</span>: <span class="string">'jonwatts'</span>, <span class="string">'email'</span>: <span class="string">'jon@example.com'</span>&#125;</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span> UserSerializer(user, fields=(<span class="string">'id'</span>, <span class="string">'email'</span>))</span><br><span class="line">&#123;<span class="string">'id'</span>: 2, <span class="string">'email'</span>: <span class="string">'jon@example.com'</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="自定义默认字段"><a href="#自定义默认字段" class="headerlink" title="自定义默认字段"></a>自定义默认字段</h4><p>在2.0+版本中可用.<br>在3.0+版本中, 相关方法不复存在.</p>
+<hr>
+<h3 id="第三方包"><a href="#第三方包" class="headerlink" title="第三方包"></a>第三方包</h3><p>…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/9.2 序列化器/" data-id="ck1hlao8d000cqgpl0davaenr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/10.1 序列化器字段/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          10.1 序列化器字段:非关系字段 Serializer Field
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/9. 序列化器/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">9.1 序列化器:数据验证 Serializer</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>9.1 序列化器:数据验证 Serializer | 紫秋的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型.  rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法">
+<meta name="keywords" content="django-rest-framework中文文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="9.1 序列化器:数据验证 Serializer">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/9. 序列化器/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型.  rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-10-10T10:25:30.977Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="9.1 序列化器:数据验证 Serializer">
+<meta name="twitter:description" content="序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型.  rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法">
+  
+    <link rel="alternate" href="/atom.xml" title="紫秋的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">紫秋的个人博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">孤独患者自我拉扯</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-9. 序列化器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/03/9. 序列化器/" class="article-date">
+  <time datetime="2019-10-03T09:52:47.000Z" itemprop="datePublished">2019-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      9.1 序列化器:数据验证 Serializer
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型. </p>
+<p>rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法来控制响应的输出，ModelSerializer类为创建用于处理模型实例和查询集的序列化程序提供了有用的快捷实现方式. </p>
+<a id="more"></a>
+
+<h3 id="声明序列化器"><a href="#声明序列化器" class="headerlink" title="声明序列化器"></a>声明序列化器</h3><p>首先创建一个Model, 以及一个该Model的对象.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Comment</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, email, content, created=None)</span>:</span></span><br><span class="line">        self.email = email</span><br><span class="line">        self.content = content</span><br><span class="line">        self.created = created <span class="keyword">or</span> datetime.now()</span><br><span class="line"></span><br><span class="line">comment = Comment(email=<span class="string">'leila@example.com'</span>, content=<span class="string">'foo bar'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后声明一个序列化器, 字段和该Model保持一致, 可以用来序列化和反序列化该对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    email = serializers.EmailField()</span><br><span class="line">    content = serializers.CharField(max_length=<span class="number">200</span>)</span><br><span class="line">    created = serializers.DateTimeField()</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="将一个对象序列化"><a href="#将一个对象序列化" class="headerlink" title="将一个对象序列化"></a>将一个对象序列化</h3><p>像使用Django的Form类一样使用Serializer.</p>
+<p>实例化一个序列化器, 使用<code>instance</code>参数传入想要进行序列化的对象, 并在之后访问<code>.data</code>属性获得序列化结果.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">serializer = CommentSerializer(instance=comment)</span><br><span class="line">serializer.data</span><br><span class="line"><span class="comment"># &#123;'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>序列化结果是原生的python类型, 接下来我们将其渲染为json类型.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.renderers <span class="keyword">import</span> JSONRenderer</span><br><span class="line"></span><br><span class="line">json = JSONRenderer().render(serializer.data)</span><br><span class="line">json</span><br><span class="line"><span class="comment"># b'&#123;"email":"leila@example.com", "content":"foo bar", "created":"2016-01-27T15:17:10.375877"&#125;'</span></span><br></pre></td></tr></table></figure>
+
+<p>当然, 在rest-framework中, 渲染器的选择和渲染过程通常是在视图处理函数返回Response后自动进行的, 我们只需要确保Response中包含的数据是合法的即可. 具体查阅<code>Renderer</code>一节.</p>
+<hr>
+<h3 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h3><p>反序列化过程中, 序列化器接收数据, 并将其重新构建为复杂数据类型(即<strong>构造数据类型</strong>, 在python中就是<strong>对象</strong>, 在rest-framework中则通常专指<strong>Model的实例</strong>), 以便进一步操作.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">from</span> rest_framework.parsers <span class="keyword">import</span> JSONParser</span><br><span class="line"></span><br><span class="line"><span class="comment"># 这里的json指的是上面代码中生成的json</span></span><br><span class="line">stream = io.BytesIO(json)</span><br><span class="line">data = JSONParser().parse(stream)</span><br></pre></td></tr></table></figure>
+
+<p>在传入数据后, serializer根据自己的字段, 自动验证其数据合法性, 并转换为原生python数据类型, 放入<code>validated_data</code>属性中.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">serializer = CommentSerializer(data=data)</span><br><span class="line">serializer.is_valid()</span><br><span class="line"><span class="comment"># True</span></span><br><span class="line">serializer.validated_data</span><br><span class="line"><span class="comment"># &#123;'content': 'foo bar', 'email': 'leila@example.com', 'created': datetime.datetime(2012, 08, 22, 16, 20, 09, 822243)&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>之后使用<code>validated_data</code>属性进行操作, 例如更新对象的属性, 并存储入数据库.</p>
+<hr>
+<h3 id="存储实例对象"><a href="#存储实例对象" class="headerlink" title="存储实例对象"></a>存储实例对象</h3><p>为了将数据(<code>validated_data</code>)重构为对象, 我们需要实现create方法或者update方法, 或同时实现两者.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    email = serializers.EmailField()</span><br><span class="line">    content = serializers.CharField(max_length=<span class="number">200</span>)</span><br><span class="line">    created = serializers.DateTimeField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> Comment(**validated_data)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(self, instance, validated_data)</span>:</span></span><br><span class="line">        instance.email = validated_data.get(<span class="string">'email'</span>, instance.email)</span><br><span class="line">        instance.content = validated_data.get(<span class="string">'content'</span>, instance.content)</span><br><span class="line">        instance.created = validated_data.get(<span class="string">'created'</span>, instance.created)</span><br><span class="line">        <span class="keyword">return</span> instance</span><br></pre></td></tr></table></figure>
+
+<p>在实现了以上方法之后, 我们就可以使用serializer.save(), 该方法会自动调用create或update, 重构实例.</p>
+<p>如果该实例是Django Model的某个实例, 需要将其保存至数据库, 代码则应该如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    email = serializers.EmailField()</span><br><span class="line">    content = serializers.CharField(max_length=<span class="number">200</span>)</span><br><span class="line">    created = serializers.DateTimeField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> Comment.objects.create(**validated_data)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(self, instance, validated_data)</span>:</span></span><br><span class="line">        instance.email = validated_data.get(<span class="string">'email'</span>, instance.email)</span><br><span class="line">        instance.content = validated_data.get(<span class="string">'content'</span>, instance.content)</span><br><span class="line">        instance.created = validated_data.get(<span class="string">'created'</span>, instance.created)</span><br><span class="line">        instance.save()</span><br><span class="line">        <span class="keyword">return</span> instance</span><br></pre></td></tr></table></figure>
+
+<p>这样, 当我们使用<code>.save()</code>方法时, 会使用<code>validated_data</code>创建一个Model实例并储存至数据库, 然后返回该实例.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">comment = serializer.save()</span><br></pre></td></tr></table></figure>
+
+<p>调用<code>.save()</code>方法时, 可能创建一个新的实例(<code>create</code>), 或是更新一个现有实例(<code>update</code>), 取决于实例化序列化器时是否传入了一个现有实例(<code>instance</code>)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .save()将会调用.create()创建一个新的实例</span></span><br><span class="line">serializer = CommentSerializer(data=data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># .save将会调用.update()更新一个现有的Comment实例</span></span><br><span class="line">serializer = CommentSerializer(instance=comment, data=data)</span><br></pre></td></tr></table></figure>
+
+<p><code>create</code>和<code>update</code>的实现都是可选的, 你可以实现其中任意一个, 或者实现两者, 取决于实际需要.</p>
+<hr>
+<h4 id="为-save-方法传递额外关键字参数"><a href="#为-save-方法传递额外关键字参数" class="headerlink" title="为.save()方法传递额外关键字参数"></a>为<code>.save()</code>方法传递额外关键字参数</h4><p>在调用时可以为<code>.save</code>传递任意关键字参数, 这些关键字参数在保存/更新实例时, 都会被注入到实例中, 作为实例的属性.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># view.py</span></span><br><span class="line">serializer.save(owner=request.user)</span><br></pre></td></tr></table></figure>
+
+<p>所有的附加关键字参数将被包含至<code>validated_data</code>中, 在<code>.create()</code>和<code>.update()</code>被调用时使用.</p>
+<hr>
+<h4 id="直接重写-save"><a href="#直接重写-save" class="headerlink" title="直接重写.save()"></a>直接重写<code>.save()</code></h4><p>有时候, 单独实现create或者update意义不大, 例如我们想要在验证数据合法性之后将其使用email发送, 就应该直接重写<code>.save()</code>方法, 表意明确.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContactForm</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    email = serializers.EmailField()</span><br><span class="line">    message = serializers.CharField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save</span><span class="params">(self)</span>:</span></span><br><span class="line">        email = self.validated_data[<span class="string">'email'</span>]</span><br><span class="line">        message = self.validated_data[<span class="string">'message'</span>]</span><br><span class="line">        send_email(<span class="keyword">from</span>=email, message=message)</span><br></pre></td></tr></table></figure>
+
+<p>注意在这种情况下, 直接访问<code>serializer</code>的<code>validated_data</code>属性.</p>
+<hr>
+<h2 id="验证数据合法性"><a href="#验证数据合法性" class="headerlink" title="验证数据合法性"></a>验证数据合法性</h2><p>在访问<code>validated_data</code>属性或存储一个实例之前, 应该总是调用<code>is_valid</code>方法来验证数据是否合法, 如果验证未通过, <code>.errors</code>属性将会包含一个字典, 描述产生错误的字段和信息.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">serializer = CommentSerializer(data=&#123;<span class="string">'email'</span>: <span class="string">'foobar'</span>, <span class="string">'content'</span>: <span class="string">'baz'</span>&#125;)</span><br><span class="line">serializer.is_valid()</span><br><span class="line"><span class="comment"># False</span></span><br><span class="line">serializer.errors</span><br><span class="line"><span class="comment"># &#123;'email': ['Enter a valid e-mail address.'], 'created': ['This field is required.']&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>字典中的每个键是字段名, 对应的值则是该字段的出错信息. 一个可能存在的特殊键是<code>non_field_errors</code>, 里面会存储一些通用的验证错误(不具体与某个字段相关).</p>
+<p>该特殊键的键名可以通过<code>NON_FIELD_ERRORS_KEY</code>设置项进行修改.</p>
+<hr>
+<h4 id="在数据验证失败时抛出异常"><a href="#在数据验证失败时抛出异常" class="headerlink" title="在数据验证失败时抛出异常"></a>在数据验证失败时抛出异常</h4><p><code>is_valid</code>方法的<code>raise_exception</code>参数为<code>True</code>时, 当数据验证失败抛出<code>serializers.ValidationError</code>异常(而非存储出错信息).</p>
+<p>该异常会由REST-framework提供的默认异常处理程序自动处理，默认情况下将返回<code>HTTP 400 Bad Request</code>响应.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serializer.is_valid(raise_exception=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="为字段添加自定义验证"><a href="#为字段添加自定义验证" class="headerlink" title="为字段添加自定义验证"></a>为字段添加自定义验证</h4><p>在定义序列化器时, 添加名为<code>.validate_&lt;field_name&gt;</code>的方法, 该方法会自动用于对应字段的数据验证.</p>
+<p><code>.validate_&lt;field_name&gt;</code>方法仅接收一个参数<code>value</code>, 即该字段的数据, 返回值为经过验证(或进一步处理)的数据, 或在此之前就抛出<code>serializers.ValidationError</code>异常.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BlogPostSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    title = serializers.CharField(max_length=<span class="number">100</span>)</span><br><span class="line">    content = serializers.CharField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate_title</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Check that the blog post is about Django.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">'django'</span> <span class="keyword">not</span> <span class="keyword">in</span> value.lower():</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(<span class="string">"Blog post is not about Django"</span>)</span><br><span class="line">        <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+
+<p>注意, 可选字段(required=False)如果没有获得数据, 该字段的验证也就不会进行.</p>
+<hr>
+<h4 id="为对象添加自定义验证"><a href="#为对象添加自定义验证" class="headerlink" title="为对象添加自定义验证."></a>为对象添加自定义验证.</h4><p>对象级别的验证, 即针对整个对象的验证, 与任何字段无关, 自定义<code>.validate()</code>方法来进行该验证.</p>
+<p><code>validate</code>方法接收一个<code>data</code>参数, 即传入序列化器的所有数据.返回值为经过验证(处理)的数据, 或在此之前就抛出<code>serializers.ValidationError</code>异常.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    description = serializers.CharField(max_length=<span class="number">100</span>)</span><br><span class="line">    start = serializers.DateTimeField()</span><br><span class="line">    finish = serializers.DateTimeField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Check that the start is before the stop.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> data[<span class="string">'start'</span>] &gt; data[<span class="string">'finish'</span>]:</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(<span class="string">"finish must occur after start"</span>)</span><br><span class="line">        <span class="keyword">return</span> data</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="验证器"><a href="#验证器" class="headerlink" title="验证器"></a>验证器</h4><p>对象级别的验证和字段级别的验证都是通过重写/添加特定方法名的方法在验证流程中调用，除此之外，我们还可以直接定义一个验证器函数，在定义字段时指定.</p>
+<p>一些可复用的验证行为应当被写为验证器, 并酌情添加至字段或对象级别, 详情参考<strong>验证器</strong>(Validator)一节.</p>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multiple_of_ten</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">10</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'Not a multiple of ten'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>为字段添加验证器, 在定义字段时添加.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GameRecord</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    score = IntegerField(validators=[multiple_of_ten])</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>为对象添加验证器, 在Meta属性中添加.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    name = serializers.CharField()</span><br><span class="line">    room_number = serializers.IntegerField(choices=[<span class="number">101</span>, <span class="number">102</span>, <span class="number">103</span>, <span class="number">201</span>])</span><br><span class="line">    date = serializers.DateField()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Each room only has one event per day.</span></span><br><span class="line">        validators = UniqueTogetherValidator(</span><br><span class="line">            queryset=Event.objects.all(), </span><br><span class="line">            fields=[<span class="string">'room_number'</span>, <span class="string">'date'</span>]</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>验证器不需要返回初始数据, 仅需要在验证失败时抛出<code>serializers.ValidationError</code>异常. </p>
+<p>每个字段/对象可包含多个验证器.</p>
+<hr>
+<h3 id="访问初始数据和实例"><a href="#访问初始数据和实例" class="headerlink" title="访问初始数据和实例"></a>访问初始数据和实例</h3><p>实例化序列化器之后, 使用<code>.instance</code>属性访问初始传入实例的属性, 使用<code>.initial_data</code>访问未经验证的初始数据. </p>
+<hr>
+<h3 id="部分更新"><a href="#部分更新" class="headerlink" title="部分更新"></a>部分更新</h3><p>在实例化序列化器时, 需要传入所有必填字段的值, 但在更新实例时仅需要部分字段的值, 此时需要将<code>partial</code>参数设为<code>True</code>来允许仅传入部分字段.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serializer = CommentSerializer(instance=comment, data=&#123;<span class="string">'content'</span>: <span class="string">u'foo bar'</span>&#125;, partial=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="嵌套序列化器"><a href="#嵌套序列化器" class="headerlink" title="嵌套序列化器"></a>嵌套序列化器</h3><p>如果一个Model的某个字段指向的是另一个模型(例如外键，多对多字段), 则外模型本身也就是一个对象, 而非单纯的原生python数据类型.</p>
+<p>如果对应某个外键字段的序列化器字段被指定为(另)一个序列化器，就形成了序列化器的嵌套，该外模型被指定的序列化器进行序列化, 且由此生成的序列化结果也是嵌套的. </p>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    email = serializers.EmailField()</span><br><span class="line">    username = serializers.CharField(max_length=<span class="number">100</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    user = UserSerializer()</span><br><span class="line">    content = serializers.CharField(max_length=<span class="number">200</span>)</span><br><span class="line">    created = serializers.DateTimeField()</span><br></pre></td></tr></table></figure>
+
+<p>示例序列化结果:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="string">"content"</span>: <span class="string">"some content"</span>, </span><br><span class="line">	<span class="string">"created"</span>: <span class="string">"2019-09-30"</span>, </span><br><span class="line">	<span class="string">"user"</span>: &#123;</span><br><span class="line">		<span class="string">"email"</span>: <span class="string">"example@gmail.com"</span>, </span><br><span class="line">		<span class="string">"username"</span>: <span class="string">"username"</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果该外键字段允许为空, 则为其添加<code>reuqired=False</code>参数.</p>
+<p>如果该外键字段为只读, 则为其添加<code>read_only=True</code>参数.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    user = UserSerializer(required=<span class="literal">False</span>)  <span class="comment"># 可能是匿名用户. </span></span><br><span class="line">    content = serializers.CharField(max_length=<span class="number">200</span>)</span><br><span class="line">    created = serializers.DateTimeField()</span><br></pre></td></tr></table></figure>
+
+<p>如果该字段可能对应多个外模型, 例如一对多, 多对多字段, 则需要添加<code>many=True</code>参数.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommentSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    user = UserSerializer(required=<span class="literal">False</span>)</span><br><span class="line">    edits = EditItemSerializer(many=<span class="literal">True</span>)  <span class="comment"># edit'项的嵌套列表</span></span><br><span class="line">    content = serializers.CharField(max_length=<span class="number">200</span>)</span><br><span class="line">    created = serializers.DateTimeField()</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="可写的嵌套序列化器"><a href="#可写的嵌套序列化器" class="headerlink" title="可写的嵌套序列化器"></a>可写的嵌套序列化器</h3><p>嵌套序列化器一般不用来进行反序列化, 不过也可以实现这一点. 嵌套序列化器涉及到两个模型, 因此如果涉及到数据库相关操作, 我们需要在重写<code>update</code>和<code>create</code>方法时保存多个对象.</p>
+<h4 id="验证数据合法性-1"><a href="#验证数据合法性-1" class="headerlink" title="验证数据合法性"></a>验证数据合法性</h4><p>嵌套的数据在验证合法性时, 如果未通过, 那么其错误信息也会是嵌套结构, 与数据保持一致.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">serializer = CommentSerializer(data=&#123;<span class="string">'user'</span>: &#123;<span class="string">'email'</span>: <span class="string">'foobar'</span>, <span class="string">'username'</span>: <span class="string">'doe'</span>&#125;, <span class="string">'content'</span>: <span class="string">'baz'</span>&#125;)</span><br><span class="line">serializer.is_valid()</span><br><span class="line"><span class="comment"># False</span></span><br><span class="line">serializer.errors</span><br><span class="line"><span class="comment"># &#123;'user': &#123;'email': ['Enter a valid e-mail address.']&#125;, 'created': ['This field is required.']&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="使用嵌套数据进行create"><a href="#使用嵌套数据进行create" class="headerlink" title="使用嵌套数据进行create"></a>使用嵌套数据进行<code>create</code></h4><p>从嵌套数据中取出(pop)内层的数据, 并分别处理.</p>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    profile = ProfileSerializer()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        fields = [<span class="string">'username'</span>, <span class="string">'email'</span>, <span class="string">'profile'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, validated_data)</span>:</span></span><br><span class="line">        profile_data = validated_data.pop(<span class="string">'profile'</span>)</span><br><span class="line">        user = User.objects.create(**validated_data)</span><br><span class="line">        Profile.objects.create(user=user, **profile_data)</span><br><span class="line">        <span class="keyword">return</span> user</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用嵌套数据进行update"><a href="#使用嵌套数据进行update" class="headerlink" title="使用嵌套数据进行update"></a>使用嵌套数据进行<code>update</code></h4><p>在更新时处理好关系模型需要慎重考虑, 例如外模型部分的字段可能未提供, 或者为空值, 在这些情况下, 如何更新模型? 可选项:</p>
+<ol>
+<li>在数据库中将关联字段设置成NULL. </li>
+<li>删除关联的实例. </li>
+<li>忽略数据并保留这个实例. </li>
+<li>抛出验证错误. </li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(self, instance, validated_data)</span>:</span></span><br><span class="line">   profile_data = validated_data.pop(<span class="string">'profile'</span>)</span><br><span class="line">   <span class="comment"># 当该字段不存在时会抛出DoesNotExist异常, 所以要么保证必须传入该字段, 要么处理该异常.</span></span><br><span class="line">   profile = instance.profile</span><br><span class="line"></span><br><span class="line">   instance.username = validated_data.get(<span class="string">'username'</span>, instance.username)</span><br><span class="line">   instance.email = validated_data.get(<span class="string">'email'</span>, instance.email)</span><br><span class="line">   instance.save()</span><br><span class="line"></span><br><span class="line">   profile.is_premium_member = profile_data.get(</span><br><span class="line">       <span class="string">'is_premium_member'</span>, </span><br><span class="line">       profile.is_premium_member</span><br><span class="line">   )</span><br><span class="line">   profile.has_support_contract = profile_data.get(</span><br><span class="line">       <span class="string">'has_support_contract'</span>, </span><br><span class="line">       profile.has_support_contract</span><br><span class="line">    )</span><br><span class="line">   profile.save()</span><br></pre></td></tr></table></figure>
+
+<p>因为嵌套关系的创建和更新行为可能不明确，并且可能需要关联模型间的复杂依赖关系，REST framework 3 要求始终明确的定义这些方法, 而非依赖于默认行为.</p>
+<p>注意: 在<code>ModelSerializer</code>中, 默认不提供对嵌套序列化器的可写支持.</p>
+<hr>
+<h3 id="处理多个对象"><a href="#处理多个对象" class="headerlink" title="处理多个对象"></a>处理多个对象</h3><p><strong>序列化多个对象</strong></p>
+<p>在实例化一个序列化器时, 如果传入的实例是一个查询集而非单个对象, 则需要将<code>many</code>参数置为<code>True</code>, 以便序列化器依次作用于每个对象.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">queryset = Book.objects.all()</span><br><span class="line">serializer = BookSerializer(instance=queryset, many=<span class="literal">True</span>)</span><br><span class="line">serializer.data</span><br><span class="line"><span class="comment"># [</span></span><br><span class="line"><span class="comment">#     &#123;'id': 0, 'title': 'The electric kool-aid acid test', 'author': 'Tom Wolfe'&#125;, </span></span><br><span class="line"><span class="comment">#     &#123;'id': 1, 'title': 'If this is a man', 'author': 'Primo Levi'&#125;, </span></span><br><span class="line"><span class="comment">#     &#123;'id': 2, 'title': 'The wind-up bird chronicle', 'author': 'Haruki Murakami'&#125;</span></span><br><span class="line"><span class="comment"># ]</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="反序列化多个对象"><a href="#反序列化多个对象" class="headerlink" title="反序列化多个对象"></a>反序列化多个对象</h4><p>反序列化多个对象默认支持多个对象的创建，但是不支持多个对象的更新. 有关如何支持或自定义这些情况的更多信息，请查看<code>ListSerializer</code>部分. </p>
+<hr>
+<h3 id="额外的上下文"><a href="#额外的上下文" class="headerlink" title="额外的上下文"></a>额外的上下文</h3><p>在某些情况下，除了要序列化的对象之外，还需要为序列化程序提供额外的上下文. 一个常见的情况是，如果使用包含超链接关系字段的序列化器, 需要序列化器能够访问当前的请求以便正确生成完全限定的URL. </p>
+<p>你可以在实例化序列化器的时候传递一个context参数来传递任意的附加上下文. 例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">serializer = AccountSerializer(account, context=&#123;<span class="string">'request'</span>: request&#125;)</span><br><span class="line">serializer.data</span><br><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">	'id': 6, </span></span><br><span class="line"><span class="string">	'owner': u'denvercoder9', </span></span><br><span class="line"><span class="string">	'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), </span></span><br><span class="line"><span class="string">	'details': 'http://example.com/accounts/6/details'</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">'''</span></span><br></pre></td></tr></table></figure>
+
+<p>这个上下文的字典可以在任何序列化器字段的逻辑中使用，例如<code>.to_representation()</code>方法中可以通过访问<code>self.context</code>属性获取上下文字典. </p>
+<p>注: 在通用视图中, 自动传递给序列化器上下文中包括了<code>request</code>, <code>format</code>等信息, 因此可以直接使用, 详情查看<strong>通用视图</strong>一节.</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>简而言之, 在rest-framework 序列化器的作用: </p>
+<ol>
+<li>序列化: 接受一个模型实例, 并将其序列化为原生的python数据类型, 例如字典, 以便可以简单地被渲染为json, xml或者其他内容类型.</li>
+<li>反序列化: 接受一个json, xml或者其他内容类型的数据, 将其转为python原生数据类型, 以便进行一些相关操作, 例如创建实例并存储进数据库.</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/03/9. 序列化器/" data-id="ck1hlao830009qgplnl1kr5su" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/9.2 序列化器/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          9.2 序列化器:内置序列化器 Serializer
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/03/8. 渲染器/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">8. 渲染器 Renderers</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL-数据库/">SQL 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/django-rest-framework中文文档/">django-rest-framework中文文档</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/元编程/">元编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端安全/">前端安全</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/SQL-数据库/" style="font-size: 10px;">SQL 数据库</a> <a href="/tags/django-rest-framework中文文档/" style="font-size: 20px;">django-rest-framework中文文档</a> <a href="/tags/元编程/" style="font-size: 10px;">元编程</a> <a href="/tags/前端安全/" style="font-size: 10px;">前端安全</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/10/03/26. 设置/">26. 设置 Settings</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/25. 测试/">25. 测试 Testing</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/24. 状态码/">24. 状态码 Status</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/23. 异常处理/">23. 异常处理 Exception</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/03/22. 返回URL/">22. 返回URL Return URL</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 紫秋<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
