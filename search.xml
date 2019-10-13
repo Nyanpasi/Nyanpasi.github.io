@@ -3158,8 +3158,8 @@
 </ol>
 ]]></content>
       <tags>
-        <tag>前端安全</tag>
         <tag>XSS</tag>
+        <tag>前端安全</tag>
       </tags>
   </entry>
   <entry>
@@ -3228,8 +3228,8 @@
 <p><a href="http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html" target="_blank" rel="noopener">Cookie 的 SameSite 属性</a><br><a href="https://vsupalov.com/avoid-csrf-errors-axios-django/" target="_blank" rel="noopener">How to avoid CSRF errors with axios and Django?</a><br><a href="https://stackoverflow.com/questions/39254562/csrf-with-django-reactredux-using-axios" target="_blank" rel="noopener">CSRF with Django, React+Redux using Axios</a></p>
 ]]></content>
       <tags>
-        <tag>CSRF</tag>
         <tag>前端安全</tag>
+        <tag>CSRF</tag>
       </tags>
   </entry>
   <entry>
