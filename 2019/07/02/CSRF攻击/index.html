@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="CSRF(Cross-site request forgery) 跨站请求伪造, 也被缩写为XSRF CSRF的本质是外站盗用用户的身份并伪造成用户发送请求, 造成隐私和财产安全">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-13T02:28:26.257Z">
+<meta property="og:updated_time" content="2019-10-13T09:08:44.039Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSRF攻击原理和防御">
 <meta name="twitter:description" content="CSRF(Cross-site request forgery) 跨站请求伪造, 也被缩写为XSRF CSRF的本质是外站盗用用户的身份并伪造成用户发送请求, 造成隐私和财产安全">
@@ -385,18 +385,17 @@
 <p>防御CSRF攻击主要可以从两个方面入手, 客户端和服务器端.</p>
 <hr>
 <h4 id="客户端的防御"><a href="#客户端的防御" class="headerlink" title="客户端的防御"></a>客户端的防御</h4><p>从客户端来说, 用户主要通过浏览器进行对网站的访问, 因此出于安全方面的考虑, 浏览器默认对跨域请求做出限制, 拦截掉所有不同源的请求. </p>
-<p>同源策略:</p>
-<p>什么是同源?<br>协议, 域名, 端口均相同, 就是同源, 三者任一不同, 则为跨域</p>
+<p>同源策略: <strong>协议</strong>, <strong>域名</strong>, <strong>端口</strong>均相同, 就是同源, 三者任一不同, 则为跨域.</p>
 <p>如何做出限制?</p>
-<ul>
+<ol>
 <li>DOM层面:不同源的js或document, 不可读取或设置当前DOM的属性</li>
 <li>Cookie和XMLHttprequest层面: 浏览器直接拦截当前页面中Ajax的跨域请求,  对于同源的Ajax请求, 不可携带与本网站不同源的Cookie</li>
 <li><code>&lt;script&gt;&lt;img&gt;&lt;iframe&gt;&lt;link&gt;&lt;video&gt;&lt;audio&gt;</code>等带有src属性的标签不受该限制</li>
 <li>其他插件的同源策略</li>
-</ul>
+</ol>
 <p>在以上的例子中, 在B网站页面中内嵌的js对与其不同源的A网站发起的请求被浏览器拦截, 因此也就无法完成伪造请求. </p>
 <hr>
-<h4 id="服务器端的防御"><a href="#服务器端的防御" class="headerlink" title="服务器端的防御"></a>服务器端的防御</h4><p>从服务器端来说, 主要方案是在客户端页面增加伪随机数, 并在验证时需要验证该伪随机数</p>
+<h4 id="服务器端的防御"><a href="#服务器端的防御" class="headerlink" title="服务器端的防御"></a>服务器端的防御</h4><p>从服务器端来说, 主要方案是在客户端页面增加伪随机数, 并在验证时需要验证该伪随机数, 这样, 在外域直接发起的请求不可能携带该随机数:</p>
 <ol>
 <li>所有表单包含同一个伪随机数, 且该随机数为一直不变, 例如可以根据用户的cookie算出, 因为B无法访问A在客户端设置的Cookie, 所以B不可能得知正确的伪随机数</li>
 <li>每个表单都包含不同的伪随机数, 该伪随机数每次都在变化, 并将每次的伪随机数都保存在服务器端, 并添加一份到表单的隐藏字段中, 只有包含对应的伪随机数的post请求提交到服务器端时, 该请求才被接受</li>
@@ -408,17 +407,28 @@
 <p>在用户发起请求时, 先访问当前域的cookie, 获得csrftoken, 然后将其包含在表单数据中, 或放置于某个HTTP头中(取决于Django的<code>CSRF_HEADER_NAME</code>设置项).</p>
 <p>如果使用Django Template, 则该字段在初始化时就作为隐藏字段被包含在表单中, 在提交时会随之提交.</p>
 <hr>
-<h4 id="前后端分离项目如何自动包含csrf"><a href="#前后端分离项目如何自动包含csrf" class="headerlink" title="前后端分离项目如何自动包含csrf?"></a>前后端分离项目如何自动包含csrf?</h4><p>例如使用axios, 仅需设置如下两行:</p>
+<h4 id="前后端分离项目如何自动包含csrftoken"><a href="#前后端分离项目如何自动包含csrftoken" class="headerlink" title="前后端分离项目如何自动包含csrftoken?"></a>前后端分离项目如何自动包含csrftoken?</h4><p>例如使用axios, 仅需设置如下两行:</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">axios.defaults.xsrfCookieName = <span class="string">'csrftoken'</span></span><br><span class="line">axios.defaults.xsrfHeaderName = <span class="string">"X-CSRFToken"</span></span><br></pre></td></tr></table></figure>
 
 <p>前者设置axios应当从cookies获得csrftoken的字段名, 后者则是应当将csrftoken作为哪个HTTP头中发送.</p>
 <p>后者的设置值具体可能还要参考Django的<a href="https://docs.djangoproject.com/en/2.2/ref/settings/#csrf-header-name" target="_blank" rel="noopener"><code>CSRF_HEADER_NAME</code></a>设置项.</p>
 <p>这样, 在每个发送请求时, axios都会自动获取csrftoken, 并自动包含csrftoken.</p>
 <hr>
-<h4 id="在跨域请求时-如何解决csrf问题"><a href="#在跨域请求时-如何解决csrf问题" class="headerlink" title="在跨域请求时, 如何解决csrf问题?"></a>在<strong>跨域</strong>请求时, 如何解决csrf问题?</h4><p>跨域时可以指定跨域请求<strong>携带</strong>外域的cookie, 但在当前域内不可以<strong>访问</strong>该cookie, 因此也无法获取该cookie中包含的csrftoken.</p>
+<h4 id="在跨域请求时-如何解决csrftoken问题"><a href="#在跨域请求时-如何解决csrftoken问题" class="headerlink" title="在跨域请求时, 如何解决csrftoken问题?"></a>在<strong>跨域</strong>请求时, 如何解决csrftoken问题?</h4><p>跨域时可以指定跨域请求<strong>携带</strong>外域的cookie, 但在当前域内不可以<strong>访问</strong>该cookie, 因此也无法获取该cookie中包含的csrftoken.</p>
 <p>即, 跨域请求不可能从cookie中获得csrftoken, 任何获取外域cookie的行为都被浏览器阻止.</p>
-<p>如果必须开启CSRF验证, 则需要后端给出csrf接口, 跨域请求需要先访问该接口获得csrftoken, 该csrftoken应当包含在响应的body部分, 而非放置在cookie中.</p>
+<p>如果必须开启CSRF验证, 则需要后端给出csrftoken接口, 跨域请求需要先访问该接口获得csrftoken, 该csrftoken应当包含在响应的<code>body</code>部分, 而非放置在cookie中.</p>
 <p>获取到csrftoken后, 将其包含在表单或HTTP头中发起跨域请求.</p>
+<hr>
+<h4 id="cookie的samesite属性"><a href="#cookie的samesite属性" class="headerlink" title="cookie的samesite属性"></a>cookie的samesite属性</h4><p>cookie的<code>samesite</code>属性是尚未被广泛使用的防御CSRF的设, 该属性可以被设置为三个值:</p>
+<ol>
+<li><code>Strict</code>: Set-Cookie: CookieName=CookieValue; SameSite=Strict;</li>
+<li><code>Lax</code>: Set-Cookie: CookieName=CookieValue; SameSite=Lax;</li>
+<li><code>None</code>: Set-Cookie: widget_session=abc123; SameSite=None; Secure</li>
+</ol>
+<p>设置为<code>Strict</code>时, 任何跨域请求不允许携带cookie.<br>设置为<code>Lax</code>时, 链接, 预加载请求, GET表单请求允许携带cookie<br>设置为<code>None</code>时, 允许在任意请求中携带cookie, 但必须同时设置<code>Secure</code>属性.</p>
+<hr>
+<p>参考:</p>
+<p><a href="http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html" target="_blank" rel="noopener">Cookie 的 SameSite 属性</a><br><a href="https://vsupalov.com/avoid-csrf-errors-axios-django/" target="_blank" rel="noopener">How to avoid CSRF errors with axios and Django?</a><br><a href="https://stackoverflow.com/questions/39254562/csrf-with-django-reactredux-using-axios" target="_blank" rel="noopener">CSRF with Django, React+Redux using Axios</a></p>
 
       
     </div>
@@ -586,7 +596,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端的防御"><span class="nav-number">1.</span> <span class="nav-text">客户端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器端的防御"><span class="nav-number">2.</span> <span class="nav-text">服务器端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Django的CSRF验证"><span class="nav-number">3.</span> <span class="nav-text">Django的CSRF验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#前后端分离项目如何自动包含csrf"><span class="nav-number">4.</span> <span class="nav-text">前后端分离项目如何自动包含csrf?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在跨域请求时-如何解决csrf问题"><span class="nav-number">5.</span> <span class="nav-text">在跨域请求时, 如何解决csrf问题?</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端的防御"><span class="nav-number">1.</span> <span class="nav-text">客户端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器端的防御"><span class="nav-number">2.</span> <span class="nav-text">服务器端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Django的CSRF验证"><span class="nav-number">3.</span> <span class="nav-text">Django的CSRF验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#前后端分离项目如何自动包含csrftoken"><span class="nav-number">4.</span> <span class="nav-text">前后端分离项目如何自动包含csrftoken?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在跨域请求时-如何解决csrftoken问题"><span class="nav-number">5.</span> <span class="nav-text">在跨域请求时, 如何解决csrftoken问题?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie的samesite属性"><span class="nav-number">6.</span> <span class="nav-text">cookie的samesite属性</span></a></li></ol></div>
             
 
           </div>

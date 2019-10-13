@@ -1,63 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hexo+Github搭建个人博客</title>
-    <url>/2019/10/12/%E4%BD%BF%E7%94%A8Hexo+Github%E9%83%A8%E7%BD%B2%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<p><a href="https://hexo.io/index.html" target="_blank" rel="noopener">Hexo</a>是一个快速、简洁且高效的博客框架, 基于Node.js</p>
-<p><a href="https://github.com" target="_blank" rel="noopener">Github</a>可以为每一个repository提供一个Github Pages, 但默认是不开启的.</p>
-<p>我们通过Hexo生成静态页面, 然后将其同步至远程仓库, 作为某个repository的Github Page, 这样就可以直接在Github上访问了.</p>
-<a id="more"></a>
-
-<p>搭建过程分为三步:</p>
-<ol>
-<li>在github上建立一个repository并开启Github Page.</li>
-<li>用Hexo在本地创建博客.</li>
-<li>安装git, 并将Hexo部署到远程仓库.</li>
-</ol>
-<p>之后, 就可以访问搭建在Github的博客页面了.</p>
-<hr>
-<h3 id="创建repository并开启Github-Page"><a href="#创建repository并开启Github-Page" class="headerlink" title="创建repository并开启Github Page"></a>创建repository并开启Github Page</h3><ol>
-<li>创建一个repository, repository name 设置为<strong><span style="color: deeppink;">username</span>.github.io</strong>(推荐, 这样生成的访问地址最为简短)</li>
-<li>进入repository的setting页面, 找到GitHub Pages一节, 点击<code>choose a theme</code></li>
-<li>选中一个主题, 然后select theme, 再之后会自动创建一个<code>index.md</code>文件, 无需修改, 直接commit changes</li>
-<li>之后再进入repository的setting界面, 找到Github Pages一节, 已经出现提示:<strong>Your site is published at <span style="color: deeppink;">URL<span></span></span></strong></li>
-<li>直接在浏览器中访问该URL, 至此Github Page开启成功.</li>
-</ol>
-<hr>
-<h3 id="使用Hexo创建个人博客"><a href="#使用Hexo创建个人博客" class="headerlink" title="使用Hexo创建个人博客"></a>使用Hexo创建个人博客</h3><ol>
-<li>安装node.js </li>
-<li>阅读Hexo文档, 安装Hexo, 并使用Hexo创建一个博客项目, 搭建个人博客.</li>
-</ol>
-<hr>
-<h3 id="使用git部署博客"><a href="#使用git部署博客" class="headerlink" title="使用git部署博客"></a>使用git部署博客</h3><ol>
-<li><p>安装git, 完成后在命令行输入<code>git version</code>确认安装成功</p>
-</li>
-<li><p>打开repostory页面, 点击<code>Clone or download</code>, 弹出来的小框里选择右上角<code>Use HTTPS</code>, 之后复制出现的URL</p>
-</li>
-<li><p>在上一步中, repository的URL为<code>https</code>开头, 意味着会使用https协议进行远程仓库的连接</p>
-</li>
-<li><p>打开Hexo创建的项目的根目录下<code>_config.yml</code>文件, 该文件是一个<strong>YAML</strong> <em>[/ˈjæməl/]</em>语法的配置文件</p>
-</li>
-<li><p>找到deploy一节, 更改为如下形式, URL指的是第2步获得的URL.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: URL</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>切换至本地hexo项目根目录, 安装相关库, <code>npm install hexo-deployer-git —save</code></p>
-</li>
-<li><p>之后使用hexo部署命令: <code>hexo d</code>, 进行远程部署</p>
-</li>
-<li><p>在部署过程中, 会弹出github的账号密码输入框, 正确输入并确认, 之后会进行部署</p>
-</li>
-</ol>
-<p>到此, 部署成功, 访问该repostory的Github Page的URL, 显示效果与本地一致.</p>
-<p>之后每次写博客之后, 使用<code>hexo d</code>命令部署即可. </p>
-<p>如果更新博客之后, 部署命令显示无新内容, 使用<code>hexo clean</code>清除缓存, 然后再次尝试部署.</p>
-<p>因为缓存的原因, 每次同步之后可能要稍等几分钟才能在Github Page中生效.</p>
-]]></content>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>26. 设置 Settings</title>
     <url>/2019/10/03/26.%20%E8%AE%BE%E7%BD%AE/</url>
     <content><![CDATA[<blockquote>
@@ -1416,93 +1359,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11. 序列化器 Validator</title>
-    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
-    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
-<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
-<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
-<a id="more"></a>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
-
-<p>运行 python manage.py shell</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
-<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset：划定唯一约束的范围</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
-</ol>
-<p>示例代码:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset: 用于验证的查询集</li>
-<li>fields: 联合唯一约束的字段列表</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
-<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
-<p>实例化时的参数</p>
-<ol>
-<li>queryset： 用于验证的查询集</li>
-<li>field： 字段名, 必须为序列化器中的字段</li>
-<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
-<li>message:可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
-<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
-<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
-<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
-
-<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
-<hr>
-<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
-<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
-<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
-<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
-<hr>
-<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
-<hr>
-<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
-<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
-<hr>
-<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
-
-<p>使用<code>set_context()</code></p>
-<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>django-rest-framework中文文档</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>10.2 序列化器字段:关系字段 Serializer Field</title>
     <url>/2019/10/03/10.2%20%E5%BA%8F%E5%88%97%E5%8C%96%E5%99%A8%E5%AD%97%E6%AE%B5-%E5%85%B3%E7%B3%BB%E5%AD%97%E6%AE%B5/</url>
     <content><![CDATA[<p>关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段.</p>
@@ -1650,6 +1506,93 @@
 <p>如果要声明一个指向使用了中间模型的<code>ManyToManyField</code>字段的序列化器关系字段, 确保设置<code>read_only=True</code>.</p>
 <p>如果想序列化包含在中间模型的额外字段的序列化结果, 可以将中间模型作为<a href="https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects" target="_blank" rel="noopener">嵌套对象</a>进行序列化. </p>
 ]]></content>
+      <tags>
+        <tag>django-rest-framework中文文档</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11. 序列化器 Validator</title>
+    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
+    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
+<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
+<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
+
+<p>运行 python manage.py shell</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset：划定唯一约束的范围</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset: 用于验证的查询集</li>
+<li>fields: 联合唯一约束的字段列表</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
+<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
+<p>实例化时的参数</p>
+<ol>
+<li>queryset： 用于验证的查询集</li>
+<li>field： 字段名, 必须为序列化器中的字段</li>
+<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
+<li>message:可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
+<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
+<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
+<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
+<hr>
+<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
+<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
+<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
+<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
+<hr>
+<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
+<hr>
+<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
+<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
+<hr>
+<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>set_context()</code></p>
+<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>django-rest-framework中文文档</tag>
       </tags>
@@ -2992,6 +2935,63 @@
       </tags>
   </entry>
   <entry>
+    <title>Hexo+Github搭建个人博客</title>
+    <url>/2019/08/23/%E4%BD%BF%E7%94%A8Hexo+Github%E9%83%A8%E7%BD%B2%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<p><a href="https://hexo.io/index.html" target="_blank" rel="noopener">Hexo</a>是一个快速、简洁且高效的博客框架, 基于Node.js</p>
+<p><a href="https://github.com" target="_blank" rel="noopener">Github</a>可以为每一个repository提供一个Github Pages, 但默认是不开启的.</p>
+<p>我们通过Hexo生成静态页面, 然后将其同步至远程仓库, 作为某个repository的Github Page, 这样就可以直接在Github上访问了.</p>
+<a id="more"></a>
+
+<p>搭建过程分为三步:</p>
+<ol>
+<li>在github上建立一个repository并开启Github Page.</li>
+<li>用Hexo在本地创建博客.</li>
+<li>安装git, 并将Hexo部署到远程仓库.</li>
+</ol>
+<p>之后, 就可以访问搭建在Github的博客页面了.</p>
+<hr>
+<h3 id="创建repository并开启Github-Page"><a href="#创建repository并开启Github-Page" class="headerlink" title="创建repository并开启Github Page"></a>创建repository并开启Github Page</h3><ol>
+<li>创建一个repository, repository name 设置为<strong><span style="color: deeppink;">username</span>.github.io</strong>(推荐, 这样生成的访问地址最为简短)</li>
+<li>进入repository的setting页面, 找到GitHub Pages一节, 点击<code>choose a theme</code></li>
+<li>选中一个主题, 然后select theme, 再之后会自动创建一个<code>index.md</code>文件, 无需修改, 直接commit changes</li>
+<li>之后再进入repository的setting界面, 找到Github Pages一节, 已经出现提示:<strong>Your site is published at <span style="color: deeppink;">URL<span></span></span></strong></li>
+<li>直接在浏览器中访问该URL, 至此Github Page开启成功.</li>
+</ol>
+<hr>
+<h3 id="使用Hexo创建个人博客"><a href="#使用Hexo创建个人博客" class="headerlink" title="使用Hexo创建个人博客"></a>使用Hexo创建个人博客</h3><ol>
+<li>安装node.js </li>
+<li>阅读Hexo文档, 安装Hexo, 并使用Hexo创建一个博客项目, 搭建个人博客.</li>
+</ol>
+<hr>
+<h3 id="使用git部署博客"><a href="#使用git部署博客" class="headerlink" title="使用git部署博客"></a>使用git部署博客</h3><ol>
+<li><p>安装git, 完成后在命令行输入<code>git version</code>确认安装成功</p>
+</li>
+<li><p>打开repostory页面, 点击<code>Clone or download</code>, 弹出来的小框里选择右上角<code>Use HTTPS</code>, 之后复制出现的URL</p>
+</li>
+<li><p>在上一步中, repository的URL为<code>https</code>开头, 意味着会使用https协议进行远程仓库的连接</p>
+</li>
+<li><p>打开Hexo创建的项目的根目录下<code>_config.yml</code>文件, 该文件是一个<strong>YAML</strong> <em>[/ˈjæməl/]</em>语法的配置文件</p>
+</li>
+<li><p>找到deploy一节, 更改为如下形式, URL指的是第2步获得的URL.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: URL</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>切换至本地hexo项目根目录, 安装相关库, <code>npm install hexo-deployer-git —save</code></p>
+</li>
+<li><p>之后使用hexo部署命令: <code>hexo d</code>, 进行远程部署</p>
+</li>
+<li><p>在部署过程中, 会弹出github的账号密码输入框, 正确输入并确认, 之后会进行部署</p>
+</li>
+</ol>
+<p>到此, 部署成功, 访问该repostory的Github Page的URL, 显示效果与本地一致.</p>
+<p>之后每次写博客之后, 使用<code>hexo d</code>命令部署即可. </p>
+<p>如果更新博客之后, 部署命令显示无新内容, 使用<code>hexo clean</code>清除缓存, 然后再次尝试部署.</p>
+<p>因为缓存的原因, 每次同步之后可能要稍等几分钟才能在Github Page中生效.</p>
+]]></content>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo自定义代码高亮</title>
     <url>/2019/08/22/Hexo%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE/</url>
     <content><![CDATA[<p>以Next主题为例, 只提供了五种代码高亮样式, 在都不满足需要的情况下, 可能需要进行自定义.</p>
@@ -3001,15 +3001,22 @@
 <p>行内代码高亮的css部分定义在<code>next/source.css/_common/component/highlight/highlight.styl</code>中.</p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: $code-foreground;</span><br><span class="line">  <span class="attribute">background</span>: $code-background;</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  font-size $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>更改为红色文本, 淡红色背景, 则更改<code>color</code>和<code>background</code>属性:</p>
+<p>例如更改行内代码样式为红色文本, 淡红色背景, 则重设<code>color</code>和<code>background</code>属性:</p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">rgba</span>(255,192,203, 0.1);</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  font-size $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>具体显示效果如本文所示.</p>
 <hr>
 <h3 id="高亮主题"><a href="#高亮主题" class="headerlink" title="高亮主题"></a>高亮主题</h3><p>Hexo提供了五种代码高亮主题: <code>normal</code>, <code>night</code>, <code>night blue</code>, <code>night bright</code>, <code>night eighties</code>.</p>
 <p>高亮主题的css部分定义在<code>next/source.css/_common/component/highlight/theme.styl</code>中, 在这里我们能看到具体的方案配色:</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">if $highlight_theme == "normal"</span><br><span class="line">  $highlight-background   = #f7f7f7</span><br><span class="line">  $highlight-current-line = #efefef</span><br><span class="line">  $highlight-selection    = #d6d6d6</span><br><span class="line">  $highlight-foreground   = #4d4d4c</span><br><span class="line">  $highlight-comment      = #8e908c</span><br><span class="line">  $highlight-red          = #c82829</span><br><span class="line">  $highlight-orange       = #f5871f</span><br><span class="line">  $highlight-yellow       = #eab700</span><br><span class="line">  $highlight-green        = #718c00</span><br><span class="line">  $highlight-aqua         = #3e999f</span><br><span class="line">  $highlight-blue         = #4271ae</span><br><span class="line">  $highlight-purple       = #8959a8</span><br><span class="line">  $highlight-gutter       = &#123;</span><br><span class="line">    <span class="selector-tag">color</span>: <span class="selector-id">#869194</span>,</span><br><span class="line">    <span class="selector-tag">bg-color</span>: <span class="selector-id">#eff2f3</span></span><br><span class="line">  &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">if</span> $highlight_theme == <span class="string">"normal"</span></span><br><span class="line">  $highlight-background   = #f7f7f7</span><br><span class="line">  $highlight-current-line = #efefef</span><br><span class="line">  $highlight-selection    = #d6d6d6</span><br><span class="line">  $highlight-foreground   = #4d4d4c</span><br><span class="line">  $highlight-comment      = #8e908c</span><br><span class="line">  $highlight-red          = #c82829</span><br><span class="line">  $highlight-orange       = #f5871f</span><br><span class="line">  $highlight-yellow       = #eab700</span><br><span class="line">  $highlight-green        = #718c00</span><br><span class="line">  $highlight-aqua         = #3e999f</span><br><span class="line">  $highlight-blue         = #4271ae</span><br><span class="line">  $highlight-purple       = #8959a8</span><br><span class="line">  $highlight-gutter       = &#123;</span><br><span class="line">    color: #869194,</span><br><span class="line">    bg-color: #eff2f3</span><br><span class="line">  &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
-<p>直接更改某个主题的配色, 然后应用该主题即可.</p>
+<p>直接更改某个主题的配色, 或是创建新的配色主题:</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> $highlight_theme == <span class="string">"solarized light"</span></span><br><span class="line">  $highlight-background   = #FDF6E3</span><br><span class="line">  $highlight-constant     = #00FF00</span><br><span class="line">  $highlight-current-line = #FDF6E3</span><br><span class="line">  $highlight-selection    = #ECE7D5</span><br><span class="line">  $highlight-foreground   = #657A81</span><br><span class="line">  $highlight-comment      = #93A1A1</span><br><span class="line">  $highlight-red          = #D30102</span><br><span class="line">  $highlight-orange       = #657A81</span><br><span class="line">  $highlight-yellow       = #657A81</span><br><span class="line">  $highlight-green        = #2AA198</span><br><span class="line">  $highlight-aqua         = #657A81</span><br><span class="line">  $highlight-blue         = #657A81</span><br><span class="line">  $highlight-purple       = #B58900</span><br><span class="line">  $highlight-gutter       = &#123;</span><br><span class="line">    color: #586E75</span><br><span class="line">    bg-color: #FDF6E3</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后到<strong>站点配置文件</strong>(即项目根目录下<code>_config.yml</code>文件)中, 更改使用的配色主题:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">highlight_theme: solarized light</span><br></pre></td></tr></table></figure>
+
+<p>保存生效即可.</p>
 ]]></content>
       <tags>
         <tag>Hexo</tag>
@@ -3175,18 +3182,17 @@
 <p>防御CSRF攻击主要可以从两个方面入手, 客户端和服务器端.</p>
 <hr>
 <h4 id="客户端的防御"><a href="#客户端的防御" class="headerlink" title="客户端的防御"></a>客户端的防御</h4><p>从客户端来说, 用户主要通过浏览器进行对网站的访问, 因此出于安全方面的考虑, 浏览器默认对跨域请求做出限制, 拦截掉所有不同源的请求. </p>
-<p>同源策略:</p>
-<p>什么是同源?<br>协议, 域名, 端口均相同, 就是同源, 三者任一不同, 则为跨域</p>
+<p>同源策略: <strong>协议</strong>, <strong>域名</strong>, <strong>端口</strong>均相同, 就是同源, 三者任一不同, 则为跨域.</p>
 <p>如何做出限制?</p>
-<ul>
+<ol>
 <li>DOM层面:不同源的js或document, 不可读取或设置当前DOM的属性</li>
 <li>Cookie和XMLHttprequest层面: 浏览器直接拦截当前页面中Ajax的跨域请求,  对于同源的Ajax请求, 不可携带与本网站不同源的Cookie</li>
 <li><code>&lt;script&gt;&lt;img&gt;&lt;iframe&gt;&lt;link&gt;&lt;video&gt;&lt;audio&gt;</code>等带有src属性的标签不受该限制</li>
 <li>其他插件的同源策略</li>
-</ul>
+</ol>
 <p>在以上的例子中, 在B网站页面中内嵌的js对与其不同源的A网站发起的请求被浏览器拦截, 因此也就无法完成伪造请求. </p>
 <hr>
-<h4 id="服务器端的防御"><a href="#服务器端的防御" class="headerlink" title="服务器端的防御"></a>服务器端的防御</h4><p>从服务器端来说, 主要方案是在客户端页面增加伪随机数, 并在验证时需要验证该伪随机数</p>
+<h4 id="服务器端的防御"><a href="#服务器端的防御" class="headerlink" title="服务器端的防御"></a>服务器端的防御</h4><p>从服务器端来说, 主要方案是在客户端页面增加伪随机数, 并在验证时需要验证该伪随机数, 这样, 在外域直接发起的请求不可能携带该随机数:</p>
 <ol>
 <li>所有表单包含同一个伪随机数, 且该随机数为一直不变, 例如可以根据用户的cookie算出, 因为B无法访问A在客户端设置的Cookie, 所以B不可能得知正确的伪随机数</li>
 <li>每个表单都包含不同的伪随机数, 该伪随机数每次都在变化, 并将每次的伪随机数都保存在服务器端, 并添加一份到表单的隐藏字段中, 只有包含对应的伪随机数的post请求提交到服务器端时, 该请求才被接受</li>
@@ -3198,17 +3204,28 @@
 <p>在用户发起请求时, 先访问当前域的cookie, 获得csrftoken, 然后将其包含在表单数据中, 或放置于某个HTTP头中(取决于Django的<code>CSRF_HEADER_NAME</code>设置项).</p>
 <p>如果使用Django Template, 则该字段在初始化时就作为隐藏字段被包含在表单中, 在提交时会随之提交.</p>
 <hr>
-<h4 id="前后端分离项目如何自动包含csrf"><a href="#前后端分离项目如何自动包含csrf" class="headerlink" title="前后端分离项目如何自动包含csrf?"></a>前后端分离项目如何自动包含csrf?</h4><p>例如使用axios, 仅需设置如下两行:</p>
+<h4 id="前后端分离项目如何自动包含csrftoken"><a href="#前后端分离项目如何自动包含csrftoken" class="headerlink" title="前后端分离项目如何自动包含csrftoken?"></a>前后端分离项目如何自动包含csrftoken?</h4><p>例如使用axios, 仅需设置如下两行:</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line">axios.defaults.xsrfCookieName = <span class="string">'csrftoken'</span></span><br><span class="line">axios.defaults.xsrfHeaderName = <span class="string">"X-CSRFToken"</span></span><br></pre></td></tr></table></figure>
 
 <p>前者设置axios应当从cookies获得csrftoken的字段名, 后者则是应当将csrftoken作为哪个HTTP头中发送.</p>
 <p>后者的设置值具体可能还要参考Django的<a href="https://docs.djangoproject.com/en/2.2/ref/settings/#csrf-header-name" target="_blank" rel="noopener"><code>CSRF_HEADER_NAME</code></a>设置项.</p>
 <p>这样, 在每个发送请求时, axios都会自动获取csrftoken, 并自动包含csrftoken.</p>
 <hr>
-<h4 id="在跨域请求时-如何解决csrf问题"><a href="#在跨域请求时-如何解决csrf问题" class="headerlink" title="在跨域请求时, 如何解决csrf问题?"></a>在<strong>跨域</strong>请求时, 如何解决csrf问题?</h4><p>跨域时可以指定跨域请求<strong>携带</strong>外域的cookie, 但在当前域内不可以<strong>访问</strong>该cookie, 因此也无法获取该cookie中包含的csrftoken.</p>
+<h4 id="在跨域请求时-如何解决csrftoken问题"><a href="#在跨域请求时-如何解决csrftoken问题" class="headerlink" title="在跨域请求时, 如何解决csrftoken问题?"></a>在<strong>跨域</strong>请求时, 如何解决csrftoken问题?</h4><p>跨域时可以指定跨域请求<strong>携带</strong>外域的cookie, 但在当前域内不可以<strong>访问</strong>该cookie, 因此也无法获取该cookie中包含的csrftoken.</p>
 <p>即, 跨域请求不可能从cookie中获得csrftoken, 任何获取外域cookie的行为都被浏览器阻止.</p>
-<p>如果必须开启CSRF验证, 则需要后端给出csrf接口, 跨域请求需要先访问该接口获得csrftoken, 该csrftoken应当包含在响应的body部分, 而非放置在cookie中.</p>
+<p>如果必须开启CSRF验证, 则需要后端给出csrftoken接口, 跨域请求需要先访问该接口获得csrftoken, 该csrftoken应当包含在响应的<code>body</code>部分, 而非放置在cookie中.</p>
 <p>获取到csrftoken后, 将其包含在表单或HTTP头中发起跨域请求.</p>
+<hr>
+<h4 id="cookie的samesite属性"><a href="#cookie的samesite属性" class="headerlink" title="cookie的samesite属性"></a>cookie的samesite属性</h4><p>cookie的<code>samesite</code>属性是尚未被广泛使用的防御CSRF的设, 该属性可以被设置为三个值:</p>
+<ol>
+<li><code>Strict</code>: Set-Cookie: CookieName=CookieValue; SameSite=Strict;</li>
+<li><code>Lax</code>: Set-Cookie: CookieName=CookieValue; SameSite=Lax;</li>
+<li><code>None</code>: Set-Cookie: widget_session=abc123; SameSite=None; Secure</li>
+</ol>
+<p>设置为<code>Strict</code>时, 任何跨域请求不允许携带cookie.<br>设置为<code>Lax</code>时, 链接, 预加载请求, GET表单请求允许携带cookie<br>设置为<code>None</code>时, 允许在任意请求中携带cookie, 但必须同时设置<code>Secure</code>属性.</p>
+<hr>
+<p>参考:</p>
+<p><a href="http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html" target="_blank" rel="noopener">Cookie 的 SameSite 属性</a><br><a href="https://vsupalov.com/avoid-csrf-errors-axios-django/" target="_blank" rel="noopener">How to avoid CSRF errors with axios and Django?</a><br><a href="https://stackoverflow.com/questions/39254562/csrf-with-django-reactredux-using-axios" target="_blank" rel="noopener">CSRF with Django, React+Redux using Axios</a></p>
 ]]></content>
       <tags>
         <tag>CSRF</tag>
