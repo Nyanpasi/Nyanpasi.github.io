@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="CSRF(Cross-site request forgery) 跨站请求伪造, 也被缩写为XSRF CSRF的本质是外站盗用用户的身份并伪造成用户发送请求, 造成隐私和财产安全">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-12T17:37:12.938Z">
+<meta property="og:updated_time" content="2019-10-13T02:28:26.257Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSRF攻击原理和防御">
 <meta name="twitter:description" content="CSRF(Cross-site request forgery) 跨站请求伪造, 也被缩写为XSRF CSRF的本质是外站盗用用户的身份并伪造成用户发送请求, 造成隐私和财产安全">
@@ -408,7 +408,7 @@
 <p>在用户发起请求时, 先访问当前域的cookie, 获得csrftoken, 然后将其包含在表单数据中, 或放置于某个HTTP头中(取决于Django的<code>CSRF_HEADER_NAME</code>设置项).</p>
 <p>如果使用Django Template, 则该字段在初始化时就作为隐藏字段被包含在表单中, 在提交时会随之提交.</p>
 <hr>
-<h4 id="如何自动包含csrf"><a href="#如何自动包含csrf" class="headerlink" title="如何自动包含csrf?"></a>如何自动包含csrf?</h4><p>例如使用axiox, 仅需设置如下两行:</p>
+<h4 id="前后端分离项目如何自动包含csrf"><a href="#前后端分离项目如何自动包含csrf" class="headerlink" title="前后端分离项目如何自动包含csrf?"></a>前后端分离项目如何自动包含csrf?</h4><p>例如使用axios, 仅需设置如下两行:</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">axios.defaults.xsrfCookieName = <span class="string">'csrftoken'</span></span><br><span class="line">axios.defaults.xsrfHeaderName = <span class="string">"X-CSRFToken"</span></span><br></pre></td></tr></table></figure>
 
 <p>前者设置axios应当从cookies获得csrftoken的字段名, 后者则是应当将csrftoken作为哪个HTTP头中发送.</p>
@@ -451,8 +451,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/17/Django信号系统/" rel="next" title="Django信号系统">
-                <i class="fa fa-chevron-left"></i> Django信号系统
+              <a href="/2019/06/01/python多继承协同任务/" rel="next" title="python多继承协同任务">
+                <i class="fa fa-chevron-left"></i> python多继承协同任务
               </a>
             
           </div>
@@ -540,7 +540,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -553,7 +553,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -586,7 +586,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端的防御"><span class="nav-number">1.</span> <span class="nav-text">客户端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器端的防御"><span class="nav-number">2.</span> <span class="nav-text">服务器端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Django的CSRF验证"><span class="nav-number">3.</span> <span class="nav-text">Django的CSRF验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何自动包含csrf"><span class="nav-number">4.</span> <span class="nav-text">如何自动包含csrf?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在跨域请求时-如何解决csrf问题"><span class="nav-number">5.</span> <span class="nav-text">在跨域请求时, 如何解决csrf问题?</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端的防御"><span class="nav-number">1.</span> <span class="nav-text">客户端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器端的防御"><span class="nav-number">2.</span> <span class="nav-text">服务器端的防御</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Django的CSRF验证"><span class="nav-number">3.</span> <span class="nav-text">Django的CSRF验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#前后端分离项目如何自动包含csrf"><span class="nav-number">4.</span> <span class="nav-text">前后端分离项目如何自动包含csrf?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在跨域请求时-如何解决csrf问题"><span class="nav-number">5.</span> <span class="nav-text">在跨域请求时, 如何解决csrf问题?</span></a></li></ol></div>
             
 
           </div>
