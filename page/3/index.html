@@ -1331,7 +1331,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/23/使用Hexo+Github部署个人博客/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/25/Hexo添加访问统计/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -1350,7 +1350,156 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/23/使用Hexo+Github部署个人博客/" itemprop="url">Hexo+Github搭建个人博客</a></h1>
+                <a class="post-title-link" href="/2019/08/25/Hexo添加访问统计/" itemprop="url">Hexo+Next添加访问统计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-25T11:58:21+08:00">
+                2019-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>如果使用的是Next主题的话, 已经集成了busuanzi统计, 但默认处于禁用状态.</p>
+<hr>
+<h3 id="开启busuanzi统计"><a href="#开启busuanzi统计" class="headerlink" title="开启busuanzi统计"></a>开启busuanzi统计</h3><p>打开主题配置文件<code>next/_config.yml</code>, 找到<code>busuanzi_count</code>部分:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="comment"># count values only if the other configs are false</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">false</span></span><br><span class="line">  <span class="comment"># custom uv span for the whole site</span></span><br><span class="line"><span class="attr">  site_uv:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  site_uv_header:</span> <span class="string">&lt;i</span> <span class="string">class="fa</span> <span class="string">fa-user"&gt;&lt;/i&gt;</span></span><br><span class="line"><span class="attr">  site_uv_footer:</span></span><br><span class="line">  <span class="comment"># custom pv span for the whole site</span></span><br><span class="line"><span class="attr">  site_pv:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  site_pv_header:</span> <span class="string">&lt;i</span> <span class="string">class="fa</span> <span class="string">fa-eye"&gt;&lt;/i&gt;</span></span><br><span class="line"><span class="attr">  site_pv_footer:</span></span><br><span class="line">  <span class="comment"># custom pv span for one page only</span></span><br><span class="line"><span class="attr">  page_pv:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  page_pv_header:</span> <span class="string">&lt;i</span> <span class="string">class="fa</span> <span class="string">fa-file-o"&gt;&lt;/i&gt;</span></span><br><span class="line"><span class="attr">  page_pv_footer:</span></span><br></pre></td></tr></table></figure>
+
+<p>将<code>enable</code>设为<code>true</code>, 即可开启busuanzi统计.</p>
+<hr>
+<h3 id="更改外链"><a href="#更改外链" class="headerlink" title="更改外链"></a>更改外链</h3><p>在<strong>当前版本</strong>中, 由于busuanzi网址失效, 而next中未及时更新该部分, 所以需要手动更改</p>
+<p>打开<code>next/layout/_third-party/analytic/</code>, 打开<code>busuanzi-counter.swig</code>, 找到</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="string">"https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>更改为:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="string">"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="统计量"><a href="#统计量" class="headerlink" title="统计量"></a>统计量</h3><p><code>site_uv</code>: 网站访问用户<br><code>site_pv</code>: 网站访问次数<br><code>page_pv</code>: 页面访问次数</p>
+<p>前两者是网站访问的统计量, 会显示在首页的页脚部分, 后者则是页面访问的统计量, 会显示在博客的标题下方.</p>
+<p>在开启busuanzi统计之后, 如果是在本地4000端口运行服务器, 前两者的数据会非常大, 因为所有不蒜子用户共用一个统计空间, 所有使用<code>localhost:4000</code>网址的用户会累计到同一个记录上.</p>
+<p>在部署至与别人不重复的网址时, 就可以恢复正常.</p>
+<hr>
+<h3 id="自定义统计前缀和后缀"><a href="#自定义统计前缀和后缀" class="headerlink" title="自定义统计前缀和后缀"></a>自定义统计前缀和后缀</h3><p>在以上设置项中, </p>
+<ol>
+<li><code>*_header</code>是显示在统计数字之前的前缀, 默认为一个<code>font-awesome</code>图标</li>
+<li><code>*_footer</code>是显示在统计数字之后的后缀, 默认无.</li>
+</ol>
+<p>可以直接修改进行自定义.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="comment"># count values only if the other configs are false</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">false</span></span><br><span class="line">  <span class="comment"># custom uv span for the whole site</span></span><br><span class="line"><span class="attr">  site_uv:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  site_uv_header:</span> <span class="string">本站访问人数</span></span><br><span class="line"><span class="attr">  site_uv_footer:</span></span><br><span class="line">  <span class="comment"># custom pv span for the whole site</span></span><br><span class="line"><span class="attr">  site_pv:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  site_pv_header:</span> <span class="string">本站访问量</span></span><br><span class="line"><span class="attr">  site_pv_footer:</span></span><br><span class="line">  <span class="comment"># custom pv span for one page only</span></span><br><span class="line"><span class="attr">  page_pv:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  page_pv_header:</span> <span class="string">本文阅读量</span></span><br><span class="line"><span class="attr">  page_pv_footer:</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="更新-2019-10-14"><a href="#更新-2019-10-14" class="headerlink" title="更新(2019.10.14)"></a>更新(2019.10.14)</h3><p>在最新版本的Next中, 外链失效问题已被修复, 且配置项少量更改.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/23/Hexo+Github部署个人博客/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/23/Hexo+Github部署个人博客/" itemprop="url">Hexo+Github搭建个人博客</a></h1>
         
 
         <div class="post-meta">
@@ -1406,153 +1555,11 @@
 <p>我们通过Hexo生成静态页面, 然后将其同步至远程仓库, 作为某个repository的Github Page, 这样就可以直接在Github上访问了.</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/08/23/使用Hexo+Github部署个人博客/#more" rel="contents">
+            <a class="btn" href="/2019/08/23/Hexo+Github部署个人博客/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
           <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/22/Hexo自定义代码高亮/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/22/Hexo自定义代码高亮/" itemprop="url">Hexo自定义代码高亮</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-22T11:58:21+08:00">
-                2019-08-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>以Next主题为例, 只提供了五种代码高亮样式, 在都不满足需要的情况下, 可能需要进行自定义.</p>
-<p>因为Next并没有提供接口, 所以需要直接修改相关css代码.</p>
-<hr>
-<h3 id="行内代码"><a href="#行内代码" class="headerlink" title="行内代码"></a>行内代码</h3><p>被一对反引号标记的行内代码, 默认情况下是灰色背景, 文本颜色不变, 如果需要修改, 则找到<code>&lt;code&gt;</code>选择器部分:</p>
-<p>行内代码高亮的css部分定义在<code>next/source.css/_common/component/highlight/highlight.styl</code>中.</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: $code-foreground;</span><br><span class="line">  <span class="attribute">background</span>: $code-background;</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  font-size $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>例如更改行内代码样式为红色文本, 淡红色背景, 则重设<code>color</code>和<code>background</code>属性:</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">rgba</span>(255,192,203, 0.1);</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  font-size $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>具体显示效果如本文所示.</p>
-<hr>
-<h3 id="高亮主题"><a href="#高亮主题" class="headerlink" title="高亮主题"></a>高亮主题</h3><p>Hexo提供了五种代码高亮主题: <code>normal</code>, <code>night</code>, <code>night blue</code>, <code>night bright</code>, <code>night eighties</code>.</p>
-<p>高亮主题的css部分定义在<code>next/source.css/_common/component/highlight/theme.styl</code>中, 在这里我们能看到具体的方案配色:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">if</span> $highlight_theme == <span class="string">"normal"</span></span><br><span class="line">  $highlight-background   = #f7f7f7</span><br><span class="line">  $highlight-current-line = #efefef</span><br><span class="line">  $highlight-selection    = #d6d6d6</span><br><span class="line">  $highlight-foreground   = #4d4d4c</span><br><span class="line">  $highlight-comment      = #8e908c</span><br><span class="line">  $highlight-red          = #c82829</span><br><span class="line">  $highlight-orange       = #f5871f</span><br><span class="line">  $highlight-yellow       = #eab700</span><br><span class="line">  $highlight-green        = #718c00</span><br><span class="line">  $highlight-aqua         = #3e999f</span><br><span class="line">  $highlight-blue         = #4271ae</span><br><span class="line">  $highlight-purple       = #8959a8</span><br><span class="line">  $highlight-gutter       = &#123;</span><br><span class="line">    color: #869194,</span><br><span class="line">    bg-color: #eff2f3</span><br><span class="line">  &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>直接更改某个主题的配色, 或是创建新的配色主题:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> $highlight_theme == <span class="string">"solarized light"</span></span><br><span class="line">  $highlight-background   = #FDF6E3</span><br><span class="line">  $highlight-constant     = #00FF00</span><br><span class="line">  $highlight-current-line = #FDF6E3</span><br><span class="line">  $highlight-selection    = #ECE7D5</span><br><span class="line">  $highlight-foreground   = #657A81</span><br><span class="line">  $highlight-comment      = #93A1A1</span><br><span class="line">  $highlight-red          = #D30102</span><br><span class="line">  $highlight-orange       = #657A81</span><br><span class="line">  $highlight-yellow       = #657A81</span><br><span class="line">  $highlight-green        = #2AA198</span><br><span class="line">  $highlight-aqua         = #657A81</span><br><span class="line">  $highlight-blue         = #657A81</span><br><span class="line">  $highlight-purple       = #B58900</span><br><span class="line">  $highlight-gutter       = &#123;</span><br><span class="line">    color: #586E75</span><br><span class="line">    bg-color: #FDF6E3</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后到<strong>站点配置文件</strong>(即项目根目录下<code>_config.yml</code>文件)中, 更改使用的配色主题:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">highlight_theme: solarized light</span><br></pre></td></tr></table></figure>
-
-<p>保存生效即可.</p>
-
-          
         
       
     </div>
@@ -1636,7 +1643,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1649,7 +1656,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -1710,6 +1717,26 @@
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
 
 
 
