@@ -108,14 +108,14 @@
 <meta name="description" content="元编程是一种编写计算机程序的技术, 这些程序可以将自己看做数据, 因此可以在运行时可以对它进行内省, 生成, 修改.   因此我们可以区分Python元编程的两种主要方法  专注于语言对基本元素(函数, 类, 类型)内省的能力和对运行时创建或修改的能力 允许程序直接处理代码本身, 例如原始的纯文本格式, 或是抽象语法树(AST)">
 <meta name="keywords" content="元编程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python元编程">
+<meta property="og:title" content="Python元编程">
 <meta property="og:url" content="http://yoursite.com/2019/01/07/python元编程相关/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="元编程是一种编写计算机程序的技术, 这些程序可以将自己看做数据, 因此可以在运行时可以对它进行内省, 生成, 修改.   因此我们可以区分Python元编程的两种主要方法  专注于语言对基本元素(函数, 类, 类型)内省的能力和对运行时创建或修改的能力 允许程序直接处理代码本身, 例如原始的纯文本格式, 或是抽象语法树(AST)">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-12T03:18:56.055Z">
+<meta property="og:updated_time" content="2019-10-14T17:25:13.192Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python元编程">
+<meta name="twitter:title" content="Python元编程">
 <meta name="twitter:description" content="元编程是一种编写计算机程序的技术, 这些程序可以将自己看做数据, 因此可以在运行时可以对它进行内省, 生成, 修改.   因此我们可以区分Python元编程的两种主要方法  专注于语言对基本元素(函数, 类, 类型)内省的能力和对运行时创建或修改的能力 允许程序直接处理代码本身, 例如原始的纯文本格式, 或是抽象语法树(AST)">
 
 
@@ -152,7 +152,7 @@
 
 
 
-  <title>python元编程 | 紫秋的个人博客</title>
+  <title>Python元编程 | 紫秋的个人博客</title>
   
 
 
@@ -318,7 +318,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">python元编程</h1>
+          <h1 class="post-title" itemprop="name headline">Python元编程</h1>
         
 
         <div class="post-meta">
@@ -396,7 +396,7 @@
 </ul>
 <hr>
 <h3 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h3><p>一个装饰器, 接收一个函数, 并返回一个新的函数. </p>
-<p>未嵌套装饰器的大概定义如下</p>
+<p>典型的装饰器定义如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(func)</span>:</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">warpper</span><span class="params">(*args,**kw)</span>:</span></span><br><span class="line">      ...</span><br><span class="line">      <span class="keyword">return</span> func(*args,**kw)</span><br><span class="line">   rerurn warpper</span><br></pre></td></tr></table></figure>
 
 <p>装饰器语法</p>
@@ -409,11 +409,11 @@
 <p>&emsp;&emsp;注意装饰器语法完全等同于<code>func = decorator(func)</code>, 现在func这个变量名已经指向了新函数warpper,即增强版的func, 在完成func原本的功能之余, 还增加了新的特性. 为了保证warpper函数可以接收任何类型和任意数量的参数, 其参数定义为<code>(*args, **kwargs)</code>, 并解构传递至func中. </p>
 <p>&emsp;&emsp;我们的目的是让warpper函数完美替代原本的func, 现在func变量指向了warpper函数, 但是warpper的一些元数据未改变, 例如<code>__name__</code>属性仍然为”warpper”而不是”func”, 即<code>func.__name__ = warpper</code>.</p>
 <p> 这显然是不合适的. 为了使warpper函数<strong>看起来</strong>完全就是func, <code>functools</code>模块中提供了一个装饰器<code>@functools.warps</code>, 该装饰器接收一个额外的参数, 该参数应当传入一个函数, 该装饰器会将被装饰的函数的所有元属性更改为与额外参数(另一个函数)完全相同. </p>
-<p>所以一个典型的自定义装饰器应当如下形式:</p>
+<p>所以一个典型的装饰器定义可能如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(func)</span>:</span></span><br><span class="line"><span class="meta">	@functools.warps(func)</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">wapper</span><span class="params">(*args,**kws)</span>:</span></span><br><span class="line">		...</span><br><span class="line">	<span class="keyword">return</span> func(*args,**kws)</span><br><span class="line"><span class="keyword">return</span> wapper</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="类的特殊方法"><a href="#类的特殊方法" class="headerlink" title="类的特殊方法"></a>类的特殊方法</h2><h4 id="使用new方法来覆写实例创建过程"><a href="#使用new方法来覆写实例创建过程" class="headerlink" title="使用new方法来覆写实例创建过程"></a>使用<strong>new</strong>方法来覆写实例创建过程</h4><p>在类的实例化过程中, <code>__init__</code>是一个实例方法, 它接收一个实例(<code>self</code>), 并将其初始化</p>
+<h3 id="类的特殊方法"><a href="#类的特殊方法" class="headerlink" title="类的特殊方法"></a>类的特殊方法</h3><h4 id="使用new方法来覆写实例创建过程"><a href="#使用new方法来覆写实例创建过程" class="headerlink" title="使用new方法来覆写实例创建过程"></a>使用<strong>new</strong>方法来覆写实例创建过程</h4><p>在类的实例化过程中, <code>__init__</code>是一个实例方法, 它接收一个实例(<code>self</code>), 并将其初始化</p>
 <p>而<strong>创建</strong>该类实例的是另一个方法, <code>__new__</code>方法</p>
 <ol>
 <li><code>__new__</code>方法是用来创建实例的静态方法, 因为其特殊性, 所以无需使用<code>@staticmethod</code>来声明. </li>
@@ -429,14 +429,10 @@
 <hr>
 <h4 id="其他可以访问类-实例属性的一些方法"><a href="#其他可以访问类-实例属性的一些方法" class="headerlink" title="其他可以访问类/实例属性的一些方法"></a>其他可以访问类/实例属性的一些方法</h4><p>内置函数<code>dir()</code>和<code>vars()</code></p>
 <ul>
-<li><p>dir(cls) 返回继承自基类的和自己的所有属性的列表</p>
-</li>
-<li><p>dir(obj) 返回实例和从类中继承的所有属性的列表</p>
-</li>
-<li><p>vars(cls) 返回类<strong>自己的</strong>所有属性的键和值, 与实际属性相关联, 写有效</p>
-</li>
-<li><p>vars(obj) 返回实例<strong>自己的</strong>所有属性的键和值, 与实际属性相关联, 写有效</p>
-</li>
+<li><code>dir(cls)</code> 返回继承自基类的和自己的所有属性的列表</li>
+<li><code>dir(obj)</code> 返回实例和从类中继承的所有属性的列表</li>
+<li><code>vars(cls)</code> 返回类<strong>自己的</strong>(不包含继承的)所有属性的键和值, 与实际属性相关联, 写有效</li>
+<li><code>vars(obj)</code> 返回实例<strong>自己的</strong>所有属性的键和值, 与实际属性相关联, 写有效</li>
 </ul>
 <p>类和实例的属性</p>
 <ul>
@@ -445,8 +441,8 @@
 </ul>
 <p>实际上, <code>vars</code>调用就是返回<code>__dict__</code>属性的值</p>
 <hr>
-<h3 id="元类"><a href="#元类" class="headerlink" title="元类"></a>元类</h3><p>元类(metaclass)是一个python特性. </p>
-<p>元类是定义其他类的原型. 在python中一切皆对象, 所以定义了实例对象的类本身, 也是对象. 因此, 如果它也是对象, 那么一定有与之相关联的类, 事实上, 所有类定义的基类都是内置的<code>type</code>类. </p>
+<h3 id="元类"><a href="#元类" class="headerlink" title="元类"></a>元类</h3><p>元类(<code>metaclass</code>)是一个python特性. </p>
+<p>元类是定义其他类的原型. 在python中一切皆对象, 所以定义了实例对象的类本身, 也是对象. 进一步考虑, 如果它也是对象, 那么一定有与之相关联的类, 事实上, 所有类定义的基类都是内置的<code>type</code>类. </p>
 <blockquote>
 <p>普通类是type的<strong>实例</strong>, 而元类是type的<strong>子类</strong>. </p>
 </blockquote>
@@ -475,8 +471,8 @@
 </ul>
 <hr>
 <h3 id="动态代码生成"><a href="#动态代码生成" class="headerlink" title="动态代码生成"></a>动态代码生成</h3><ol>
-<li><code>ecec(object, globals, locals)</code>: 用于手动执行代码</li>
-<li><code>eval(expression, globals, locals)</code>：用于求值</li>
+<li><code>exec(object, globals, locals)</code>: 用于手动执行代码</li>
+<li><code>eval(expression, globals, locals)</code>：用于求表达式值</li>
 <li><code>complie(source, filename, mode)</code>：编译任意Python代码</li>
 </ol>
 <p>Python语法首先被转换为抽象语法树(Abstract Syntax Tree, AST),然后被编译为字节码. 抽象语法树是对源代码抽象语法结构的一种树状表示. 使用内置的ast模块可以得到Python代码的原始AST, 在传递给<code>complie()</code> 调用之前, 可以对AST进行修改, 以便向现有语法中添加新的语义. 也可以使用纯人工方式创建AST, 不需要解析任何源码, 这样就可以为自定义的领域特定语言创建Python字节码. </p>
@@ -599,7 +595,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -612,7 +608,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -645,7 +641,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰器"><span class="nav-number">1.</span> <span class="nav-text">装饰器</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#类的特殊方法"><span class="nav-number"></span> <span class="nav-text">类的特殊方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用new方法来覆写实例创建过程"><span class="nav-number">0.1.</span> <span class="nav-text">使用new方法来覆写实例创建过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他可以访问类-实例属性的一些方法"><span class="nav-number">0.2.</span> <span class="nav-text">其他可以访问类/实例属性的一些方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#元类"><span class="nav-number">1.</span> <span class="nav-text">元类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态代码生成"><span class="nav-number">2.</span> <span class="nav-text">动态代码生成</span></a></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰器"><span class="nav-number">1.</span> <span class="nav-text">装饰器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类的特殊方法"><span class="nav-number">2.</span> <span class="nav-text">类的特殊方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用new方法来覆写实例创建过程"><span class="nav-number">2.1.</span> <span class="nav-text">使用new方法来覆写实例创建过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他可以访问类-实例属性的一些方法"><span class="nav-number">2.2.</span> <span class="nav-text">其他可以访问类/实例属性的一些方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#元类"><span class="nav-number">3.</span> <span class="nav-text">元类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态代码生成"><span class="nav-number">4.</span> <span class="nav-text">动态代码生成</span></a></li></ol></div>
             
 
           </div>
@@ -694,7 +690,7 @@
 
   
     <span class="site-uv">
-      本站访问量
+      本站访问人数
       <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
       
     </span>
@@ -702,7 +698,7 @@
 
   
     <span class="site-pv">
-      <i class="fa fa-eye"></i>
+      本站访问量
       <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
       
     </span>

@@ -105,18 +105,18 @@
 
 
 
-<meta name="description" content="内置信号模型相关的内置信号都在django.db.models.signals中定义    信号 发送时机    pre_save 在save之前发送   pre_delete 在delete之前发送   post_save 在save之后发送   post_delete 在delete之后发送   m2m_changed 在manytomany表改动后发送">
+<meta name="description" content="Django的信号机制是观察者模式的典型实现.  观察者模式定义了对象之间的依赖关系, 当被观察对象状态发生变化时, 自动通知其依赖对象, 并且依赖对象自动更新.  值得注意的是, Django信号机制是同步的, 而非异步的, 因此要避免滥用信号机制造成效率损失.">
 <meta name="keywords" content="Django,Django信号系统">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Django信号系统">
 <meta property="og:url" content="http://yoursite.com/2019/03/17/Django信号系统/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="内置信号模型相关的内置信号都在django.db.models.signals中定义    信号 发送时机    pre_save 在save之前发送   pre_delete 在delete之前发送   post_save 在save之后发送   post_delete 在delete之后发送   m2m_changed 在manytomany表改动后发送">
+<meta property="og:description" content="Django的信号机制是观察者模式的典型实现.  观察者模式定义了对象之间的依赖关系, 当被观察对象状态发生变化时, 自动通知其依赖对象, 并且依赖对象自动更新.  值得注意的是, Django信号机制是同步的, 而非异步的, 因此要避免滥用信号机制造成效率损失.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-12T17:33:42.012Z">
+<meta property="og:updated_time" content="2019-10-14T17:36:55.390Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Django信号系统">
-<meta name="twitter:description" content="内置信号模型相关的内置信号都在django.db.models.signals中定义    信号 发送时机    pre_save 在save之前发送   pre_delete 在delete之前发送   post_save 在save之后发送   post_delete 在delete之后发送   m2m_changed 在manytomany表改动后发送">
+<meta name="twitter:description" content="Django的信号机制是观察者模式的典型实现.  观察者模式定义了对象之间的依赖关系, 当被观察对象状态发生变化时, 自动通知其依赖对象, 并且依赖对象自动更新.  值得注意的是, Django信号机制是同步的, 而非异步的, 因此要避免滥用信号机制造成效率损失.">
 
 
 
@@ -373,7 +373,13 @@
       
 
       
-        <h3 id="内置信号"><a href="#内置信号" class="headerlink" title="内置信号"></a>内置信号</h3><p>模型相关的内置信号都在<code>django.db.models.signals</code>中定义</p>
+        <p>Django的信号机制是观察者模式的典型实现. </p>
+<p>观察者模式定义了对象之间的依赖关系, 当被观察对象状态发生变化时, 自动通知其依赖对象, 并且依赖对象自动更新. </p>
+<p>值得注意的是, Django信号机制是<strong>同步</strong>的, 而非异步的, 因此要避免滥用信号机制造成效率损失.</p>
+<a id="more"></a>
+
+<hr>
+<h3 id="内置信号"><a href="#内置信号" class="headerlink" title="内置信号"></a>内置信号</h3><p>模型相关的内置信号都在<code>django.db.models.signals</code>中定义</p>
 <table>
 <thead>
 <tr>
@@ -402,8 +408,6 @@
 <td>在manytomany表改动后发送</td>
 </tr>
 </tbody></table>
-<a id="more"></a>
-
 <p>请求相关的内置信号定义在<code>django.core.signals</code>中的信号</p>
 <table>
 <thead>
@@ -574,8 +578,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/07/python元编程相关/" rel="next" title="python元编程">
-                <i class="fa fa-chevron-left"></i> python元编程
+              <a href="/2019/01/07/python元编程相关/" rel="next" title="Python元编程">
+                <i class="fa fa-chevron-left"></i> Python元编程
               </a>
             
           </div>
@@ -584,8 +588,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/06/01/python MRO及C3线性化算法/" rel="prev" title="MRO及C3线性化算法">
-                MRO及C3线性化算法 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/06/01/python MRO及C3线性化算法/" rel="prev" title="Python MRO及C3线性化算法">
+                Python MRO及C3线性化算法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -663,7 +667,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -676,7 +680,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -758,7 +762,7 @@
 
   
     <span class="site-uv">
-      本站访问量
+      本站访问人数
       <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
       
     </span>
@@ -766,7 +770,7 @@
 
   
     <span class="site-pv">
-      <i class="fa fa-eye"></i>
+      本站访问量
       <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
       
     </span>

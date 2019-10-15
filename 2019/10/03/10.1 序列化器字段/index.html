@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值. 序列化器字段定义在fields.py中, 但为了方便起见, 应该使用from rest_framework import serializers 并用serializers.&amp;lt;FieldName&amp;gt;的形式来使用.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-10T10:21:12.378Z">
+<meta property="og:updated_time" content="2019-10-14T14:40:47.206Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="10.1 序列化器字段:非关系字段 Serializer Field">
 <meta name="twitter:description" content="序列化器字段进行从原始数据到python原生数据类型的转换, 验证输入值, 以及从其对应的Model实例中获取和设置值. 序列化器字段定义在fields.py中, 但为了方便起见, 应该使用from rest_framework import serializers 并用serializers.&amp;lt;FieldName&amp;gt;的形式来使用.">
@@ -547,7 +547,7 @@
 <h4 id="TimeField"><a href="#TimeField" class="headerlink" title="TimeField"></a>TimeField</h4><p><code>TimeField(format=api_settings.TIME_FORMAT, input_formats=None)</code></p>
 <h4 id="DurationField"><a href="#DurationField" class="headerlink" title="DurationField"></a>DurationField</h4><p><code>DurationField()</code></p>
 <hr>
-<h3 id="选择字段"><a href="#选择字段" class="headerlink" title="选择字段"></a>选择字段</h3><h4 id="ChoiceField"><a href="#ChoiceField" class="headerlink" title="ChoiceField"></a>ChoiceField</h4><p>该字段可以接受一个在该字段合法值列表中的值, 对应于mysql中的枚举类</p>
+<h3 id="选择字段"><a href="#选择字段" class="headerlink" title="选择字段"></a>选择字段</h3><h4 id="ChoiceField"><a href="#ChoiceField" class="headerlink" title="ChoiceField"></a>ChoiceField</h4><p>该字段可以接受一个在该字段合法值列表中的值.</p>
 <p>示例</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ActApplicant</span><span class="params">(Model)</span>:</span></span><br><span class="line">    status_choices = [</span><br><span class="line">        (<span class="number">0</span>, <span class="string">'未通过'</span>), </span><br><span class="line">        (<span class="number">1</span>, <span class="string">'已通过'</span>), </span><br><span class="line">        (<span class="number">2</span>, <span class="string">'申请中'</span>)</span><br><span class="line">    ]</span><br><span class="line">    act = ForeignKey(Act, verbose_name=<span class="string">'活动'</span>, on_delete=CASCADE)</span><br><span class="line">    applicant = ForeignKey(Applicant, verbose_name=<span class="string">'申请人'</span>, on_delete=CASCADE)</span><br><span class="line">    apply_time = DateTimeField(<span class="string">'申请时间'</span>)</span><br><span class="line">    status = SmallIntegerField(<span class="string">'申请状态'</span>, choices=status_choices, default=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.act.title</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        unique_together = (<span class="string">'act'</span>, <span class="string">'applicant'</span>)</span><br><span class="line">        verbose_name = verbose_name_plural = <span class="string">'活动申请'</span></span><br></pre></td></tr></table></figure>
 
@@ -695,8 +695,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/10/03/11. 验证器/" rel="prev" title="11. 序列化器 Validator">
-                11. 序列化器 Validator <i class="fa fa-chevron-right"></i>
+              <a href="/2019/10/03/10.2 序列化器字段-关系字段/" rel="prev" title="10.2 序列化器字段:关系字段 Serializer Field">
+                10.2 序列化器字段:关系字段 Serializer Field <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -774,7 +774,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -787,7 +787,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -869,7 +869,7 @@
 
   
     <span class="site-uv">
-      本站访问量
+      本站访问人数
       <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
       
     </span>
@@ -877,7 +877,7 @@
 
   
     <span class="site-pv">
-      <i class="fa fa-eye"></i>
+      本站访问量
       <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
       
     </span>
