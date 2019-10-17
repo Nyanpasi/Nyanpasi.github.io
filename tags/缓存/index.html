@@ -94,7 +94,7 @@
 
 
 
-  <meta name="keywords" content="django-rest-framework中文文档,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -105,18 +105,16 @@
 
 
 
-<meta name="description" content="在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列命名常量, 使用这些常量会让代码更加清晰可读.">
-<meta name="keywords" content="django-rest-framework中文文档">
-<meta property="og:type" content="article">
-<meta property="og:title" content="24. 状态码 Status">
-<meta property="og:url" content="http://yoursite.com/2019/10/03/24. 状态码/index.html">
+<meta name="description" content="技术">
+<meta property="og:type" content="website">
+<meta property="og:title" content="紫秋的个人博客">
+<meta property="og:url" content="http://yoursite.com/tags/缓存/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列命名常量, 使用这些常量会让代码更加清晰可读.">
+<meta property="og:description" content="技术">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-12T04:03:26.177Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="24. 状态码 Status">
-<meta name="twitter:description" content="在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列命名常量, 使用这些常量会让代码更加清晰可读.">
+<meta name="twitter:title" content="紫秋的个人博客">
+<meta name="twitter:description" content="技术">
 
 
 
@@ -146,13 +144,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/10/03/24. 状态码/">
+  <link rel="canonical" href="http://yoursite.com/tags/缓存/">
 
 
 
 
 
-  <title>24. 状态码 Status | 紫秋的个人博客</title>
+  <title>Tag: 缓存 | 紫秋的个人博客</title>
   
 
 
@@ -171,7 +169,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -287,182 +285,52 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  
+  
+  
+  <div class="post-block tag">
 
-  
+    <div id="posts" class="posts-collapse">
+      <div class="collection-title">
+        <h1>缓存<small>Tag</small>
+        </h1>
+      </div>
 
-  
-  
-  
+      
+        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/24. 状态码/">
+    <header class="post-header">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
+      <h2 class="post-title">
         
-        
-          <h1 class="post-title" itemprop="name headline">24. 状态码 Status</h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
+            <a class="post-title-link" href="/2019/03/18/Django缓存/" itemprop="url">
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span itemprop="name">Django缓存系统</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T18:09:47+08:00">
-                2019-10-03
-              </time>
-            
+            </a>
+        
+      </h2>
 
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated" datetime="2019-03-18T11:15:03+08:00" content="2019-03-18">
+          03-18
+        </time>
+      </div>
 
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="page-pv"><span>该文章被访问</span>
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
-            </span>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>在响应中使用纯粹的状态码并不推荐, rest-framework提供了一系列<strong>命名常量</strong>, 使用这些常量会让代码更加清晰可读.</p>
-<a id="more"></a>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> status</span><br><span class="line"><span class="keyword">from</span> rest_framework.response <span class="keyword">import</span> Response</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">empty_view</span><span class="params">(self)</span>:</span></span><br><span class="line">    content = &#123;<span class="string">'please move along'</span>: <span class="string">'nothing to see here'</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> Response(content, status=status.HTTP_404_NOT_FOUND)</span><br></pre></td></tr></table></figure>
-
-<p>包含在<code>status</code>模块中的所有状态码会在下面列出.</p>
-<p>该模块同样包含了一个辅助函数用以测试一个状态码是否在某一个区间内.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> status</span><br><span class="line"><span class="keyword">from</span> rest_framework.test <span class="keyword">import</span> APITestCase</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleTestCase</span><span class="params">(APITestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_url_root</span><span class="params">(self)</span>:</span></span><br><span class="line">        url = reverse(<span class="string">'index'</span>)</span><br><span class="line">        response = self.client.get(url)</span><br><span class="line">        self.assertTrue(status.is_success(response.status_code))</span><br></pre></td></tr></table></figure>
-
-<p>HTTP状态码的合适使用方式请参考<a href>RFC 2616</a> 和<a href>RFC 6585</a>.</p>
-<hr>
-<h3 id="信息提示-1xx"><a href="#信息提示-1xx" class="headerlink" title="信息提示 - 1xx"></a>信息提示 - 1xx</h3><p>这类响应码代表了临时响应. rest-framework默认未使用该类状态码.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HTTP_100_CONTINUE</span><br><span class="line">HTTP_101_SWITCHING_PROTOCOLS</span><br></pre></td></tr></table></figure>
-
-<h3 id="成功-2xx"><a href="#成功-2xx" class="headerlink" title="成功 - 2xx"></a>成功 - 2xx</h3><p>这类响应码代表着客户端请求被成功收到, 理解并接收.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HTTP_200_OK</span><br><span class="line">HTTP_201_CREATED</span><br><span class="line">HTTP_202_ACCEPTED</span><br><span class="line">HTTP_203_NON_AUTHORITATIVE_INFORMATION</span><br><span class="line">HTTP_204_NO_CONTENT</span><br><span class="line">HTTP_205_RESET_CONTENT</span><br><span class="line">HTTP_206_PARTIAL_CONTENT</span><br><span class="line">HTTP_207_MULTI_STATUS</span><br><span class="line">HTTP_208_ALREADY_REPORTED</span><br><span class="line">HTTP_226_IM_USED</span><br></pre></td></tr></table></figure>
-
-<h3 id="重定向-3xx"><a href="#重定向-3xx" class="headerlink" title="重定向 - 3xx"></a>重定向 - 3xx</h3><p>这类响应码代表着用户代理必须采取进一步的行动才能满足请求.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP_300_MULTIPLE_CHOICES</span><br><span class="line">HTTP_301_MOVED_PERMANENTLY</span><br><span class="line">HTTP_302_FOUND</span><br><span class="line">HTTP_303_SEE_OTHER</span><br><span class="line">HTTP_304_NOT_MODIFIED</span><br><span class="line">HTTP_305_USE_PROXY</span><br><span class="line">HTTP_306_RESERVED</span><br><span class="line">HTTP_307_TEMPORARY_REDIRECT</span><br><span class="line">HTTP_308_PERMANENT_REDIRECT</span><br></pre></td></tr></table></figure>
-
-<h3 id="客户端错误-4xx"><a href="#客户端错误-4xx" class="headerlink" title="客户端错误 - 4xx"></a>客户端错误 - 4xx</h3><p>这类状态码代表着(可能是)客户端错误. 在使用该类状态码的时候响应<strong>应当</strong>包含一个实体用以说明该错误状况的解释, 以及该错误是暂时的还是永久的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">HTTP_400_BAD_REQUEST</span><br><span class="line">HTTP_401_UNAUTHORIZED</span><br><span class="line">HTTP_402_PAYMENT_REQUIRED</span><br><span class="line">HTTP_403_FORBIDDEN</span><br><span class="line">HTTP_404_NOT_FOUND</span><br><span class="line">HTTP_405_METHOD_NOT_ALLOWED</span><br><span class="line">HTTP_406_NOT_ACCEPTABLE</span><br><span class="line">HTTP_407_PROXY_AUTHENTICATION_REQUIRED</span><br><span class="line">HTTP_408_REQUEST_TIMEOUT</span><br><span class="line">HTTP_409_CONFLICT</span><br><span class="line">HTTP_410_GONE</span><br><span class="line">HTTP_411_LENGTH_REQUIRED</span><br><span class="line">HTTP_412_PRECONDITION_FAILED</span><br><span class="line">HTTP_413_REQUEST_ENTITY_TOO_LARGE</span><br><span class="line">HTTP_414_REQUEST_URI_TOO_LONG</span><br><span class="line">HTTP_415_UNSUPPORTED_MEDIA_TYPE</span><br><span class="line">HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE</span><br><span class="line">HTTP_417_EXPECTATION_FAILED</span><br><span class="line">HTTP_422_UNPROCESSABLE_ENTITY</span><br><span class="line">HTTP_423_LOCKED</span><br><span class="line">HTTP_424_FAILED_DEPENDENCY</span><br><span class="line">HTTP_426_UPGRADE_REQUIRED</span><br><span class="line">HTTP_428_PRECONDITION_REQUIRED</span><br><span class="line">HTTP_429_TOO_MANY_REQUESTS</span><br><span class="line">HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE</span><br><span class="line">HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS</span><br></pre></td></tr></table></figure>
-
-<h3 id="服务器错误-5xx"><a href="#服务器错误-5xx" class="headerlink" title="服务器错误 - 5xx"></a>服务器错误 - 5xx</h3><p>这类响应码代表着服务端出错或无法执行该请求. 响应应当包含一个实体, 该实体中<strong>应当</strong>有对错误情况的说明, 以及该情况是暂时的或永久的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP_500_INTERNAL_SERVER_ERROR</span><br><span class="line">HTTP_501_NOT_IMPLEMENTED</span><br><span class="line">HTTP_502_BAD_GATEWAY</span><br><span class="line">HTTP_503_SERVICE_UNAVAILABLE</span><br><span class="line">HTTP_504_GATEWAY_TIMEOUT</span><br><span class="line">HTTP_505_HTTP_VERSION_NOT_SUPPORTED</span><br><span class="line">HTTP_506_VARIANT_ALSO_NEGOTIATES</span><br><span class="line">HTTP_507_INSUFFICIENT_STORAGE</span><br><span class="line">HTTP_508_LOOP_DETECTED</span><br><span class="line">HTTP_509_BANDWIDTH_LIMIT_EXCEEDED</span><br><span class="line">HTTP_510_NOT_EXTENDED</span><br><span class="line">HTTP_511_NETWORK_AUTHENTICATION_REQUIRED</span><br></pre></td></tr></table></figure>
-
-<h3 id="辅助函数"><a href="#辅助函数" class="headerlink" title="辅助函数"></a>辅助函数</h3><p>以下辅助函数用以判断响应码属于哪一类.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">is_informational()  <span class="comment"># 1xx</span></span><br><span class="line">is_success()        <span class="comment"># 2xx</span></span><br><span class="line">is_redirect()       <span class="comment"># 3xx</span></span><br><span class="line">is_client_error()   <span class="comment"># 4xx</span></span><br><span class="line">is_server_error()   <span class="comment"># 5xx</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/django-rest-framework中文文档/" rel="tag"># django-rest-framework中文文档</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/10/03/23. 异常处理/" rel="next" title="23. 异常处理 Exception">
-                <i class="fa fa-chevron-left"></i> 23. 异常处理 Exception
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/10/03/25. 测试/" rel="prev" title="25. 测试 Testing">
-                25. 测试 Testing <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
       
     </div>
+
   </div>
+  
+  
+  
+
+  
 
 
           </div>
@@ -470,10 +338,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -494,17 +358,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -555,22 +410,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息提示-1xx"><span class="nav-number">1.</span> <span class="nav-text">信息提示 - 1xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成功-2xx"><span class="nav-number">2.</span> <span class="nav-text">成功 - 2xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向-3xx"><span class="nav-number">3.</span> <span class="nav-text">重定向 - 3xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端错误-4xx"><span class="nav-number">4.</span> <span class="nav-text">客户端错误 - 4xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器错误-5xx"><span class="nav-number">5.</span> <span class="nav-text">服务器错误 - 5xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#辅助函数"><span class="nav-number">6.</span> <span class="nav-text">辅助函数</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -724,10 +563,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 

@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="Django的信号机制是观察者模式的典型实现.  观察者模式定义了对象之间的依赖关系, 当被观察对象状态发生变化时, 自动通知其依赖对象, 并且依赖对象自动更新.  值得注意的是, Django信号机制是同步的, 而非异步的, 因此要避免滥用信号机制造成效率损失.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-14T17:36:55.390Z">
+<meta property="og:updated_time" content="2019-10-17T09:03:37.745Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Django信号系统">
 <meta name="twitter:description" content="Django的信号机制是观察者模式的典型实现.  观察者模式定义了对象之间的依赖关系, 当被观察对象状态发生变化时, 自动通知其依赖对象, 并且依赖对象自动更新.  值得注意的是, Django信号机制是同步的, 而非异步的, 因此要避免滥用信号机制造成效率损失.">
@@ -504,7 +504,7 @@
 </thead>
 <tbody><tr>
 <td>sender</td>
-<td>WSgiHandler</td>
+<td>WSGIHandler</td>
 <td>处理该请求的Handler</td>
 </tr>
 <tr>
@@ -545,7 +545,24 @@
 <p>使用该信号</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.dispatch <span class="keyword">import</span> receiver</span><br><span class="line"></span><br><span class="line"><span class="meta">@receiver(new_signal, )</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handler</span><span class="params">(sender, **kwargs)</span>:</span></span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
 
-<p><a href="https://stackoverflow.com/questions/2719038/where-should-signal-handlers-live-in-a-django-project" target="_blank" rel="noopener">参考</a></p>
+<hr>
+<h3 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h3><h4 id="如何在信号中获得可能已存在的记录"><a href="#如何在信号中获得可能已存在的记录" class="headerlink" title="如何在信号中获得可能已存在的记录?"></a>如何在信号中获得可能已存在的记录?</h4><p>如果要获得原记录需要使用<code>pre_save</code>, 此时原记录尚存.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@receiver(pre_save, sender)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">(sender, **kwargs)</span>:</span></span><br><span class="line">  instance = kwargs.get(<span class="string">'instance'</span>)</span><br><span class="line">  record = model.object.filter(id=instance.id).first()</span><br><span class="line">  <span class="keyword">if</span> record:</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="如何在信号中判断一条记录为新增记录"><a href="#如何在信号中判断一条记录为新增记录" class="headerlink" title="如何在信号中判断一条记录为新增记录?"></a>如何在信号中判断一条记录为新增记录?</h4><p>判断<code>instance._state.adding</code>, 如果为<code>True</code>则是新增记录, 如果为<code>False</code>则未新增记录.</p>
+<p>值得注意的是, 在信号中判断是否为新增记录仍然必须使用<code>pre_save</code>, 此时instance尚未存储, <code>._state.addding</code>可能被设置为<code>True</code>, 如果使用<code>post_save</code>, <code>._state.adding</code>无论如何会被设置为<code>False</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@receiver(pre_save, sender)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">(sender, **kwargs)</span>:</span></span><br><span class="line">  record = kwargs.get(<span class="string">'instance'</span>)</span><br><span class="line">  <span class="keyword">if</span> record._state.adding:</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>.id</code>属性判断是否为新增记录, 仍然使用<code>pre_save</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@receiver(pre_save, sender)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">(sender, **kwargs)</span>:</span></span><br><span class="line">  record = kwargs.get(<span class="string">'instance'</span>)</span><br><span class="line">  <span class="keyword">if</span> record.id <span class="keyword">is</span> <span class="literal">None</span>: <span class="comment">#id为自增列, 存储前值为None.</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="如何让多个信号触发同一个函数"><a href="#如何让多个信号触发同一个函数" class="headerlink" title="如何让多个信号触发同一个函数?"></a>如何让多个信号触发同一个函数?</h4><p>使用多个<code>@receiver</code>装饰器即可:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@receiver(post_save, sender=Model1)</span></span><br><span class="line"><span class="meta">@receiver(post_save, sender=Model2)</span></span><br><span class="line"><span class="meta">@receiver(post_save, sender=Model3)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_signal_handle</span><span class="params">(sender , **kwargs)</span></span></span><br><span class="line"><span class="function">    # <span class="title">some</span> <span class="title">code</span> <span class="title">here</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>参考:<br><a href="https://stackoverflow.com/questions/2719038/where-should-signal-handlers-live-in-a-django-project" target="_blank" rel="noopener">singnal代码应当放在项目的哪个位置</a><br><a href="https://stackoverflow.com/questions/907695/in-a-django-model-custom-save-method-how-should-you-identify-a-new-object" target="_blank" rel="noopener">在save()方法中如何判断为新增实例</a></p>
 
       
     </div>
@@ -588,8 +605,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/06/01/python MRO及C3线性化算法/" rel="prev" title="Python MRO及C3线性化算法">
-                Python MRO及C3线性化算法 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/18/Django缓存/" rel="prev" title="Django缓存系统">
+                Django缓存系统 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -667,7 +684,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -680,7 +697,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -713,7 +730,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#内置信号"><span class="nav-number">1.</span> <span class="nav-text">内置信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#信号接收的命名关键字参数"><span class="nav-number">2.</span> <span class="nav-text">信号接收的命名关键字参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#信号相关代码位置"><span class="nav-number">3.</span> <span class="nav-text">信号相关代码位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义处理函数"><span class="nav-number">4.</span> <span class="nav-text">定义处理函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义信号"><span class="nav-number">5.</span> <span class="nav-text">自定义信号</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#内置信号"><span class="nav-number">1.</span> <span class="nav-text">内置信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#信号接收的命名关键字参数"><span class="nav-number">2.</span> <span class="nav-text">信号接收的命名关键字参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#信号相关代码位置"><span class="nav-number">3.</span> <span class="nav-text">信号相关代码位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义处理函数"><span class="nav-number">4.</span> <span class="nav-text">定义处理函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义信号"><span class="nav-number">5.</span> <span class="nav-text">自定义信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他问题"><span class="nav-number">6.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#如何在信号中获得可能已存在的记录"><span class="nav-number">6.1.</span> <span class="nav-text">如何在信号中获得可能已存在的记录?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何在信号中判断一条记录为新增记录"><span class="nav-number">6.2.</span> <span class="nav-text">如何在信号中判断一条记录为新增记录?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何让多个信号触发同一个函数"><span class="nav-number">6.3.</span> <span class="nav-text">如何让多个信号触发同一个函数?</span></a></li></ol></li></ol></div>
             
 
           </div>
