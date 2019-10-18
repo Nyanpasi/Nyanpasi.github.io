@@ -3382,6 +3382,58 @@
       </tags>
   </entry>
   <entry>
+    <title>Epoll IO多路复用模型</title>
+    <url>/2019/04/21/Epoll%20IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E6%A8%A1%E5%9E%8B%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<h3 id="Send-和Recv-做了什么"><a href="#Send-和Recv-做了什么" class="headerlink" title="Send()和Recv()做了什么"></a>Send()和Recv()做了什么</h3><p>send()和recv()只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能. </p>
+<p>当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 仅此而已, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区. </p>
+<hr>
+<h3 id="程序阻塞于recv调用"><a href="#程序阻塞于recv调用" class="headerlink" title="程序阻塞于recv调用"></a>程序阻塞于recv调用</h3><p>在网络编程中, 我们send()之后, 就尝试使用recv()接收回复. 从调用recv()到得到结果, 等待时间分为两部分</p>
+<ol>
+<li>对方回复尚未到达, 因此完全无数据可读的时间</li>
+<li>对方回复数据已到达, 将数据从内核缓冲区取回应用程序缓冲区</li>
+</ol>
+<p>鉴于真实的网络环境, 第1段的时间远远大于第2段的时间. </p>
+<p>在阻塞IO的情况下, 我们必须等待这两段时间, 而在这期间, 程序只能让出处理机. </p>
+<p><img src="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70" alt="同步阻塞IO模型"></p>
+<hr>
+<h3 id="多路复用IO"><a href="#多路复用IO" class="headerlink" title="多路复用IO"></a>多路复用IO</h3><p>操作将I/O状态的变化封装为事件, 并提供了专门的系统模块<code>select</code>来让应用程序可以接收事件通知. 我们主要讨论的<code>epoll</code>是改进版的<code>select</code>. </p>
+<p>应用程序可以通过<code>epoll</code>注册文件描述符和回调函数, 由epoll负责监测这些文件的I/O变化. </p>
+<p>当程序调用epoll时, epoll就返回可用的(指可读/可写, 取决于注册时要求监听的事件类型)文件描述符, 然后程序就可以获得已就绪可以进行操作的文件. </p>
+<p>调用epoll的过程是阻塞的, 但除非所有等待的事件均没有发生时, epoll调用才会令程序阻塞, 只要有任意一个等待的事件发生, epoll就将其返回给程序. </p>
+<p>因此, 程序在send()之后, 不再自己尝试recv, 而是将其注册入epoll,然后继续执行, 程序可以继续将多个文件描述符及其等待的事件注册入epoll, 然后在恰当的时机(例如完成本轮循环后)通过epoll调用来获取可以进行操作的文件描述符. </p>
+<p>当程序从epoll中获得这些文件描述符时, 就可以直接调用recv来从内存缓冲区中拷贝数据到应用程序缓冲区. </p>
+<p>这样, 我们通过epoll来监测<code>多个</code>事件, 而只要<code>任意一个</code>事件发生, 程序就不会被阻塞, 这就是所谓<code>多路复用</code>. </p>
+<p>(<em>即使一直没有事件发生, 我们仍然可以通过超时参数来结束epoll调用的阻塞</em>)</p>
+<p><img src="https://img-blog.csdnimg.cn/20190703171840419.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70" alt="多路复用IO模型"></p>
+<p>需要说明的是, epoll并非在被调用时才去轮询其监测的事件, 而是在事件发生时就将其放置入一个内置数组中, 当调用时从该数组复制数据, 这也是它比select高明的地方. </p>
+<hr>
+<h3 id="边缘触发-ET-和水平触发-LT"><a href="#边缘触发-ET-和水平触发-LT" class="headerlink" title="边缘触发(ET)和水平触发(LT)"></a>边缘触发(ET)和水平触发(LT)</h3><p>一个事件被epoll获取之后, 如果程序没有将与之相关的套接字缓冲区处理完毕(例如epoll在报告了某个socket可读事件以后, 程序并没有一次读取完其中的数据)</p>
+<p>如果工作方式为水平触发(Level Triggered), 在下次epoll调用时, 仍然报告该事件, 默认工作方式, 减少可能出现的编程错误<br>如果工作方式为边缘触发(Edge Triggered), 在下次epoll调用时, 不会报告该事件, 高速工作方式, 效率较高</p>
+<hr>
+<h3 id="epoll的系统调用和工作原理"><a href="#epoll的系统调用和工作原理" class="headerlink" title="epoll的系统调用和工作原理"></a>epoll的系统调用和工作原理</h3><ol>
+<li><code>epoll_create()</code>创建一个epoll句柄</li>
+<li><code>epoll_ctl()</code>注册文件描述符、对应的等待的事件, 以及触发方式到epoll句柄中</li>
+<li><code>epoll_wait()</code>收集在epoll监控的事件中已经发生的事件, 返回值为一个整型</li>
+</ol>
+<p>调用<code>epoll_wait</code>, 需要传入一个epoll句柄, 一个结构体数组(<code>epoll_event</code>)的指针, 该数组的大小, 和超时时间. 结构体可以存储事件及其对应的文件描述符等相关信息, 每个结构体存放一个事件. </p>
+<p>epoll是<code>基于事件的就绪通知方式</code>,epoll使用红黑树来存储监听的事件, 当一个事件发生时, 由内核调用一个回调, 激活这个文件描述符, 并将激活的文件描述符取出添加到一个双向链表中. <code>epoll_wait</code>则会检查该链表, 将就绪的事件复制入<code>epoll_event</code>数组中, 然后返回一个整型, 代表在<code>epoll_event</code>数组中就绪的描述符的数量, 程序只需要去该数组中取出所需的文件描述符即可. </p>
+<hr>
+<h3 id="相较于select的优点"><a href="#相较于select的优点" class="headerlink" title="相较于select的优点"></a>相较于select的优点</h3><p>select对于每个进程打开的文件描述符是有限制的, 默认是2048. 对于事件的检测方式是每次调用时将所有文件描述符传递给select(也就是复制到内核态), 再以轮询的方式检测, 获得可用文件描述符的时间复杂度是O(n). </p>
+<p>由于任意时间活跃的(处于可读可写状态)的socket在所有监测的socket中只占一部分, 这种拷贝全部文件描述符, 并线性扫描全部socket的方式导致效率随文件描述符的数量线性下降. </p>
+<p>epoll没有文件描述符打开数量的固有限制(只取决于内存大小). 先通过<code>epoll_ctl</code>将文件描述符告知内核, 这样就彻底省掉了每次调用都要复制文件描述符到内核态的开销. 并且通过内核的类回调机制来激活文件描述符, 无需进行轮询, 获得可用文件描述符的时间复杂度是O(1). </p>
+<p>鉴于以上特性, epoll可以高效处理数以百万计的socket句柄, 与select相比有了飞跃般的提升. </p>
+<hr>
+<h3 id="Nginx中epoll的使用"><a href="#Nginx中epoll的使用" class="headerlink" title="Nginx中epoll的使用"></a>Nginx中epoll的使用</h3><p>严格来说epoll是同步阻塞模型, 在真正进行IO的时候还是要被阻塞的, 只是可以实现单线程内的IO复用. </p>
+<p>也正是因为如此, Nginx的worker进程数量通常应当与处理机数量保持一致, 但如果任务是IO密集型, 就要启动比处理机数量略多的worker进程(1.5到2倍之间). </p>
+<hr>
+<p>参考<br><a href="https://www.cnblogs.com/lojunren/p/3856290.html" target="_blank" rel="noopener">Linux下的I/O复用与epoll详解</a><br><a href="https://blog.csdn.net/stpeace/article/details/43719449" target="_blank" rel="noopener">send和recv</a><br><a href="https://www.programering.com/a/MDOxgzMwATQ.html" target="_blank" rel="noopener">Five kinds of I/O model under Unix</a><br><a href="https://www.cnblogs.com/longjiang-uestc/p/9605283.html" target="_blank" rel="noopener">epoll机制详解</a></p>
+<a id="more"></a>]]></content>
+      <tags>
+        <tag>Epoll</tag>
+        <tag>IO多路复用模型</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django缓存系统</title>
     <url>/2019/03/18/Django%E7%BC%93%E5%AD%98/</url>
     <content><![CDATA[<p>使用缓存可以降低动态生成响应的代价.</p>
@@ -3640,6 +3692,301 @@
       <tags>
         <tag>Django</tag>
         <tag>Django信号系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Dockerfile</title>
+    <url>/2019/02/20/Dockerfile%E7%9A%84%E7%BC%96%E5%86%99/</url>
+    <content><![CDATA[<p><code>Dockerfile</code>是一个文本文档, 包含所有用于构建镜像的指令, 使用<code>docker build</code>读取并执行<code>Dockerfile</code>的命令即可构建出新的镜像.</p>
+<a id="more"></a>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker build [OPTIONS] PATH | URL | -</span><br></pre></td></tr></table></figure>
+
+<p><code>docker build</code>从一个<code>Dockerfile</code>及<code>context</code>中构建镜像, context指的是执行<code>build</code>命令时指定的<code>PATH</code>或者<code>URL</code>(Git库)中包含的所有文件和递归子文件夹.</p>
+<p>构建镜像在<code>docker deamon</code>而非<code>docker CLI</code>中进行, 在进行构建前<code>docker build</code>指令首先将所有上下文发送至<code>docker deamon</code>.</p>
+<p>所有的对文件的操作指令都是在上下文中进行, 因此在相关指令中所有的文件路径都是相对路径, 例如<code>COPY ./package.json /app/</code>, 指的是在展开<code>context</code>后, 复制其中的<code>package.json</code>文件.</p>
+<p>例如以下例子使用当前目录作为context:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker build .</span><br></pre></td></tr></table></figure>
+
+<p>因此, 为了避免发送不必要的文件, 最好使用空白目录作为上下文, 并将dockerfile包含其中, 或者只包含必要的构建镜像所需文件.</p>
+<p><code>Dockerfile</code>的文件名一般默认为<code>Dockerfile</code>, 因此在上个例子中, <code>build</code>指令会自动寻找当前目录下名为<code>Dockerfile</code>的文件, 如果需要将其他文件作为<code>Dockerfile</code>, 则通过<code>-f</code>选项指定.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker build -f /path/to/a/Dockerfile .</span><br></pre></td></tr></table></figure>
+
+<p>在以上例子中, 指定<code>Dockerfile</code>的路径为<code>/path/to/a/Dockerfile</code>, 同时context的Path为当前目录.</p>
+<hr>
+<h3 id="常用Dockerfile指令"><a href="#常用Dockerfile指令" class="headerlink" title="常用Dockerfile指令"></a>常用Dockerfile指令</h3><hr>
+<h4 id="ARG"><a href="#ARG" class="headerlink" title="ARG"></a>ARG</h4><p>声明变量</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ARG</span>  CODE_VERSION=latest</span><br><span class="line"><span class="keyword">FROM</span> base:$&#123;CODE_VERSION&#125;</span><br><span class="line"><span class="keyword">CMD</span><span class="bash">  /code/run-app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> extras:$&#123;CODE_VERSION&#125;</span><br><span class="line"><span class="keyword">CMD</span><span class="bash">  /code/run-extras</span></span><br></pre></td></tr></table></figure>
+
+<p>在<code>FROM</code>之前声明的变量在镜像构建阶段之外, 因此<code>FROM</code>之后的任何指令不能引用变量, 如果需要在构建阶段引用变量默认值, 在FROM之后再次使用<code>ARG</code>指令声明变量, 并且不进行赋值. </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ARG</span> VERSION=latest</span><br><span class="line"><span class="keyword">FROM</span> busybox:$VERSION</span><br><span class="line"><span class="keyword">ARG</span> VERSION</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">echo</span> <span class="variable">$VERSION</span> &gt; image_version</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h4><hr>
+<p><code>FROM</code>指令指定用哪个镜像作为基础镜像, 基础镜像可以是任何能够从官方库拉取的镜像. 通常, 一个Dockerfile必须以<code>FROM</code>构建命令开始, 但可能出现多个<code>FROM</code>用来进行其他镜像与当前镜像的合并.</p>
+<p>FROM指令有三种格式:</p>
+<ol>
+<li><code>FROM &lt;image&gt; [AS &lt;name&gt;]</code></li>
+<li><code>FROM &lt;image&gt;[:&lt;tag&gt;] [AS &lt;name&gt;]</code></li>
+<li><code>FROM &lt;image&gt;[@&lt;digest&gt;] [AS &lt;name&gt;]</code></li>
+</ol>
+<p>唯一一个可能出现在<code>FROM</code>之前的指令为<code>ARG</code>.</p>
+<hr>
+<h4 id="RUN"><a href="#RUN" class="headerlink" title="RUN"></a>RUN</h4><hr>
+<p>RUN命令用于在控制台中执行指令, 会在镜像的最上层执行指令并提交结果, 应用了结果的镜像作为下一步构建的基础, RUN命令有两种格式:</p>
+<ol>
+<li><code>RUN &lt;command&gt; (shell form, the command is run in a shell)</code></li>
+<li><code>RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;] (exec form)</code></li>
+</ol>
+<p>如果命令过长, 使用<code>\</code>换行.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">RUN /bin/bash -c <span class="string">'source $HOME/.bashrc; \</span></span><br><span class="line"><span class="string">echo $HOME'</span></span><br></pre></td></tr></table></figure>
+
+<p>等同于</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">RUN /bin/bash -c <span class="string">'source $HOME/.bashrc; echo $HOME'</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h4><hr>
+<p>在没有<code>ENTRYPOINT</code>时, 可能用于执行容器<strong>主进程</strong></p>
+<p>CMD命令有三种格式:</p>
+<ol>
+<li><code>CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;] (exec form, this is the preferred form)</code></li>
+<li><code>CMD [&quot;param1&quot;,&quot;param2&quot;] (as default parameters to ENTRYPOINT)</code></li>
+<li><code>CMD command param1 param2 (shell form)</code></li>
+</ol>
+<p>CMD指令会在<code>docker run</code>命令未指定任何其他指令时作为启动主进程的指令, 可以被<code>run</code>命令所覆盖.</p>
+<p>例如, Dockerfile中:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CMD <span class="built_in">echo</span> <span class="string">"Hello world"</span></span><br></pre></td></tr></table></figure>
+
+<p>使用<code>docker run</code>运行容器并附加指令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it ubuntu /bin/bash -c <span class="string">"echo hello docker"</span></span><br></pre></td></tr></table></figure>
+
+<p>输出结果为 “hello docker”.</p>
+<hr>
+<h4 id="ENTRYPOINT"><a href="#ENTRYPOINT" class="headerlink" title="ENTRYPOINT"></a>ENTRYPOINT</h4><hr>
+<p><code>ENTRYPOINT</code>指定启动容器主进程的入口, 有两种格式:</p>
+<ol>
+<li><code>ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;] (exec form, preferred)</code></li>
+<li><code>ENTRYPOINT command param1 param2 (shell form)</code></li>
+</ol>
+<p>当Dockerfile中同时存在<code>EMTRYPOINT</code>和<code>CMD</code>时, CMD指令自动被视为其第二种格式, 即作为ENTRYPOINT指令的参数:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line">ENTRYPOINT [<span class="string">"top"</span>, <span class="string">"-b"</span>]</span><br><span class="line">CMD [<span class="string">"-c"</span>]</span><br></pre></td></tr></table></figure>
+
+<p>ENTRYPOINT不会被<code>docker run</code>指令重写.</p>
+<hr>
+<h4 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h4><hr>
+<p>用于指定容器暴露的端口</p>
+<p><code>EXPOSE &lt;port&gt; [&lt;port&gt;/&lt;protocol&gt;...]</code></p>
+<hr>
+<h4 id="VOLUME"><a href="#VOLUME" class="headerlink" title="VOLUME"></a>VOLUME</h4><p>指定数据卷</p>
+<p><code>VOLUME [&quot;/data&quot;]</code></p>
+<hr>
+<h4 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h4><hr>
+<p>指定工作目录, 之后各级的当前目录就更改为工作目录, 如果目录不存在, 则自动建立.</p>
+<p><code>WORKDIR /path/to/workdir</code></p>
+<hr>
+<h4 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h4><p>从<code>context</code>中复制文件到镜像中.</p>
+<ol>
+<li><code>COPY [--chown=&lt;user&gt;:&lt;group&gt;] &lt;src&gt;... &lt;dest&gt;</code></li>
+<li><code>COPY [--chown=&lt;user&gt;:&lt;group&gt;] [&quot;&lt;src&gt;&quot;,... &quot;&lt;dest&gt;&quot;]</code></li>
+</ol>
+<hr>
+<h4 id="ADD"><a href="#ADD" class="headerlink" title="ADD"></a>ADD</h4><p>ADD 指令和 COPY 的格式和性质基本一致, 但是在 COPY 基础上增加了一些功能.</p>
+<ol>
+<li><code>ADD [--chown=&lt;user&gt;:&lt;group&gt;] &lt;src&gt;... &lt;dest&gt;</code></li>
+<li><code>ADD [--chown=&lt;user&gt;:&lt;group&gt;] [&quot;&lt;src&gt;&quot;,... &quot;&lt;dest&gt;&quot;]</code></li>
+</ol>
+<p>在官方的最佳实践文档中, 推荐尽可能使用<code>COPY</code>.</p>
+<hr>
+<p>参考:</p>
+<p><a href="https://legacy.gitbook.com/book/yeasy/docker_practice/details" target="_blank" rel="noopener">Docker —— 从入门到实践</a></p>
+]]></content>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker数据管理</title>
+    <url>/2019/02/19/Docker%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<p>容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求.</p>
+<p>由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换?</p>
+<p>答案是: 通过<code>UnionFS</code>将宿主机操作系统中的文件系统的文件/目录<strong>挂载</strong>到容器中, 就能够让容器和宿主机共享该文件/目录.</p>
+<a id="more"></a>
+
+<hr>
+<p>三种挂载文件的方式:</p>
+<ol>
+<li><code>Bind Mount</code></li>
+<li><code>Volume</code></li>
+<li><code>Tmpfs Mount</code></li>
+</ol>
+<hr>
+<p><code>Bind Mount</code>: 能够直接将宿主操作系统中的目录和文件挂载到容器内的文件系统中, 通过指定容器外的路径和容器内的路径, 就可以形成挂载映射关系, 在容器内外对文件的读写, 都是相互可见的, Docker之外的应用程序也可以更改这些数据.</p>
+<hr>
+<p><code>Volume</code>: 也是从宿主操作系统中挂载目录到容器内, 只不过这个挂载的目录由 Docker 进行管理, 我们只需要指定容器内的目录, 不需要关心具体挂载到了宿主操作系统中的哪里. 非Docker程序不能更改这些数据.</p>
+<hr>
+<p><code>Tmpfs Mount</code>: 支持挂载系统内存中的一部分到容器的文件系统里, 不过由于内存和容器的特征, 它的存储并不是持久的, 其中的内容会随着容器的停止而消失. </p>
+<hr>
+<h3 id="Bind-Mount"><a href="#Bind-Mount" class="headerlink" title="Bind Mount"></a>Bind Mount</h3><p>使用<code>-v</code>或<code>--volume</code>选项即可指定内外目录的映射关系. 格式为 <code>&lt;host-path&gt;:&lt;container-path&gt;</code>, 为了避免混淆, 必须使用绝对路径.</p>
+<p>例如: </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name some-nginx -v /some/content:/usr/share/nginx/html -d nginx</span><br></pre></td></tr></table></figure>
+
+<p>之后使用<code>docker inspect &lt;NAME|ID&gt;</code>命令, 在<code>Mounts</code>一节中即可查看挂载信息.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">    <span class="string">"Mounts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"Type"</span>: <span class="string">"bind"</span>,</span><br><span class="line">            <span class="string">"Source"</span>: <span class="string">"/some/content"</span>,</span><br><span class="line">            <span class="string">"Destination"</span>: <span class="string">"/usr/share/nginx/html"</span>,</span><br><span class="line">            <span class="string">"Mode"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="string">"RW"</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="string">"Propagation"</span>: <span class="string">"rprivate"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
+
+<p>在使用<code>Bind Mount</code>方式进行挂载时, 默认容器对该文件是可读可写的, 在挂载信息中, <code>RW</code>(Read and Write)属性的值为<code>true</code></p>
+<p>如果只允许容器内对该共享文件只读, 则在映射路径后添加<code>:ro</code>标识</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name some-nginx -v /some/content:/usr/share/nginx/html:ro -d nginx</span><br></pre></td></tr></table></figure>
+
+<p>此时<code>Mounts</code>信息中, <code>Mode</code>属性为<code>ro</code>, <code>RW</code>属性为<code>false</code>.</p>
+<p>在开发过程中, 对于可能经常需要手动修改的配置文件, 比较适合这种挂载方式, 安全性较低, 但是方便.</p>
+<hr>
+<h3 id="Volume"><a href="#Volume" class="headerlink" title="Volume"></a>Volume</h3><hr>
+<h4 id="挂载数据卷"><a href="#挂载数据卷" class="headerlink" title="挂载数据卷"></a>挂载数据卷</h4><p>数据卷方式指定容器内哪个目录需要被挂载即可, Docker会自动将其挂载至宿主机的某个目录上. 使用<code>-v</code>或<code>--volume</code>指定容器内目录.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name some-nginx -v /usr/share/nginx/html -d nginx</span><br></pre></td></tr></table></figure>
+
+<p>虽然使用的选项(<code>-v</code>)与<code>Bind Mount</code>的方式相同, 但是因为路径的格式不同, 因此可以直接区分两种方式.</p>
+<p>使用<code>docker inspect ID|NAME</code>指令查看具体挂载信息:</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">    <span class="string">"Mounts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"Type"</span>: <span class="string">"volume"</span>,</span><br><span class="line">            <span class="string">"Name"</span>: <span class="string">"fc67d7d8da5f8822bbe885c77fe1027893dda88d9dab07352852cf3271547c59"</span>,</span><br><span class="line">            <span class="string">"Source"</span>: <span class="string">"/var/lib/docker/volumes/fc67d7d8da5f8822bbe885c77fe1027893dda88d9dab07352852cf3271547c59/_data"</span>,</span><br><span class="line">            <span class="string">"Destination"</span>: <span class="string">"/usr/share/nginx/html"</span>,</span><br><span class="line">            <span class="string">"Driver"</span>: <span class="string">"local"</span>,</span><br><span class="line">            <span class="string">"Mode"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="string">"RW"</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="string">"Propagation"</span>: <span class="string">""</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Source</code>属性的值为Docker分配的宿主机的具体挂载目录, 位于Docker的资源目录下, 当然, 我们无需关心这个目录, 在操作数据卷时, 一律通过docker相关的指令进行.</p>
+<p><code>Name</code>属性为该数据卷的别名, 可以通过创建时<code>-v &lt;name&gt;:&lt;container-path&gt;</code>的方式给出, 由于在<code>Bind Mount</code>的方式中<code>host-path</code>部分必须使用绝对路径, 因此此处也不会引起混淆.</p>
+<p>通过数据卷别名, 我们可以明确地引用指定命名数据卷, 因此可以方便地实现数据卷共享等功能, 例如:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo docker run -d --name webapp -v html:/webapp/html webapp:latest</span><br><span class="line">$ sudo docker run -d --name nginx -v html:/usr/share/nginx/html:ro nginx:1.12</span><br></pre></td></tr></table></figure>
+
+<p>在以上两个容器, 共享<code>html</code>这个数据卷: 第一次挂载数据卷时, 创建别名为<code>html</code>的数据卷, 第二次挂载同名数据卷时, Docker检索到该数据卷已存在, 直接引用该命名数据卷.</p>
+<hr>
+<h4 id="docker-volume-相关指令"><a href="#docker-volume-相关指令" class="headerlink" title="docker volume 相关指令"></a>docker volume 相关指令</h4><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>docker volume create &lt;name&gt;</code></td>
+<td>直接创建数据卷, 不依赖任何容器</td>
+</tr>
+<tr>
+<td><code>docker volume inspect &lt;name&gt;[s]</code></td>
+<td>查看指定数据卷的详细信息, 一个或多个</td>
+</tr>
+<tr>
+<td><code>docker volume ls</code></td>
+<td>列出现存数据卷</td>
+</tr>
+<tr>
+<td><code>docker volume rm &lt;name&gt;[s]</code></td>
+<td>删除指定数据卷, 一个或多个</td>
+</tr>
+<tr>
+<td><code>docker volume prune</code></td>
+<td>删除未被任何容器使用的数据卷</td>
+</tr>
+</tbody></table>
+<hr>
+<p>在删除数据卷时, 可以</p>
+<ol>
+<li>直接通过<code>docker volume rm &lt;name&gt;</code>指令来删除指定的数据卷, 如果该数据卷未被任何现存容器所引用, 则删除成功. </li>
+<li>在删除容器时, 使用<code>-v</code>选项来删除与本容器相关的数据卷, 例如: <code>docker rm -v &lt;container-name&gt;</code>. </li>
+<li>使用<code>docker volume prune</code>删除未被任何容器所使用的数据卷.</li>
+</ol>
+<p>注:<code>prune</code>指令不仅可用于数据卷, 还可以用于镜像, 容器, 网络或所有docker相关对象, 具体查看<a href="https://docs.docker.com/config/pruning/" target="_blank" rel="noopener">官方文档</a>.</p>
+<hr>
+<h4 id="数据卷容器-Data-Container"><a href="#数据卷容器-Data-Container" class="headerlink" title="数据卷容器(Data Container)"></a>数据卷容器(<code>Data Container</code>)</h4><p>建立一个容器, 在创建时通过<code>-v</code>选项随之创建一个数据卷, 我们创建该容器的目的就是为了定义一个或多个数据卷并通过该容器引用这些数据卷, 这样的容器就叫做数据卷容器.</p>
+<p>使用任意镜像都可以创建数据卷容器, 该容器甚至可以不运行:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker create --name appdata -v /webapp/storage ubuntu</span><br></pre></td></tr></table></figure>
+
+<p>该数据卷无需别名, 因为所有对该数据卷的引用都是使用<code>--volume-from</code>指令通过数据卷容器进行的, 例如:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --name webapp --volumes-from appdata webapp:latest</span><br></pre></td></tr></table></figure>
+
+<p>通过这种方式引用数据卷时, 无需再定义该数据卷在容器内的映射目录, 会自动应用至<strong>定义</strong>该数据卷时的路径.</p>
+<p>相较于命名数据卷的方式, 数据卷容器隐藏了数据卷的配置和定义, 只需要使用数据卷来应用, 因此可以更方便地进行迁移.</p>
+<h4 id="备份数据卷"><a href="#备份数据卷" class="headerlink" title="备份数据卷"></a>备份数据卷</h4><p>创建一个数据卷容器</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -v /dbdata --name dbstore ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>假设该数据卷容器中在运行一段时间后获得了部分数据, 我们将这些数据打包, 则执行下一条命令, 包括:</p>
+<ol>
+<li>创建一个新的临时容器, 挂载<code>dbstore</code>中的数据卷</li>
+<li>映射一个容器内目录<code>/backup</code>到宿主机当前目录</li>
+<li>使用<code>tar</code>命令, 将<code>dbstore</code>的数据卷打包至<code>/backup</code>目录</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --rm --volumes-from dbstore -v $(<span class="built_in">pwd</span>):/backup ubuntu tar cvf /backup/backup.tar /dbdata</span><br></pre></td></tr></table></figure>
+
+<p>之后, 我们就可以在宿主机的当前目录获得打包后的数据卷.</p>
+<hr>
+<h4 id="恢复数据卷"><a href="#恢复数据卷" class="headerlink" title="恢复数据卷"></a>恢复数据卷</h4><p>将打包后的数据恢复至一个新建容器内的数据卷内, 创建容器<code>dbstore2</code>, 同时创建一个与之相关的数据卷<code>/dbdata</code>:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -v /dbdata --name dbstore2 ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>然后解压打包文件的内容至新容器<code>dbsotre2</code>的数据卷目录内:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --rm --volumes-from dbstore2 -v $(<span class="built_in">pwd</span>):/backup ubuntu bash -c <span class="string">"cd /dbdata &amp;&amp; tar xvf /backup/backup.tar --strip 1"</span></span><br></pre></td></tr></table></figure>
+
+<p>查看官方文档 <a href="https://docs.docker.com/storage/volumes/" target="_blank" rel="noopener">Backup, restore, or migrate data volumes</a></p>
+<hr>
+<p>参考:</p>
+<p><a href="https://boxboat.com/2016/06/18/docker-data-containers-and-named-volumes/" target="_blank" rel="noopener">Docker Data Containers and Named Volumes</a><br><a href="https://juejin.im/book/5b7ba116e51d4556f30b476c/section/5b8381abe51d4538de11609a" target="_blank" rel="noopener">开发者必备的 Docker 实践指南</a></p>
+]]></content>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker基本原理</title>
+    <url>/2019/02/18/Docker%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<p>容器是一种轻量级, 可移植, 自包含的软件打包技术, 使应用程序可以在几乎任何地方以相同的方式运行. <code>Docker</code>是容器技术的一个实现.</p>
+<a id="more"></a>
+
+<hr>
+<h3 id="实现基础"><a href="#实现基础" class="headerlink" title="实现基础"></a>实现基础</h3><p>Docker的实现, 主要归结于三大技术：</p>
+<ul>
+<li>命名空间 (<code>Namespaces</code>) </li>
+<li>控制组 (<code>Control Groups</code>)</li>
+<li>联合文件系统 (<code>Union File System</code>)</li>
+</ul>
+<p>命名空间(<code>Namespaces</code>) , 是linux核心在2.4版本后逐渐引入的一项用于运行隔离的模块, 利用PID Namespace, Docker实现了容器中隔离程序运行中进程隔离这一目标. </p>
+<hr>
+<p>资源控制组(<code>Control Groups</code>) , 是linux在2.6 版本后逐渐引入的一项对计算机资源控制的模块. 资源控制组的作用就是控制计算机资源, CGroups主要做的是硬件资源的隔离以及控制硬件资源的分配, 即<strong>隔离</strong>和<strong>分配</strong>两个作用. </p>
+<hr>
+<p>联合文件系统 (<code>Union File System</code>), 将其他文件系统挂载到同一联合挂载点的文件系统服务, Docker使用<code>UnionFS</code>和<code>copy-on-write</code>(写时复制)技术提供不同的容器模块, 十分轻量和快速.</p>
+<hr>
+<h3 id="核心组成"><a href="#核心组成" class="headerlink" title="核心组成"></a>核心组成</h3><p>Docker的核心组成分为四部分</p>
+<ul>
+<li>镜像 (<code>Image</code>)</li>
+<li>容器 (<code>Container</code>)</li>
+<li>网络 (<code>Network</code>)</li>
+<li>数据卷 (<code>Volume</code>)</li>
+</ul>
+<p>镜像(<code>Image</code>) 一个封装好的镜像是一个<strong>只读</strong>的文件包, 包含了虚拟环境运行最原始文件系统的内容. 镜像是分层结构, 所以不同的镜像版本可以建立在公共的基础层(<code>layer</code>)上, 即多个不同版本的镜像占用的空间小于这些镜像本身大小之和. </p>
+<hr>
+<p>容器 ( <code>Container</code>), 容器是在镜像之上新加的一层, 成为<code>Container layer</code>, 这一层是可读可写的. 镜像是只读的, 当以镜像为基础的容器启动后, 容器内也就成为了一个”活”的空间. Docker的容器应该有三项内容组成：</p>
+<ol>
+<li>一个 Docker 镜像</li>
+<li>一个程序运行环境</li>
+<li>一个指令集合</li>
+</ol>
+<p>PS： <code>Dockerfile</code>中只允许最后一个<code>CMD</code>或<code>ENTRYPOINT</code>生效, 与之对应, Dockerfile中其他命令生成的<code>layer</code>为<code>Read-only</code>的, CMD或ENTRYPOINT生成的layer是<code>R/W</code>的. </p>
+<hr>
+<p>网络 (<code>Network</code>), 在 Docker实现了强大的网络功能, 不但能够十分轻松的对每个容器的网络进行配置, 还能在容器间建立虚拟网络, 将数个容器包裹其中, 同时与其他网络环境隔离. 另外, 利用一些技术, Docker 能够在容器中营造独立的域名解析环境, 可以在不修改代码和配置的前提下直接迁移容器, Docker会完成新环境的网络适配. 这个功能能够在不同的物理服务器间实现, 让处在两台物理机上的两个Docker所提供的容器, 加入到同一个虚拟网络中, 形成完全屏蔽硬件的效果. </p>
+<hr>
+<p>数据卷 (<code>Volume</code>), 得益于Docker底层的 <code>Union File System</code> 技术, Docker除了能够从宿主操作系统中挂载目录外, 还能够建立独立的目录持久存放数据, 或者在容器间共享. 在Docker中, 通过这几种方式进行数据共享或持久化的文件或目录,都称为数据卷(Volume).</p>
+<hr>
+<h3 id="Docker-Engine"><a href="#Docker-Engine" class="headerlink" title="Docker Engine"></a>Docker Engine</h3><p>目前这款实现容器化的工具是由Docker官方进行维护的, Docker官方将其命名为<code>Docker Engine</code>, 同时定义其为工业级的容器引擎(<code>Industry-standard Container Engine</code>). 在 <code>Docker Engine</code>中, 实现了 Docker 技术中最核心的部分, 也就是容器引擎这一部分. </p>
+<p>Docker Engine 是一款软件, 但实实在在去深究的话, 它其实算是由多个独立软件所组成的软件包. 在这些程序中, 最核心的就是</p>
+<ul>
+<li><code>docker daemon</code></li>
+<li><code>docker CLI</code></li>
+</ul>
+<hr>
+<p>Docker所能提供的容器管理、应用编排、镜像分发等功能, 都集中在了<code>docker daemon</code>中, 而之前所提到的镜像模块、容器模块、数据卷模块和网络模块也都在其中实现. </p>
+<p>在操作系统里, docker daemon通常以服务的形式运行以便静默的提供这些功能, 所以也通常称之为<code>Docker服务</code>.</p>
+<p>在docker daemon管理容器等相关资源的同时, 它也向外暴露了一套<code>RESTful API</code>, 通过这套接口对docker daemon中运行的容器和其他资源进行管理.</p>
+<p>为了能方便地调用这套RESTful API, 在 Docker Engine 里还直接附带了<code>docker CLI</code>这个控制台程序.</p>
+<p>docker daemon和docker CLI所组成的, 正是一个标准<code>C/S</code>( Client-Server )结构的应用程序. 衔接这两者的, 正是docker daemon所提供的这套RESTful API.</p>
+<hr>
+<p>参考：  </p>
+<p><a href="https://juejin.im/book/5b7ba116e51d4556f30b476c/section/5b8381816fb9a01a087ab7b5" target="_blank" rel="noopener">开发者必备的 Docker 实践指南</a><br><a href="https://djangostars.com/blog/what-is-docker-and-how-to-use-it-with-python/" target="_blank" rel="noopener">What is Docker and How to Use it With Python</a><br><a href="https://blog.csdn.net/xftony/article/details/80569777" target="_blank" rel="noopener">Docker技术基础：Union File System</a><br><a href="https://blog.csdn.net/qq_17545293/article/details/80822310" target="_blank" rel="noopener">Docker的Container简介</a></p>
+]]></content>
+      <tags>
+        <tag>Docker</tag>
       </tags>
   </entry>
   <entry>
