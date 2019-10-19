@@ -94,7 +94,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Django,CBV,">
 
 
 
@@ -105,17 +105,20 @@
 
 
 
-<meta name="description" content="技术">
+<meta name="description" content="使用CBV的方式在于可以增加复用, 对于一些模式化的代码, 将其抽象为混入类, 即可在所有CBV中广泛应用.  如果要在函数式View中复用代码则要使用装饰器, 但相较于混入类, 装饰器的复用性和灵活性都比较差, 因此使用CBV还是相当有必要的.  __init__(self, **kwargs) View的初始化方法, 该方法的逻辑十分简单, 接收任意关键字参数, 并将其设置为实例的属性和值.">
+<meta name="keywords" content="Django,CBV">
 <meta property="og:type" content="article">
-<meta property="og:title" content="紫秋的个人博客">
-<meta property="og:url" content="http://yoursite.com/2019/10/15/Vue Routerj/index.html">
+<meta property="og:title" content="DjangoCBV 处理流程及源码分析">
+<meta property="og:url" content="http://yoursite.com/2019/03/21/Django CBV/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="技术">
+<meta property="og:description" content="使用CBV的方式在于可以增加复用, 对于一些模式化的代码, 将其抽象为混入类, 即可在所有CBV中广泛应用.  如果要在函数式View中复用代码则要使用装饰器, 但相较于混入类, 装饰器的复用性和灵活性都比较差, 因此使用CBV还是相当有必要的.  __init__(self, **kwargs) View的初始化方法, 该方法的逻辑十分简单, 接收任意关键字参数, 并将其设置为实例的属性和值.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-15T13:50:47.622Z">
+<meta property="og:image" content="https://img2018.cnblogs.com/blog/1249301/201910/1249301-20191019184740161-194570304.png">
+<meta property="og:updated_time" content="2019-10-19T10:48:12.140Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="紫秋的个人博客">
-<meta name="twitter:description" content="技术">
+<meta name="twitter:title" content="DjangoCBV 处理流程及源码分析">
+<meta name="twitter:description" content="使用CBV的方式在于可以增加复用, 对于一些模式化的代码, 将其抽象为混入类, 即可在所有CBV中广泛应用.  如果要在函数式View中复用代码则要使用装饰器, 但相较于混入类, 装饰器的复用性和灵活性都比较差, 因此使用CBV还是相当有必要的.  __init__(self, **kwargs) View的初始化方法, 该方法的逻辑十分简单, 接收任意关键字参数, 并将其设置为实例的属性和值.">
+<meta name="twitter:image" content="https://img2018.cnblogs.com/blog/1249301/201910/1249301-20191019184740161-194570304.png">
 
 
 
@@ -145,13 +148,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/10/15/Vue Routerj/">
+  <link rel="canonical" href="http://yoursite.com/2019/03/21/Django CBV/">
 
 
 
 
 
-  <title> | 紫秋的个人博客</title>
+  <title>DjangoCBV 处理流程及源码分析 | 紫秋的个人博客</title>
   
 
 
@@ -300,7 +303,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/15/Vue Routerj/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/21/Django CBV/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -317,7 +320,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">DjangoCBV 处理流程及源码分析</h1>
         
 
         <div class="post-meta">
@@ -329,8 +332,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-15T20:26:48+08:00">
-                2019-10-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-21T11:15:03+08:00">
+                2019-03-21
               </time>
             
 
@@ -372,7 +375,34 @@
       
 
       
-        
+        <p>使用CBV的方式在于可以增加复用, 对于一些模式化的代码, 将其抽象为混入类, 即可在所有CBV中广泛应用. </p>
+<p>如果要在函数式View中复用代码则要使用装饰器, 但相较于混入类, 装饰器的复用性和灵活性都比较差, 因此使用CBV还是相当有必要的.</p>
+<hr>
+<p><code>__init__(self, **kwargs)</code></p>
+<p>View的初始化方法, 该方法的逻辑十分简单, 接收任意关键字参数, 并将其设置为实例的属性和值.</p>
+<p>该方法会在<code>as_view</code>方法中定义的<code>view</code>函数中调用.</p>
+<hr>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@classonlymethod</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">as_view</span><span class="params">(cls, **initkwargs)</span>:</span></span><br><span class="line">    <span class="string">"""Main entry point for a request-response process."""</span></span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> initkwargs:</span><br><span class="line">        <span class="keyword">if</span> key <span class="keyword">in</span> cls.http_method_names:</span><br><span class="line">            <span class="keyword">raise</span> TypeError(<span class="string">"You tried to pass in the %s method name as a "</span></span><br><span class="line">                            <span class="string">"keyword argument to %s(). Don't do that."</span></span><br><span class="line">                            % (key, cls.__name__))</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(cls, key):</span><br><span class="line">            <span class="keyword">raise</span> TypeError(<span class="string">"%s() received an invalid keyword %r. as_view "</span></span><br><span class="line">                            <span class="string">"only accepts arguments that are already "</span></span><br><span class="line">                            <span class="string">"attributes of the class."</span> % (cls.__name__, key))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">view</span><span class="params">(request, *args, **kwargs)</span>:</span></span><br><span class="line">        self = cls(**initkwargs)</span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">'get'</span>) <span class="keyword">and</span> <span class="keyword">not</span> hasattr(self, <span class="string">'head'</span>):</span><br><span class="line">            self.head = self.get</span><br><span class="line">        self.setup(request, *args, **kwargs)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(self, <span class="string">'request'</span>):</span><br><span class="line">            <span class="keyword">raise</span> AttributeError(</span><br><span class="line">                <span class="string">"%s instance has no 'request' attribute. Did you override "</span></span><br><span class="line">                <span class="string">"setup() and forget to call super()?"</span> % cls.__name__</span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">return</span> self.dispatch(request, *args, **kwargs)</span><br><span class="line">    view.view_class = cls</span><br><span class="line">    view.view_initkwargs = initkwargs</span><br><span class="line"></span><br><span class="line">    <span class="comment"># take name and docstring from class</span></span><br><span class="line">    update_wrapper(view, cls, updated=())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># and possible attributes set by decorators</span></span><br><span class="line">    <span class="comment"># like csrf_exempt from dispatch</span></span><br><span class="line">    update_wrapper(view, cls.dispatch, assigned=())</span><br><span class="line">    <span class="keyword">return</span> view</span><br></pre></td></tr></table></figure>
+
+<p>处理请求需要一个函数, 而一个类显然不是一个函数, 因此它必须通过某个方法提供一个函数, 用于处理请求.</p>
+<p><code>as_view</code>是处理请求的主要入口, 它是一个类方法, 因此直接通过类调用, 实际返回的是一个view, 该函数将被作为请求处理函数.</p>
+<p>首先检查在<code>as_view</code>调用时传入的关键字参数, 这些参数的键不能与某个http方法同名, 而且键名必须是类的某个属性名.前者是为了防止直接更改掉实际的处理方法, 后者则是防止为类<strong>新添加</strong>属性, 因为这些关键字参数都将被用于实例化View. 所有的属性都应该的View定义时实现, 如果允许新添加属性/方法可能造成处理逻辑分散, 因此有必要限定as_view传参的方式仅能做有限的修改.</p>
+<p>然后定义<code>view</code>函数, 该函数首先使用as_view方法接收的关键字参数实例化一个View实例(<code>self = cls(**initkwargs)</code>), <code>View</code>的<code>__init__</code>方法也在此处被调用, 将该实例命名为<code>self</code>, 然后使用<code>setup</code>方法将request和view接收到的所有关键字参数作为添加至实例的属性, 之后调用<code>dispatch</code>找到与request.method同名的实例方法, 然后将request和所有参数解构传值, 将其返回值作为自己的返回值返回.</p>
+<p>在启动项目时, as_view()就被调用.</p>
+<hr>
+<p><code>dispatch</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dispatch</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">    <span class="comment"># Try to dispatch to the right method; if a method doesn't exist,</span></span><br><span class="line">    <span class="comment"># defer to the error handler. Also defer to the error handler if the</span></span><br><span class="line">    <span class="comment"># request method isn't on the approved list.</span></span><br><span class="line">    <span class="keyword">if</span> request.method.lower() <span class="keyword">in</span> self.http_method_names:</span><br><span class="line">        handler = getattr(self, request.method.lower(), self.http_method_not_allowed)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        handler = self.http_method_not_allowed</span><br><span class="line">    <span class="keyword">return</span> handler(request, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>dispatch的逻辑非常简单, 首先检查请求的http方法是否被允许, 如果允许, 检查是否有与请求的method对应的同名实例方法, 如果有, 将其作为handler, 如果没有对应的同名实例方法, 将<code>http_method_not_allowed</code>作为handler</p>
+<p>如果该method不被允许, 将<code>http_method_not_allowed</code>作为handler</p>
+<p>最后调用handler处理请求并返回结果.</p>
+<hr>
+<p>流程图:</p>
+<p><img src="https://img2018.cnblogs.com/blog/1249301/201910/1249301-20191019184740161-194570304.png" alt></p>
+<p>完整源码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">View</span>:</span></span><br><span class="line">    http_method_names = [<span class="string">'get'</span>, <span class="string">'post'</span>, <span class="string">'put'</span>, <span class="string">'patch'</span>, <span class="string">'delete'</span>, <span class="string">'head'</span>, <span class="string">'options'</span>, <span class="string">'trace'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> key, value <span class="keyword">in</span> kwargs.items():</span><br><span class="line">            setattr(self, key, value)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classonlymethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">as_view</span><span class="params">(cls, **initkwargs)</span>:</span></span><br><span class="line">        <span class="string">"""Main entry point for a request-response process."""</span></span><br><span class="line">        <span class="keyword">for</span> key <span class="keyword">in</span> initkwargs:</span><br><span class="line">            <span class="keyword">if</span> key <span class="keyword">in</span> cls.http_method_names:</span><br><span class="line">                <span class="keyword">raise</span> TypeError(<span class="string">"You tried to pass in the %s method name as a "</span></span><br><span class="line">                                <span class="string">"keyword argument to %s(). Don't do that."</span></span><br><span class="line">                                % (key, cls.__name__))</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> hasattr(cls, key):</span><br><span class="line">                <span class="keyword">raise</span> TypeError(<span class="string">"%s() received an invalid keyword %r. as_view "</span></span><br><span class="line">                                <span class="string">"only accepts arguments that are already "</span></span><br><span class="line">                                <span class="string">"attributes of the class."</span> % (cls.__name__, key))</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">view</span><span class="params">(request, *args, **kwargs)</span>:</span></span><br><span class="line">            self = cls(**initkwargs)</span><br><span class="line">            <span class="keyword">if</span> hasattr(self, <span class="string">'get'</span>) <span class="keyword">and</span> <span class="keyword">not</span> hasattr(self, <span class="string">'head'</span>):</span><br><span class="line">                self.head = self.get</span><br><span class="line">            self.setup(request, *args, **kwargs)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> hasattr(self, <span class="string">'request'</span>):</span><br><span class="line">                <span class="keyword">raise</span> AttributeError(</span><br><span class="line">                    <span class="string">"%s instance has no 'request' attribute. Did you override "</span></span><br><span class="line">                    <span class="string">"setup() and forget to call super()?"</span> % cls.__name__</span><br><span class="line">                )</span><br><span class="line">            <span class="keyword">return</span> self.dispatch(request, *args, **kwargs)</span><br><span class="line">        view.view_class = cls</span><br><span class="line">        view.view_initkwargs = initkwargs</span><br><span class="line"></span><br><span class="line">        <span class="comment"># take name and docstring from class</span></span><br><span class="line">        update_wrapper(view, cls, updated=())</span><br><span class="line"></span><br><span class="line">        <span class="comment"># and possible attributes set by decorators</span></span><br><span class="line">        <span class="comment"># like csrf_exempt from dispatch</span></span><br><span class="line">        update_wrapper(view, cls.dispatch, assigned=())</span><br><span class="line">        <span class="keyword">return</span> view</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setup</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="string">"""Initialize attributes shared by all view methods."""</span></span><br><span class="line">        self.request = request</span><br><span class="line">        self.args = args</span><br><span class="line">        self.kwargs = kwargs</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">dispatch</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="comment"># Try to dispatch to the right method; if a method doesn't exist,</span></span><br><span class="line">        <span class="comment"># defer to the error handler. Also defer to the error handler if the</span></span><br><span class="line">        <span class="comment"># request method isn't on the approved list.</span></span><br><span class="line">        <span class="keyword">if</span> request.method.lower() <span class="keyword">in</span> self.http_method_names:</span><br><span class="line">            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            handler = self.http_method_not_allowed</span><br><span class="line">        <span class="keyword">return</span> handler(request, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">http_method_not_allowed</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        logger.warning(</span><br><span class="line">            <span class="string">'Method Not Allowed (%s): %s'</span>, request.method, request.path,</span><br><span class="line">            extra=&#123;<span class="string">'status_code'</span>: <span class="number">405</span>, <span class="string">'request'</span>: request&#125;</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> HttpResponseNotAllowed(self._allowed_methods())</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">options</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="string">"""Handle responding to requests for the OPTIONS HTTP verb."""</span></span><br><span class="line">        response = HttpResponse()</span><br><span class="line">        response[<span class="string">'Allow'</span>] = <span class="string">', '</span>.join(self._allowed_methods())</span><br><span class="line">        response[<span class="string">'Content-Length'</span>] = <span class="string">'0'</span></span><br><span class="line">        <span class="keyword">return</span> response</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_allowed_methods</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> [m.upper() <span class="keyword">for</span> m <span class="keyword">in</span> self.http_method_names <span class="keyword">if</span> hasattr(self, m)]</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
     
@@ -387,6 +417,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/CBV/" rel="tag"># CBV</a>
+          
+        </div>
+      
 
       
       
@@ -396,8 +434,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/10/03/26. 设置/" rel="next" title="26. 设置 Settings">
-                <i class="fa fa-chevron-left"></i> 26. 设置 Settings
+              <a href="/2019/03/20/Django请求生命周期/" rel="next" title="Django请求处理流程">
+                <i class="fa fa-chevron-left"></i> Django请求处理流程
               </a>
             
           </div>
@@ -405,6 +443,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/21/Epoll IO多路复用模型简介/" rel="prev" title="Epoll IO多路复用模型">
+                Epoll IO多路复用模型 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -472,7 +514,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -485,7 +527,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

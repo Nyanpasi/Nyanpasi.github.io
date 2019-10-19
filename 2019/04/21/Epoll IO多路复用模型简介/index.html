@@ -105,20 +105,20 @@
 
 
 
-<meta name="description" content="Send()和Recv()做了什么send()和recv()只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 仅此而已, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓">
+<meta name="description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.   程序阻塞于rec">
 <meta name="keywords" content="Epoll,IO多路复用模型">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Epoll IO多路复用模型">
 <meta property="og:url" content="http://yoursite.com/2019/04/21/Epoll IO多路复用模型简介/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="Send()和Recv()做了什么send()和recv()只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 仅此而已, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓">
+<meta property="og:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.   程序阻塞于rec">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190703171840419.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-10-18T18:55:39.098Z">
+<meta property="og:updated_time" content="2019-10-19T11:24:03.005Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Epoll IO多路复用模型">
-<meta name="twitter:description" content="Send()和Recv()做了什么send()和recv()只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 仅此而已, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓">
+<meta name="twitter:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.   程序阻塞于rec">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
 
 
@@ -376,46 +376,52 @@
       
 
       
-        <h3 id="Send-和Recv-做了什么"><a href="#Send-和Recv-做了什么" class="headerlink" title="Send()和Recv()做了什么"></a>Send()和Recv()做了什么</h3><p>send()和recv()只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能. </p>
-<p>当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 仅此而已, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区. </p>
+        <h3 id="Send和Recv做了什么"><a href="#Send和Recv做了什么" class="headerlink" title="Send和Recv做了什么"></a>Send和Recv做了什么</h3><p><code>send</code>和<code>recv</code>只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能. </p>
+<p>当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区. </p>
 <hr>
-<h3 id="程序阻塞于recv调用"><a href="#程序阻塞于recv调用" class="headerlink" title="程序阻塞于recv调用"></a>程序阻塞于recv调用</h3><p>在网络编程中, 我们send()之后, 就尝试使用recv()接收回复. 从调用recv()到得到结果, 等待时间分为两部分</p>
+<h3 id="程序阻塞于recv调用"><a href="#程序阻塞于recv调用" class="headerlink" title="程序阻塞于recv调用"></a>程序阻塞于recv调用</h3><p>在网络编程中, <code>send</code>之后立即尝试使用<code>recv</code>接收数据, 从调用<code>recv</code>到得到结果, 等待时间分为两部分</p>
 <ol>
-<li>对方回复尚未到达, 因此完全无数据可读的时间</li>
-<li>对方回复数据已到达, 将数据从内核缓冲区取回应用程序缓冲区</li>
+<li>对方回复数据尚未到达, 因此完全无数据可读的时间</li>
+<li>对方回复数据已到达, 将数据从内核缓冲区取回应用程序缓冲区的时间</li>
 </ol>
 <p>鉴于真实的网络环境, 第1段的时间远远大于第2段的时间. </p>
 <p>在阻塞IO的情况下, 我们必须等待这两段时间, 而在这期间, 程序只能让出处理机. </p>
 <p><img src="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70" alt="同步阻塞IO模型"></p>
 <hr>
-<h3 id="多路复用IO"><a href="#多路复用IO" class="headerlink" title="多路复用IO"></a>多路复用IO</h3><p>操作将I/O状态的变化封装为事件, 并提供了专门的系统模块<code>select</code>来让应用程序可以接收事件通知. 我们主要讨论的<code>epoll</code>是改进版的<code>select</code>. </p>
+<h3 id="多路复用IO"><a href="#多路复用IO" class="headerlink" title="多路复用IO"></a>多路复用IO</h3><p>操作将I/O状态的变化封装为事件, 并提供了专门的系统模块<code>select</code>来让应用程序可以接收事件通知. 我们讨论的<code>epoll</code>是改进版的<code>select</code>. </p>
 <p>应用程序可以通过<code>epoll</code>注册文件描述符和回调函数, 由epoll负责监测这些文件的I/O变化. </p>
 <p>当程序调用epoll时, epoll就返回可用的(指可读/可写, 取决于注册时要求监听的事件类型)文件描述符, 然后程序就可以获得已就绪可以进行操作的文件. </p>
-<p>调用epoll的过程是阻塞的, 但除非所有等待的事件均没有发生时, epoll调用才会令程序阻塞, 只要有任意一个等待的事件发生, epoll就将其返回给程序. </p>
-<p>因此, 程序在send()之后, 不再自己尝试recv, 而是将其注册入epoll,然后继续执行, 程序可以继续将多个文件描述符及其等待的事件注册入epoll, 然后在恰当的时机(例如完成本轮循环后)通过epoll调用来获取可以进行操作的文件描述符. </p>
-<p>当程序从epoll中获得这些文件描述符时, 就可以直接调用recv来从内存缓冲区中拷贝数据到应用程序缓冲区. </p>
-<p>这样, 我们通过epoll来监测<code>多个</code>事件, 而只要<code>任意一个</code>事件发生, 程序就不会被阻塞, 这就是所谓<code>多路复用</code>. </p>
-<p>(<em>即使一直没有事件发生, 我们仍然可以通过超时参数来结束epoll调用的阻塞</em>)</p>
+<p>调用epoll的过程是阻塞的, 但除非<strong>所有</strong>等待的事件均没有发生时, epoll调用才会令程序阻塞, 只要有<strong>任意</strong>一个等待的事件发生, epoll就将其返回给程序. </p>
+<p>因此, 程序在<code>send</code>之后, 不再自己尝试<code>recv</code>, 而是将其注册入epoll,然后继续执行, 程序可以继续将多个文件描述符及其等待的事件注册入epoll, 然后在恰当的时机(例如完成本轮循环后)通过epoll调用来获取就绪的文件描述符.</p>
+<p>当程序从epoll中获得这些文件描述符时, 就可以直接调用recv来从内存缓冲区中拷贝数据到应用程序缓冲区. 这样我们只需要等待上述的<strong>第2段</strong>时间.</p>
+<p>通过epoll来监测<strong>多个</strong>事件, 而只要<strong>任意一个</strong>事件发生, 程序就不会被阻塞, 这就是所谓<strong>多路复用</strong>. </p>
+<p>(<em>即使一直没有事件发生, 仍然可以通过超时参数来结束epoll调用的阻塞</em>)</p>
 <p><img src="https://img-blog.csdnimg.cn/20190703171840419.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70" alt="多路复用IO模型"></p>
-<p>需要说明的是, epoll并非在被调用时才去轮询其监测的事件, 而是在事件发生时就将其放置入一个内置数组中, 当调用时从该数组复制数据, 这也是它比select高明的地方. </p>
+<p>需要说明的是, epoll并非在被调用时才去轮询其监测的事件, 而是在事件就绪时就由内核将文件描述符放置入一个内置数组中, 当调用时直接从该数组复制数据.</p>
 <hr>
-<h3 id="边缘触发-ET-和水平触发-LT"><a href="#边缘触发-ET-和水平触发-LT" class="headerlink" title="边缘触发(ET)和水平触发(LT)"></a>边缘触发(ET)和水平触发(LT)</h3><p>一个事件被epoll获取之后, 如果程序没有将与之相关的套接字缓冲区处理完毕(例如epoll在报告了某个socket可读事件以后, 程序并没有一次读取完其中的数据)</p>
-<p>如果工作方式为水平触发(Level Triggered), 在下次epoll调用时, 仍然报告该事件, 默认工作方式, 减少可能出现的编程错误<br>如果工作方式为边缘触发(Edge Triggered), 在下次epoll调用时, 不会报告该事件, 高速工作方式, 效率较高</p>
+<h3 id="边缘触发-ET-和水平触发-LT"><a href="#边缘触发-ET-和水平触发-LT" class="headerlink" title="边缘触发(ET)和水平触发(LT)"></a>边缘触发(ET)和水平触发(LT)</h3><p>一个事件被epoll获取之后, 如果程序没有将与之相关的套接字缓冲区处理完毕(例如epoll在报告了某个socket可读事件以后, 程序并没有一次读取完其中的数据), 如果其工作方式为:</p>
+<ol>
+<li>水平触发(<code>Level Triggered</code>), 在下次epoll调用时, 仍然报告该事件, 默认工作方式, 减少可能出现的编程错误</li>
+<li>边缘触发(<code>Edge Triggered</code>), 在下次epoll调用时, 不会报告该事件, 高速工作方式, 效率较高</li>
+</ol>
 <hr>
 <h3 id="epoll的系统调用和工作原理"><a href="#epoll的系统调用和工作原理" class="headerlink" title="epoll的系统调用和工作原理"></a>epoll的系统调用和工作原理</h3><ol>
 <li><code>epoll_create()</code>创建一个epoll句柄</li>
 <li><code>epoll_ctl()</code>注册文件描述符、对应的等待的事件, 以及触发方式到epoll句柄中</li>
 <li><code>epoll_wait()</code>收集在epoll监控的事件中已经发生的事件, 返回值为一个整型</li>
 </ol>
-<p>调用<code>epoll_wait</code>, 需要传入一个epoll句柄, 一个结构体数组(<code>epoll_event</code>)的指针, 该数组的大小, 和超时时间. 结构体可以存储事件及其对应的文件描述符等相关信息, 每个结构体存放一个事件. </p>
-<p>epoll是<code>基于事件的就绪通知方式</code>,epoll使用红黑树来存储监听的事件, 当一个事件发生时, 由内核调用一个回调, 激活这个文件描述符, 并将激活的文件描述符取出添加到一个双向链表中. <code>epoll_wait</code>则会检查该链表, 将就绪的事件复制入<code>epoll_event</code>数组中, 然后返回一个整型, 代表在<code>epoll_event</code>数组中就绪的描述符的数量, 程序只需要去该数组中取出所需的文件描述符即可. </p>
+<p>调用<code>epoll_wait</code>, 需要传入一个epoll句柄, 一个结构体数组(<code>epoll_event</code>)的指针, 该数组的大小和超时时间. 结构体可以存储事件及其对应的文件描述符等相关信息, 每个结构体存放一个事件. </p>
+<p>epoll是<strong>基于事件的就绪通知方式</strong>, 使用红黑树来存储监听的事件, 当一个事件发生时, 由<strong>内核</strong>调用一个回调, 激活这个文件描述符, 并将激活的文件描述符取出添加到一个双向链表中. <code>epoll_wait</code>则会检查该链表, 将就绪的事件复制入<code>epoll_event</code>数组中, 然后返回一个整型, 代表在<code>epoll_event</code>数组中就绪的描述符的数量, 程序只需要去该数组中取出所需的文件描述符即可.</p>
 <hr>
-<h3 id="相较于select的优点"><a href="#相较于select的优点" class="headerlink" title="相较于select的优点"></a>相较于select的优点</h3><p>select对于每个进程打开的文件描述符是有限制的, 默认是2048. 对于事件的检测方式是每次调用时将所有文件描述符传递给select(也就是复制到内核态), 再以轮询的方式检测, 获得可用文件描述符的时间复杂度是O(n). </p>
-<p>由于任意时间活跃的(处于可读可写状态)的socket在所有监测的socket中只占一部分, 这种拷贝全部文件描述符, 并线性扫描全部socket的方式导致效率随文件描述符的数量线性下降. </p>
-<p>epoll没有文件描述符打开数量的固有限制(只取决于内存大小). 先通过<code>epoll_ctl</code>将文件描述符告知内核, 这样就彻底省掉了每次调用都要复制文件描述符到内核态的开销. 并且通过内核的类回调机制来激活文件描述符, 无需进行轮询, 获得可用文件描述符的时间复杂度是O(1). </p>
-<p>鉴于以上特性, epoll可以高效处理数以百万计的socket句柄, 与select相比有了飞跃般的提升. </p>
+<h3 id="与select不同之处"><a href="#与select不同之处" class="headerlink" title="与select不同之处"></a>与select不同之处</h3><h4 id="文件描述符数量限制"><a href="#文件描述符数量限制" class="headerlink" title="文件描述符数量限制:"></a>文件描述符数量限制:</h4><ul>
+<li><code>select</code>: 2048</li>
+<li><code>epoll</code>: 内存耗尽前无上限</li>
+</ul>
+<h4 id="对事件的检测方式"><a href="#对事件的检测方式" class="headerlink" title="对事件的检测方式"></a>对事件的检测方式</h4><p><code>select</code>: 在进行<code>select</code>调用时, 将所有文件描述符传递给select(也就是复制到内核态), 再以轮询的方式检测, 获得可用文件描述符的时间复杂度是O(n). </p>
+<p><code>epoll</code>: 先通过<code>epoll_ctl</code>将文件描述符告知内核, 这样就彻底省掉了每次调用都要复制文件描述符到内核态的开销. 并且通过内核的类回调机制来激活文件描述符, 无需进行轮询, 获得可用文件描述符的时间复杂度是O(1). </p>
+<p>鉴于以上特性, epoll可以高效处理数以百万计的socket句柄, 与select相比有飞跃般的提升. </p>
 <hr>
-<h3 id="Nginx中epoll的使用"><a href="#Nginx中epoll的使用" class="headerlink" title="Nginx中epoll的使用"></a>Nginx中epoll的使用</h3><p>严格来说epoll是同步阻塞模型, 在真正进行IO的时候还是要被阻塞的, 只是可以实现单线程内的IO复用. </p>
+<h3 id="Nginx相关"><a href="#Nginx相关" class="headerlink" title="Nginx相关"></a>Nginx相关</h3><p>严格来说Epoll是同步阻塞模型, 因此在真正进行IO操作时还是要阻塞, 只是可以实现单线程内的<strong>IO复用</strong>. </p>
 <p>也正是因为如此, Nginx的worker进程数量通常应当与处理机数量保持一致, 但如果任务是IO密集型, 就要启动比处理机数量略多的worker进程(1.5到2倍之间). </p>
 <hr>
 <p>参考<br><a href="https://www.cnblogs.com/lojunren/p/3856290.html" target="_blank" rel="noopener">Linux下的I/O复用与epoll详解</a><br><a href="https://blog.csdn.net/stpeace/article/details/43719449" target="_blank" rel="noopener">send和recv</a><br><a href="https://www.programering.com/a/MDOxgzMwATQ.html" target="_blank" rel="noopener">Five kinds of I/O model under Unix</a><br><a href="https://www.cnblogs.com/longjiang-uestc/p/9605283.html" target="_blank" rel="noopener">epoll机制详解</a></p>
@@ -451,8 +457,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/18/Django缓存/" rel="next" title="Django缓存系统">
-                <i class="fa fa-chevron-left"></i> Django缓存系统
+              <a href="/2019/03/21/Django CBV/" rel="next" title="DjangoCBV 处理流程及源码分析">
+                <i class="fa fa-chevron-left"></i> DjangoCBV 处理流程及源码分析
               </a>
             
           </div>
@@ -540,7 +546,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -553,7 +559,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -586,7 +592,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Send-和Recv-做了什么"><span class="nav-number">1.</span> <span class="nav-text">Send()和Recv()做了什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#程序阻塞于recv调用"><span class="nav-number">2.</span> <span class="nav-text">程序阻塞于recv调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多路复用IO"><span class="nav-number">3.</span> <span class="nav-text">多路复用IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#边缘触发-ET-和水平触发-LT"><span class="nav-number">4.</span> <span class="nav-text">边缘触发(ET)和水平触发(LT)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#epoll的系统调用和工作原理"><span class="nav-number">5.</span> <span class="nav-text">epoll的系统调用和工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相较于select的优点"><span class="nav-number">6.</span> <span class="nav-text">相较于select的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx中epoll的使用"><span class="nav-number">7.</span> <span class="nav-text">Nginx中epoll的使用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Send和Recv做了什么"><span class="nav-number">1.</span> <span class="nav-text">Send和Recv做了什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#程序阻塞于recv调用"><span class="nav-number">2.</span> <span class="nav-text">程序阻塞于recv调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多路复用IO"><span class="nav-number">3.</span> <span class="nav-text">多路复用IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#边缘触发-ET-和水平触发-LT"><span class="nav-number">4.</span> <span class="nav-text">边缘触发(ET)和水平触发(LT)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#epoll的系统调用和工作原理"><span class="nav-number">5.</span> <span class="nav-text">epoll的系统调用和工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与select不同之处"><span class="nav-number">6.</span> <span class="nav-text">与select不同之处</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文件描述符数量限制"><span class="nav-number">6.1.</span> <span class="nav-text">文件描述符数量限制:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对事件的检测方式"><span class="nav-number">6.2.</span> <span class="nav-text">对事件的检测方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx相关"><span class="nav-number">7.</span> <span class="nav-text">Nginx相关</span></a></li></ol></div>
             
 
           </div>
