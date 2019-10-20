@@ -105,20 +105,20 @@
 
 
 
-<meta name="description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.   程序阻塞于rec">
+<meta name="description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.">
 <meta name="keywords" content="Epoll,IO多路复用模型">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Epoll IO多路复用模型">
 <meta property="og:url" content="http://yoursite.com/2019/04/21/Epoll IO多路复用模型简介/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.   程序阻塞于rec">
+<meta property="og:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190703171840419.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-10-19T11:24:03.005Z">
+<meta property="og:updated_time" content="2019-10-19T12:07:02.274Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Epoll IO多路复用模型">
-<meta name="twitter:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.   程序阻塞于rec">
+<meta name="twitter:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区.">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
 
 
@@ -378,6 +378,8 @@
       
         <h3 id="Send和Recv做了什么"><a href="#Send和Recv做了什么" class="headerlink" title="Send和Recv做了什么"></a>Send和Recv做了什么</h3><p><code>send</code>和<code>recv</code>只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能. </p>
 <p>当我们调用send()时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv()剪贴/复制到应用程序缓冲区. </p>
+<a id="more"></a>
+
 <hr>
 <h3 id="程序阻塞于recv调用"><a href="#程序阻塞于recv调用" class="headerlink" title="程序阻塞于recv调用"></a>程序阻塞于recv调用</h3><p>在网络编程中, <code>send</code>之后立即尝试使用<code>recv</code>接收数据, 从调用<code>recv</code>到得到结果, 等待时间分为两部分</p>
 <ol>
@@ -425,7 +427,7 @@
 <p>也正是因为如此, Nginx的worker进程数量通常应当与处理机数量保持一致, 但如果任务是IO密集型, 就要启动比处理机数量略多的worker进程(1.5到2倍之间). </p>
 <hr>
 <p>参考<br><a href="https://www.cnblogs.com/lojunren/p/3856290.html" target="_blank" rel="noopener">Linux下的I/O复用与epoll详解</a><br><a href="https://blog.csdn.net/stpeace/article/details/43719449" target="_blank" rel="noopener">send和recv</a><br><a href="https://www.programering.com/a/MDOxgzMwATQ.html" target="_blank" rel="noopener">Five kinds of I/O model under Unix</a><br><a href="https://www.cnblogs.com/longjiang-uestc/p/9605283.html" target="_blank" rel="noopener">epoll机制详解</a></p>
-<a id="more"></a>
+<!-- more -->
       
     </div>
     
@@ -546,7 +548,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -559,7 +561,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
