@@ -1470,7 +1470,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket 127.0.0.1:3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2 --stats 127.0.0.1:9191</span><br></pre></td></tr></table></figure>
 
 <p>以上命令较长, 但考虑可以使用Docker部署时写入到dockerfile的CMD/ENTERYPOINT指令中, 所以跟写成<code>.ini</code>配置文件没有太大的区别.</p>
-<p>特别注意, 如果在使用docker, –socket必须去掉<code>127.0.0.1</code>, 即:</p>
+<p>特别注意, 如果使用docker进行部署, <code>--socket</code>不能包含<code>127.0.0.1</code>, 即实际启动端口需为<code>0.0.0.0:3031</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket :3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2</span><br></pre></td></tr></table></figure>
 
 <p>否则Nginx无法连接至uWSGI.</p>
@@ -1691,7 +1691,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1704,7 +1704,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

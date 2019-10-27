@@ -1359,6 +1359,93 @@
       </tags>
   </entry>
   <entry>
+    <title>11. 序列化器 Validator</title>
+    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
+    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
+<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
+<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
+
+<p>运行 python manage.py shell</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset：划定唯一约束的范围</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset: 用于验证的查询集</li>
+<li>fields: 联合唯一约束的字段列表</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
+<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
+<p>实例化时的参数</p>
+<ol>
+<li>queryset： 用于验证的查询集</li>
+<li>field： 字段名, 必须为序列化器中的字段</li>
+<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
+<li>message:可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
+<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
+<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
+<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
+<hr>
+<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
+<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
+<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
+<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
+<hr>
+<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
+<hr>
+<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
+<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
+<hr>
+<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>set_context()</code></p>
+<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>django-rest-framework中文文档</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>10.2 序列化器字段:关系字段 Serializer Field</title>
     <url>/2019/10/03/10.2%20%E5%BA%8F%E5%88%97%E5%8C%96%E5%99%A8%E5%AD%97%E6%AE%B5-%E5%85%B3%E7%B3%BB%E5%AD%97%E6%AE%B5/</url>
     <content><![CDATA[<p>关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段.</p>
@@ -1506,93 +1593,6 @@
 <p>如果要声明一个指向使用了中间模型的<code>ManyToManyField</code>字段的序列化器关系字段, 确保设置<code>read_only=True</code>.</p>
 <p>如果想序列化包含在中间模型的额外字段的序列化结果, 可以将中间模型作为<a href="https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects" target="_blank" rel="noopener">嵌套对象</a>进行序列化. </p>
 ]]></content>
-      <tags>
-        <tag>django-rest-framework中文文档</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11. 序列化器 Validator</title>
-    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
-    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
-<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
-<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
-<a id="more"></a>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
-
-<p>运行 python manage.py shell</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
-<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset：划定唯一约束的范围</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
-</ol>
-<p>示例代码:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset: 用于验证的查询集</li>
-<li>fields: 联合唯一约束的字段列表</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
-<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
-<p>实例化时的参数</p>
-<ol>
-<li>queryset： 用于验证的查询集</li>
-<li>field： 字段名, 必须为序列化器中的字段</li>
-<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
-<li>message:可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
-<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
-<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
-<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
-
-<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
-<hr>
-<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
-<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
-<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
-<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
-<hr>
-<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
-<hr>
-<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
-<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
-<hr>
-<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
-
-<p>使用<code>set_context()</code></p>
-<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>django-rest-framework中文文档</tag>
       </tags>
@@ -3005,7 +3005,7 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uwsgi --socket 127.0.0.1:3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2 --stats 127.0.0.1:9191</span><br></pre></td></tr></table></figure>
 
 <p>以上命令较长, 但考虑可以使用Docker部署时写入到dockerfile的CMD/ENTERYPOINT指令中, 所以跟写成<code>.ini</code>配置文件没有太大的区别.</p>
-<p>特别注意, 如果在使用docker, –socket必须去掉<code>127.0.0.1</code>, 即:</p>
+<p>特别注意, 如果使用docker进行部署, <code>--socket</code>不能包含<code>127.0.0.1</code>, 即实际启动端口需为<code>0.0.0.0:3031</code>:</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uwsgi --socket :3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2</span><br></pre></td></tr></table></figure>
 
 <p>否则Nginx无法连接至uWSGI.</p>
@@ -3294,7 +3294,7 @@
 <li>点赞和反对, 会同步更新统计字段的值.</li>
 <li>每个用户对同一对象的点赞和反对仅能生效一次.</li>
 <li>点赞的同时会取消反对(如果已反对), 反之亦然.</li>
-<li></li>
+<li>提供一个bulk_vote方法, 可以在两次查询中执行多个用户的赞踩操作.</li>
 </ol>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> django.db.models <span class="keyword">import</span> F</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth <span class="keyword">import</span> get_user_model</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VoteMixin</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    up_count = models.PositiveIntegerField(default=<span class="number">0</span>)</span><br><span class="line">    down_count = models.PositiveIntegerField(default=<span class="number">0</span>)</span><br><span class="line">    upvote_rate = models.FloatField(default=<span class="number">0</span>)</span><br><span class="line">    vote_reference = GenericRelation(VoteReference)</span><br><span class="line">    voter = VoteManager()</span><br><span class="line">    objects = models.Manager()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        abstract = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">vote</span><span class="params">(self, user, upvote)</span>:</span></span><br><span class="line">        <span class="string">""" 赞同/反对操作方法 """</span></span><br><span class="line">        r = self.vote_reference.filter(user=user).first()</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> r:</span><br><span class="line">            self.vote_reference.create(upvote=upvote, user=user)</span><br><span class="line">            <span class="keyword">if</span> upvote:</span><br><span class="line">                self.up_count += <span class="number">1</span></span><br><span class="line">                self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">                self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                    up_count=F(<span class="string">'up_count'</span>)+<span class="number">1</span>, </span><br><span class="line">                    upvote_rate=self.upvote_rate</span><br><span class="line">                )</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.down_count += <span class="number">1</span></span><br><span class="line">                self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">                self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                    down_count=F(<span class="string">'down_count'</span>)+<span class="number">1</span>, </span><br><span class="line">                    upvote_rate=self.upvote_rate</span><br><span class="line">                )</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> upvote != r.upvote:</span><br><span class="line">                <span class="keyword">if</span> upvote:</span><br><span class="line">                    self.up_count += <span class="number">1</span></span><br><span class="line">                    self.down_count -= <span class="number">1</span></span><br><span class="line">                    self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">                    self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                        down_count=F(<span class="string">'down_count'</span>)<span class="number">-1</span>, </span><br><span class="line">                        up_count=F(<span class="string">'up_count'</span>)+<span class="number">1</span>, </span><br><span class="line">                        upvote_rate=self.upvote_rate</span><br><span class="line">                    )</span><br><span class="line">                    self.vote_reference.filter(id=r.id).update(upvote=<span class="literal">True</span>)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    self.up_count -= <span class="number">1</span></span><br><span class="line">                    self.down_count += <span class="number">1</span></span><br><span class="line">                    self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">                    self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                        down_count=F(<span class="string">'down_count'</span>)+<span class="number">1</span>, </span><br><span class="line">                        up_count=F(<span class="string">'up_count'</span>)<span class="number">-1</span>, </span><br><span class="line">                        upvote_rate=self.upvote_rate</span><br><span class="line">                    )</span><br><span class="line">                    self.vote_reference.filter(id=r.id).update(upvote=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">voteneutral</span><span class="params">(self, user)</span>:</span></span><br><span class="line">        r = self.vote_reference.filter(user=user).first()</span><br><span class="line">        <span class="keyword">if</span> r:</span><br><span class="line">            r.delete()</span><br><span class="line">            <span class="keyword">if</span> r.upvote:</span><br><span class="line">                self.up_count -= <span class="number">1</span> </span><br><span class="line">                self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">                self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                    up_count=F(<span class="string">'up_count'</span>)<span class="number">-1</span>, </span><br><span class="line">                    upvote_rate=self.upvote_rate</span><br><span class="line">                )</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.down_count -= <span class="number">1</span></span><br><span class="line">                self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">                self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                    down_count=F(<span class="string">'down_count'</span>)<span class="number">-1</span>, </span><br><span class="line">                    upvote_rate=self.upvote_rate</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_upvote_rate</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._calc_upvote_rate(self.up_count, self.down_count)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_calc_upvote_rate</span><span class="params">(up_count, down_count)</span>:</span></span><br><span class="line">        total_vote_count = up_count + down_count</span><br><span class="line">        base = total_vote_count <span class="keyword">if</span> total_vote_count <span class="keyword">else</span> <span class="number">1</span></span><br><span class="line">        upvote_rate = round((up_count/base), <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> upvote_rate</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_voted_user</span><span class="params">(self, upvote=True)</span>:</span></span><br><span class="line">        vote_qs = self.vote_reference.filter(upvote=upvote).values(<span class="string">'user'</span>)</span><br><span class="line">        user_ids = [r.get(<span class="string">'user'</span>) <span class="keyword">for</span> r <span class="keyword">in</span> vote_qs]</span><br><span class="line">        <span class="keyword">return</span> get_user_model().objects.filter(id__in=user_ids)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">is_upvoted</span><span class="params">(self, user)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.vote_reference.filter(user=user, upvote=<span class="literal">True</span>).exists()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">is_downvoted</span><span class="params">(self, user)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.vote_reference.filter(user=user, upvote=<span class="literal">False</span>).exists()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bulk_vote</span><span class="params">(self, users_pk, upvote)</span>:</span></span><br><span class="line">        existed_record_count = self.vote_reference.filter(user__id__in=users_pk, upvote=upvote).count()</span><br><span class="line">        <span class="keyword">if</span> upvote:</span><br><span class="line">            self.up_count -= existed_record_count</span><br><span class="line">            self.__class__.objects.filter(id=self.id).update(up_count=F(<span class="string">'up_count'</span>)-existed_record_count)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.down_count -= existed_record_count</span><br><span class="line">            self.__class__.objects.filter(id=self.id).update(down_count=F(<span class="string">'down_count'</span>)-existed_record_count)</span><br><span class="line">        self.vote_reference.filter(user__id__in=users_pk, upvote=upvote).delete()</span><br><span class="line"></span><br><span class="line">        users = get_user_model().objects.filter(id__in=users_pk)</span><br><span class="line">        self_type = ContentType.objects.get_for_model(self.__class__)</span><br><span class="line">        ready_records = [VoteReference(</span><br><span class="line">            content_type=self_type, </span><br><span class="line">            object_id=self.id, </span><br><span class="line">            user=user, </span><br><span class="line">            upvote=upvote</span><br><span class="line">        ) <span class="keyword">for</span> user <span class="keyword">in</span> users]</span><br><span class="line">        VoteReference.objects.bulk_create(ready_records)</span><br><span class="line">        <span class="keyword">if</span> upvote:</span><br><span class="line">            self.up_count +=  len(users)</span><br><span class="line">            self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">            self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                up_count=F(<span class="string">'up_count'</span>)+<span class="number">1</span>,</span><br><span class="line">                upvote_rate=self.upvote_rate</span><br><span class="line">                )</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.down_count += len(users)</span><br><span class="line">            self.upvote_rate = self.get_upvote_rate()</span><br><span class="line">            self.__class__.objects.filter(id=self.id).update(</span><br><span class="line">                up_count=F(<span class="string">'down_count'</span>)+<span class="number">1</span>,</span><br><span class="line">                upvote_rate=self.upvote_rate</span><br><span class="line">                )</span><br></pre></td></tr></table></figure>
 
@@ -4354,6 +4354,29 @@
 ]]></content>
       <tags>
         <tag>RESTful</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>127.0.0.1和0.0.0.0</title>
+    <url>/2019/02/01/127.0.0.1%E5%92%8C0.0.0.0/</url>
+    <content><![CDATA[<p><code>127.0.0.1</code> 是环回地址, 通常分配给<code>loopback</code>处理, 对<code>127.0.0.1</code>的访问都会指向本机, 所以通常用于<strong>本机</strong>应用之间的交互, </p>
+<p>对<code>127.0.0.1</code>的请求不会出入网卡, 网络设备也不会对其路由.</p>
+<p>操作系统初始化本机的<code>TCP/IP</code>协议栈时, 设置协议栈本身的IP地址为<code>127.0.0.1</code>, 并注入路由表, 当IP层接到目的地址为该地址的的数据包时, 直接转发到本机的IP层进行处理.</p>
+<p>即, 对<code>127.0.0.1</code>的请求所使用的最底层协议栈为<code>TCP/IP</code>层,  直接在网络层和传输层之间环回, <strong>不会</strong>通过链路层和物理层.</p>
+<p>能ping通<code>127.0.0.1</code>意味着<code>TCP/IP</code>协议栈运行正常.</p>
+<p>localhost通常被设置为<code>127.0.0.1</code>的域名, 在支持<code>ipv6</code>的设备中, 同时还指向<code>[::1]</code></p>
+<p>使用localhost与127.0.0.1没有任何区别.</p>
+<hr>
+<p><code>0.0.0.0</code>指的是任意ip地址<code>IP_ADDR_ANY</code>, 也包括环回地址, 主机监听<code>0.0.0.0</code>时, 会接受目标地址为任意地址的请求.</p>
+<p><code>0.0.0.0</code>永远不能ping通.</p>
+<hr>
+<p>在<code>Docker</code>容器中, <code>127.0.0.1</code>指的是本容器的网络地址, 监听<code>127.0.0.1</code>的容器内服务, 不会接收任何非本容器内的请求, 包括其他容器的请求也不会被接收.</p>
+<hr>
+<p>参考:</p>
+<p><a href="https://www.zhihu.com/question/23940717" target="_blank" rel="noopener">知乎</a></p>
+]]></content>
+      <tags>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>

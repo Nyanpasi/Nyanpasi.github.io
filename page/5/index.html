@@ -1478,7 +1478,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/07/python元编程相关/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/01/127.0.0.1和0.0.0.0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -1497,7 +1497,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/07/python元编程相关/" itemprop="url">Python元编程</a></h1>
+                <a class="post-title-link" href="/2019/02/01/127.0.0.1和0.0.0.0/" itemprop="url">127.0.0.1和0.0.0.0</a></h1>
         
 
         <div class="post-meta">
@@ -1509,8 +1509,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-07T11:15:03+08:00">
-                2019-01-07
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-01T18:09:47+08:00">
+                2019-02-01
               </time>
             
 
@@ -1548,21 +1548,24 @@
 
       
         
-          <blockquote>
-<p>元编程是一种编写计算机程序的技术, 这些程序可以将自己看做数据, 因此可以在运行时可以对它进行内省, 生成, 修改. </p>
-</blockquote>
-<p>因此我们可以区分Python元编程的两种主要方法</p>
-<ol>
-<li>专注于语言对基本元素(函数, 类, 类型)内省的能力和对运行时创建或修改的能力</li>
-<li>允许程序直接处理代码本身, 例如原始的纯文本格式, 或是抽象语法树(AST)</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/07/python元编程相关/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
+            <p><code>127.0.0.1</code> 是环回地址, 通常分配给<code>loopback</code>处理, 对<code>127.0.0.1</code>的访问都会指向本机, 所以通常用于<strong>本机</strong>应用之间的交互, </p>
+<p>对<code>127.0.0.1</code>的请求不会出入网卡, 网络设备也不会对其路由.</p>
+<p>操作系统初始化本机的<code>TCP/IP</code>协议栈时, 设置协议栈本身的IP地址为<code>127.0.0.1</code>, 并注入路由表, 当IP层接到目的地址为该地址的的数据包时, 直接转发到本机的IP层进行处理.</p>
+<p>即, 对<code>127.0.0.1</code>的请求所使用的最底层协议栈为<code>TCP/IP</code>层,  直接在网络层和传输层之间环回, <strong>不会</strong>通过链路层和物理层.</p>
+<p>能ping通<code>127.0.0.1</code>意味着<code>TCP/IP</code>协议栈运行正常.</p>
+<p>localhost通常被设置为<code>127.0.0.1</code>的域名, 在支持<code>ipv6</code>的设备中, 同时还指向<code>[::1]</code></p>
+<p>使用localhost与127.0.0.1没有任何区别.</p>
+<hr>
+<p><code>0.0.0.0</code>指的是任意ip地址<code>IP_ADDR_ANY</code>, 也包括环回地址, 主机监听<code>0.0.0.0</code>时, 会接受目标地址为任意地址的请求.</p>
+<p><code>0.0.0.0</code>永远不能ping通.</p>
+<hr>
+<p>在<code>Docker</code>容器中, <code>127.0.0.1</code>指的是本容器的网络地址, 监听<code>127.0.0.1</code>的容器内服务, 不会接收任何非本容器内的请求, 包括其他容器的请求也不会被接收.</p>
+<hr>
+<p>参考:</p>
+<p><a href="https://www.zhihu.com/question/23940717" target="_blank" rel="noopener">知乎</a></p>
+
+          
         
       
     </div>
@@ -1646,7 +1649,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1659,7 +1662,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

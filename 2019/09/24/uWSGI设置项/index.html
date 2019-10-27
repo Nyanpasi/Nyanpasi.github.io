@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="通过不同方式进行设置 在启动时添加命令行参数 使用.ini文件 使用xml文件 使用yaml格式文件 …  使用命令行参数示例: 1uwsgi --http :9090 --wsgi-file foobar.py  使用.ini文件示例: 1234567[uwsgi]socket = 127.0.0.1:3031chdir = /home/foobar/myproject/wsgi-file =">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-23T19:21:12.094Z">
+<meta property="og:updated_time" content="2019-10-27T12:44:24.906Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="uWSGI设置项">
 <meta name="twitter:description" content="通过不同方式进行设置 在启动时添加命令行参数 使用.ini文件 使用xml文件 使用yaml格式文件 …  使用命令行参数示例: 1uwsgi --http :9090 --wsgi-file foobar.py  使用.ini文件示例: 1234567[uwsgi]socket = 127.0.0.1:3031chdir = /home/foobar/myproject/wsgi-file =">
@@ -441,7 +441,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket 127.0.0.1:3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2 --stats 127.0.0.1:9191</span><br></pre></td></tr></table></figure>
 
 <p>以上命令较长, 但考虑可以使用Docker部署时写入到dockerfile的CMD/ENTERYPOINT指令中, 所以跟写成<code>.ini</code>配置文件没有太大的区别.</p>
-<p>特别注意, 如果在使用docker, –socket必须去掉<code>127.0.0.1</code>, 即:</p>
+<p>特别注意, 如果使用docker进行部署, <code>--socket</code>不能包含<code>127.0.0.1</code>, 即实际启动端口需为<code>0.0.0.0:3031</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket :3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2</span><br></pre></td></tr></table></figure>
 
 <p>否则Nginx无法连接至uWSGI.</p>
@@ -572,7 +572,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -585,7 +585,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
