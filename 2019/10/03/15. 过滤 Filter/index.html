@@ -105,18 +105,18 @@
 
 
 
-<meta name="description" content="“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档  REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分而已. 分页器解决的是将全部查询集分批次返回的问题, 而过滤则是要获得我们需要的那部分数据. 最简单的方法就是重写GenericAPIView的子类">
+<meta name="description" content="“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档  REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分.  分页器解决的是将查询集分批次返回的问题, 而过滤则是要按某种条件取出部分查询集. 最简单的方法就是重写GenericAPIView的子类(例如">
 <meta name="keywords" content="django-rest-framework中文文档">
 <meta property="og:type" content="article">
 <meta property="og:title" content="15. 过滤 Filter">
 <meta property="og:url" content="http://yoursite.com/2019/10/03/15. 过滤 Filter/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档  REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分而已. 分页器解决的是将全部查询集分批次返回的问题, 而过滤则是要获得我们需要的那部分数据. 最简单的方法就是重写GenericAPIView的子类">
+<meta property="og:description" content="“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档  REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分.  分页器解决的是将查询集分批次返回的问题, 而过滤则是要按某种条件取出部分查询集. 最简单的方法就是重写GenericAPIView的子类(例如">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-10T10:21:56.703Z">
+<meta property="og:updated_time" content="2019-10-20T04:07:15.503Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="15. 过滤 Filter">
-<meta name="twitter:description" content="“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档  REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分而已. 分页器解决的是将全部查询集分批次返回的问题, 而过滤则是要获得我们需要的那部分数据. 最简单的方法就是重写GenericAPIView的子类">
+<meta name="twitter:description" content="“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档  REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分.  分页器解决的是将查询集分批次返回的问题, 而过滤则是要按某种条件取出部分查询集. 最简单的方法就是重写GenericAPIView的子类(例如">
 
 
 
@@ -376,8 +376,8 @@
         <blockquote>
 <p>“由Django Manager提供的全查询集描述了数据库表中的所有对象。可是通常你需要的只是选择所有对象中的一个子集而已。” —— Django文档</p>
 </blockquote>
-<p>REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分而已.</p>
-<p>分页器解决的是将全部查询集分批次返回的问题, 而过滤则是要获得我们需要的那部分数据.</p>
+<p>REST-framework默认获得的是一个model的全部查询集, 而通常我们只需要其中一部分. </p>
+<p>分页器解决的是将查询集分批次返回的问题, 而过滤则是要按某种条件取出部分查询集.</p>
 <p>最简单的方法就是重写<code>GenericAPIView</code>的子类(例如viewset)的<code>get_queryset</code>方法, 通过重写该方法可以使用各种方式来自定义查询集. </p>
 <a id="more"></a>
 
@@ -571,7 +571,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -584,7 +584,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

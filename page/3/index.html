@@ -300,6 +300,131 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/9. 序列化器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/03/9. 序列化器/" itemprop="url">9.1 序列化器:数据验证 Serializer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T17:52:47+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型. </p>
+<p>rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法来控制响应的输出，ModelSerializer类为创建用于处理模型实例和查询集的序列化程序提供了有用的快捷实现方式. </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/03/9. 序列化器/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/8. 渲染器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1331,7 +1456,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/25/Hexo添加访问统计/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/uWSGI设置项/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -1350,7 +1475,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/25/Hexo添加访问统计/" itemprop="url">Hexo+Next添加访问统计</a></h1>
+                <a class="post-title-link" href="/2019/09/24/uWSGI设置项/" itemprop="url">uWSGI设置项</a></h1>
         
 
         <div class="post-meta">
@@ -1362,8 +1487,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-25T11:58:21+08:00">
-                2019-08-25
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-24T17:47:47+08:00">
+                2019-09-24
               </time>
             
 
@@ -1401,140 +1526,89 @@
 
       
         
-          <p>如果使用的是Next主题的话, 已经集成了busuanzi统计, 但默认处于禁用状态.</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/25/Hexo添加访问统计/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
+          
+            <h3 id="通过不同方式进行设置"><a href="#通过不同方式进行设置" class="headerlink" title="通过不同方式进行设置"></a>通过不同方式进行设置</h3><ol>
+<li>在启动时添加命令行参数</li>
+<li>使用.ini文件</li>
+<li>使用xml文件</li>
+<li>使用yaml格式文件</li>
+<li>…</li>
+</ol>
+<p>使用命令行参数示例:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --http :9090 --wsgi-file foobar.py</span><br></pre></td></tr></table></figure>
 
-    
+<p>使用<code>.ini</code>文件示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[uwsgi]</span><br><span class="line">socket = 127.0.0.1:3031</span><br><span class="line">chdir = /home/foobar/myproject/</span><br><span class="line">wsgi-file = myproject/wsgi.py</span><br><span class="line">processes = 4</span><br><span class="line">threads = 2</span><br><span class="line">stats = 127.0.0.1:9191</span><br></pre></td></tr></table></figure>
 
-    
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi yourfile.ini</span><br></pre></td></tr></table></figure>
 
-    
+<hr>
+<h3 id="uWSGI常用配置项"><a href="#uWSGI常用配置项" class="headerlink" title="uWSGI常用配置项"></a>uWSGI常用配置项</h3><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chdir</code></td>
+<td>指定项目目录</td>
+</tr>
+<tr>
+<td><code>wsgi-file</code></td>
+<td>项目的WSGI接口文件</td>
+</tr>
+<tr>
+<td><code>processes</code></td>
+<td>指定工作进程数量</td>
+</tr>
+<tr>
+<td><code>threads</code></td>
+<td>指定每个工作进程的线程数量</td>
+</tr>
+<tr>
+<td><code>socket</code></td>
+<td>指定某个socket文件或端口, 使用<code>uwsgi</code>协议接收请求</td>
+</tr>
+<tr>
+<td><code>http</code></td>
+<td>指定某个端口, 使用<code>http</code>协议接收请求</td>
+</tr>
+<tr>
+<td><code>stats</code></td>
+<td>指定某个端口, 以json格式输出uWSGI内部统计信息</td>
+</tr>
+<tr>
+<td><code>harakiri</code></td>
+<td>指定进程被阻塞的最长时间, 超时的进程被master进程摧毁并重建</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="部署Django"><a href="#部署Django" class="headerlink" title="部署Django"></a>部署Django</h3><p>Nginx作为反向代理, 使用<code>uwsgi</code>协议与<code>uWSGI</code>服务器进行通信, 因此</p>
+<ol>
+<li><code>uWSGI</code>服务器使用<code>uwsgi</code>协议启动.</li>
+<li><code>Nginx</code>服务器使用<code>uwsgi</code>协议转发.</li>
+</ol>
+<hr>
+<h4 id="uWSGI侧设置"><a href="#uWSGI侧设置" class="headerlink" title="uWSGI侧设置"></a>uWSGI侧设置</h4><p>假设Django项目位置为<code>/home/foobar/myproject</code>, 即<code>manage.py</code>放在该目录下.</p>
+<p>命令行方式, 使用uwsgi协议, 设置工作目录<code>/home/foobar/myproject</code>, 4进程, 每个进程2线程, 输出统计信息到9191端口, 启动uWSGI:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket 127.0.0.1:3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2 --stats 127.0.0.1:9191</span><br></pre></td></tr></table></figure>
 
-    <footer class="post-footer">
-      
+<p>以上命令较长, 但考虑可以使用Docker部署时写入到dockerfile的CMD/ENTERYPOINT指令中, 所以跟写成<code>.ini</code>配置文件没有太大的区别.</p>
+<p>特别注意, 如果在使用docker, –socket必须去掉<code>127.0.0.1</code>, 即:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket :3031 --<span class="built_in">chdir</span> /home/foobar/myproject/ --wsgi-file myproject/wsgi.py --master --processes 4 --threads 2</span><br></pre></td></tr></table></figure>
 
-      
+<p>否则Nginx无法连接至uWSGI.</p>
+<hr>
+<h4 id="Nginx侧设置"><a href="#Nginx侧设置" class="headerlink" title="Nginx侧设置"></a>Nginx侧设置</h4><p>Nginx作为反向代理, 通过<code>uwsgi</code>协议转发, 即使用<code>uwsgi_pass</code>而非<code>proxy_pass</code>, 反向代理部分设置如下:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> / &#123;</span><br><span class="line">    <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">    <span class="attribute">uwsgi_pass</span> <span class="number">127.0.0.1:3031</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/23/Hexo+Github部署个人博客/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/23/Hexo+Github部署个人博客/" itemprop="url">Hexo+Github搭建个人博客</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-23T11:58:21+08:00">
-                2019-08-23
-              </time>
-            
-
-            
-
-            
-          </span>
+<p>uwsgi_params中会自动进行远程ip, 请求头等字段的重写以确保uWSGI服务器收到的是原始请求的信息, 而非Nginx请求的信息, 无需再手动设置.</p>
+<hr>
+<p>参考</p>
+<p><a href="https://uwsgi-docs-zh.readthedocs.io/zh_CN/latest/WSGIquickstart.html#django" target="_blank" rel="noopener">uWSGI官方文档</a><br><a href="https://henulwj.github.io/2016/04/20/uwsgi-common-use-parameters/" target="_blank" rel="noopener">uWSGI常用参数介绍-米刀文</a></p>
 
           
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="https://hexo.io/index.html" target="_blank" rel="noopener">Hexo</a>是一个快速、简洁且高效的博客框架, 基于Node.js</p>
-<p><a href="https://github.com" target="_blank" rel="noopener">Github</a>可以为每一个repository提供一个Github Pages, 但默认是不开启的.</p>
-<p>我们通过Hexo生成静态页面, 然后将其同步至远程仓库, 作为某个repository的Github Page, 这样就可以直接在Github上访问了.</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/23/Hexo+Github部署个人博客/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -1572,7 +1646,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1618,7 +1692,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1631,7 +1705,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

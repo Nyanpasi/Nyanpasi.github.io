@@ -300,6 +300,224 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/Django赞踩系统实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/24/Django赞踩系统实现/" itemprop="url">Untitled</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T22:48:55+08:00">
+                2019-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>from django.db import models<br>from django.db.models import F<br>from django.conf import settings<br>from django.utils import timezone<br>from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey, ContentType<br>from django.contrib import admin</p>
+<h1 id="Create-your-models-here"><a href="#Create-your-models-here" class="headerlink" title="Create your models here."></a>Create your models here.</h1><p>class VoteReference(models.Model):</p>
+<pre><code>user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+created = models.DateTimeField(default=timezone.now)
+upvote = models.BooleanField()
+
+content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+object_id = models.PositiveIntegerField()
+content_object = GenericForeignKey(&apos;content_type&apos;, &apos;object_id&apos;)
+
+class Meta:
+    ordering = &apos;-created&apos;
+
+def __str__(self):
+    return self.user.username +&quot; voted &quot; + str(self.content_object)</code></pre><p>@admin.register(VoteReference)<br>class VoteReferenceAdmin(admin.ModelAdmin):<br>    list_display = [‘user’, ‘upvote’, ‘created’, ‘content_type’, ‘object_id’, ‘content_object’]</p>
+<p>class VoteManager(models.Manager):</p>
+<pre><code>def get_upvoted(self, user):
+    self_type = ContentType.objects.get_for_model(self.model)
+    vote_qs = VoteReference.objects.filter(user=user, content_type__pk=self_type.id, upvote=True).values(&apos;object_id&apos;)
+    ids = [r.get(&apos;object_id&apos;) for r in vote_qs]
+    return self.get_queryset().filter(id__in=ids)
+
+def get_downvoted(self, user):
+    self_type = ContentType.objects.get_for_model(self.model)
+    vote_qs = VoteReference.objects.filter(user=user, content_type__pk=self_type.id, upvote=False).values(&apos;object_id&apos;)
+    ids = [r.get(&apos;object_id&apos;) for r in vote_qs]
+    return self.get_queryset().filter(id__in=vote_qs)
+
+def get_widely_upvoted(self, limit=20, monthly=False, weekly=False):
+    qs = self.get_queryset().order_by(&apos;-up_count&apos;)
+    return qs[:limit] if limit else qs
+
+
+def get_high_upvote_rate(self, min_upvote_rate=0.7, min_upvote_count=10, limit=20, monthly=False, weekly=False):
+    qs = self.get_queryset()
+    high_upvote_qs = qs.filter(upvote_rate__gte=min_upvote_rate, up_count__gte=min_upvote_count)
+    return high_upvote_qs[:limit] if limit else high_upvote_qs</code></pre><p>class VoteMixin(models.Model):<br>    up_count = models.PositiveIntegerField(default=0)<br>    down_count = models.PositiveIntegerField(default=0)<br>    upvote_rate = models.FloatField(default=0)</p>
+<pre><code>vote_reference = GenericRelation(VoteReference)
+voter = VoteManager()
+objects = models.Manager()
+
+class Meta:
+    abstract = True
+
+
+def vote(self, user, upvote):
+    r = self.vote_reference.filter(user=user).first()
+    if not r:
+        self.vote_reference.create(upvote=upvote, user=user)
+        if upvote:
+            self.up_count += 1
+            self.upvote_rate = self.get_upvote_rate()
+            self.__class__.objects.filter(id=self.id).update(up_count=F(&apos;up_count&apos;)+1, upvote_rate=self.upvote_rate)
+        else:
+            self.down_count += 1
+            self.upvote_rate = self.get_upvote_rate()
+            self.__class__.objects.filter(id=self.id).update(down_count=F(&apos;down_count&apos;)+1, upvote_rate=self.upvote_rate)
+    else:
+        if upvote != r.upvote:
+            if upvote:
+                self.up_count += 1
+                self.down_count -= 1
+                self.upvote_rate = self.get_upvote_rate()
+                self.__class__.objects.filter(id=self.id).update(down_count=F(&apos;down_count&apos;)-1, up_count=F(&apos;up_count&apos;)+1, upvote_rate=self.upvote_rate)
+                self.vote_reference.filter(id=r.id).update(upvote=True)
+            else:
+                self.up_count -= 1
+                self.down_count += 1
+                self.upvote_rate = self.get_upvote_rate()
+                self.__class__.objects.filter(id=self.id).update(down_count=F(&apos;down_count&apos;)+1, up_count=F(&apos;up_count&apos;)-1, upvote_rate=self.upvote_rate)
+                self.vote_reference.filter(id=r.id).update(upvote=False)
+
+def voteneutral(self, user):
+    r = self.vote_reference.filter(user=user).first()
+    if r:
+        r.delete()
+        if r.upvote:
+            self.up_count -= 1 # F函数不会更新当前实例的值, 因此先更新内存中实例的值, 以免与数据库中数据不一致
+            self.upvote_rate = self.get_upvote_rate()
+            self.__class__.objects.filter(id=self.id).update(up_count=F(&apos;up_count&apos;)-1, upvote_rate=self.upvote_rate)
+        else:
+            self.down_count -= 1
+            self.upvote_rate = self.get_upvote_rate()
+            self.__class__.objects.filter(id=self.id).update(down_count=F(&apos;down_count&apos;)-1, upvote_rate=self.upvote_rate)
+
+def get_upvote_rate(self):
+    return self._calc_upvote_rate(self.up_count, self.down_count)
+
+@staticmethod
+def _calc_upvote_rate(up_count, down_count):
+    total_vote_count = up_count + down_count
+    base = total_vote_count if total_vote_count else 1
+    upvote_rate = round((up_count/base), 2)
+    return upvote_rate</code></pre><p>“”” 由于使用了F函数, 所以在vote操作之后无需再调用实例的save方法, “””<br>“”” 为什么要使用F函数而不使用save(), </p>
+<ol>
+<li>update只更新部分字段数据, 效率更高</li>
+<li>保证所有操作不会被覆盖 (例如当某些以post作为外键的模型可能会同时生成post实例对象, 在存储时互相覆盖)</li>
+</ol>
+<p>“””</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/26. 设置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1435,143 +1653,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/17. 版本控制/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/03/17. 版本控制/" itemprop="url">17. 版本控制 Versioning</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T18:02:47+08:00">
-                2019-10-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>API版本控制允许为不同客户端执行不同的行为. REST-framework提供了多种版本控制方案:</p>
-<ol>
-<li>基于url查询参数的版本控制<code>QueryParameterVersioning</code></li>
-<li>基于url中路径段匹配的版本控制<code>URLPathVersioning</code></li>
-<li>基于ACCEPT请求头的版本控制<code>AcceptHeaderVersioning</code></li>
-<li>基于命名空间的版本控制<code>NamespaceVersioning</code></li>
-<li>基于主机名的版本控制<code>HostNameVersioning</code></li>
-<li>自定义的版本控制</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/03/17. 版本控制/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1617,7 +1703,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1630,7 +1716,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

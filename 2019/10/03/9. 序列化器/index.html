@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型.  rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-10T10:25:30.977Z">
+<meta property="og:updated_time" content="2019-10-20T04:13:59.831Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="9.1 序列化器:数据验证 Serializer">
 <meta name="twitter:description" content="序列化器将查询集(queryset)和模型实例(model instances)这样的复杂数据转换为原生python类型，以供渲染成JSON，XML等内容类型, 同时还提供反序列化功能，在验证了传入数据的合理性之后，允许将解析出的数据转换为复杂类型.  rest-framework中的serializers与Django的Form和ModelForm类非常像, Serializer类提供了通用方法">
@@ -393,7 +393,7 @@
 
 <p>当然, 在rest-framework中, 渲染器的选择和渲染过程通常是在视图处理函数返回Response后自动进行的, 我们只需要确保Response中包含的数据是合法的即可. 具体查阅<code>Renderer</code>一节.</p>
 <hr>
-<h3 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h3><p>反序列化过程中, 序列化器接收数据, 并将其重新构建为复杂数据类型(即<strong>构造数据类型</strong>, 在python中就是<strong>对象</strong>, 在rest-framework中则通常专指<strong>Model的实例</strong>), 以便进一步操作.</p>
+<h3 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h3><p>反序列化过程中, 序列化器接收数据, 在验证其合法性后将其转为python基本数据类型, 并允许将其重新构建为复杂数据类型(即<strong>构造数据类型</strong>, 在python中就是<strong>对象</strong>, 在rest-framework中则通常专指<strong>Model的实例</strong>), 以便进一步操作.</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">from</span> rest_framework.parsers <span class="keyword">import</span> JSONParser</span><br><span class="line"></span><br><span class="line"><span class="comment"># 这里的json指的是上面代码中生成的json</span></span><br><span class="line">stream = io.BytesIO(json)</span><br><span class="line">data = JSONParser().parse(stream)</span><br></pre></td></tr></table></figure>
 
 <p>在传入数据后, serializer根据自己的字段, 自动验证其数据合法性, 并转换为原生python数据类型, 放入<code>validated_data</code>属性中.</p>
@@ -421,7 +421,7 @@
 
 <p>所有的附加关键字参数将被包含至<code>validated_data</code>中, 在<code>.create()</code>和<code>.update()</code>被调用时使用.</p>
 <hr>
-<h4 id="直接重写-save"><a href="#直接重写-save" class="headerlink" title="直接重写.save()"></a>直接重写<code>.save()</code></h4><p>有时候, 单独实现create或者update意义不大, 例如我们想要在验证数据合法性之后将其使用email发送, 就应该直接重写<code>.save()</code>方法, 表意明确.</p>
+<h4 id="直接重写-save"><a href="#直接重写-save" class="headerlink" title="直接重写.save()"></a>直接重写<code>.save()</code></h4><p>有时候, 单独实现create或者update意义不大, 例如我们想要在验证数据合法性之后将其使用email发送, 就应该直接重写<code>.save()</code>方法, 确保表意明确.</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContactForm</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    email = serializers.EmailField()</span><br><span class="line">    message = serializers.CharField()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save</span><span class="params">(self)</span>:</span></span><br><span class="line">        email = self.validated_data[<span class="string">'email'</span>]</span><br><span class="line">        message = self.validated_data[<span class="string">'message'</span>]</span><br><span class="line">        send_email(<span class="keyword">from</span>=email, message=message)</span><br></pre></td></tr></table></figure>
 
 <p>注意在这种情况下, 直接访问<code>serializer</code>的<code>validated_data</code>属性.</p>
@@ -432,7 +432,7 @@
 <p>字典中的每个键是字段名, 对应的值则是该字段的出错信息. 一个可能存在的特殊键是<code>non_field_errors</code>, 里面会存储一些通用的验证错误(不具体与某个字段相关).</p>
 <p>该特殊键的键名可以通过<code>NON_FIELD_ERRORS_KEY</code>设置项进行修改.</p>
 <hr>
-<h4 id="在数据验证失败时抛出异常"><a href="#在数据验证失败时抛出异常" class="headerlink" title="在数据验证失败时抛出异常"></a>在数据验证失败时抛出异常</h4><p><code>is_valid</code>方法的<code>raise_exception</code>参数为<code>True</code>时, 当数据验证失败抛出<code>serializers.ValidationError</code>异常(而非存储出错信息).</p>
+<h4 id="在数据验证失败时抛出异常"><a href="#在数据验证失败时抛出异常" class="headerlink" title="在数据验证失败时抛出异常"></a>在数据验证失败时抛出异常</h4><p><code>is_valid</code>方法的<code>raise_exception</code>参数为<code>True</code>时, 数据验证失败会抛出<code>serializers.ValidationError</code>异常(而非存储出错信息).</p>
 <p>该异常会由REST-framework提供的默认异常处理程序自动处理，默认情况下将返回<code>HTTP 400 Bad Request</code>响应.</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serializer.is_valid(raise_exception=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
 
@@ -642,7 +642,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -655,7 +655,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
