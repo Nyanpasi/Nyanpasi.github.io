@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="使用Docker部署Django项目, 一共四个容器  MySQL容器 Redis容器 uWSGI容器 Nginx容器">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-30T08:17:31.420Z">
+<meta property="og:updated_time" content="2019-10-30T08:30:49.125Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Django项目部署">
 <meta name="twitter:description" content="使用Docker部署Django项目, 一共四个容器  MySQL容器 Redis容器 uWSGI容器 Nginx容器">
@@ -384,7 +384,7 @@
 <a id="more"></a>
 
 <h3 id="MySQL容器"><a href="#MySQL容器" class="headerlink" title="MySQL容器"></a>MySQL容器</h3><p>鉴于Django2.2+和MySQL8.0+版本在某些情况下不兼容, 所以使用MySQL5.7版本</p>
-<p>由于在开发时直接使用该容器, 而且MySQL默认使用密码比较安全, 所以映射至外部端口.</p>
+<p>由于在开发时直接使用该容器, 所以映射至宿主机端口以供外部访问.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=your-password mysql:5.7</span><br></pre></td></tr></table></figure>
 
 <p>然后进入容器, 执行命令行</p>
@@ -400,12 +400,12 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
 
 <hr>
-<h3 id="Redis容器"><a href="#Redis容器" class="headerlink" title="Redis容器"></a>Redis容器</h3><p>Redis容器不使用密码, 所以不映射至宿主机端口, 只允许通过<strong>容器间通信</strong>进行访问.</p>
+<h3 id="Redis容器"><a href="#Redis容器" class="headerlink" title="Redis容器"></a>Redis容器</h3><p>Redis容器不使用密码, 不映射至宿主机端口, 只允许通过<strong>容器间通信</strong>进行访问.</p>
 <p>在创建Redis容器时, 暴露6379端口</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name redis --expose 6379 redis</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h3 id="uWSGI容器"><a href="#uWSGI容器" class="headerlink" title="uWSGI容器"></a>uWSGI容器</h3><p>Django运行需要使用多个第三方库, 所以必须通过建立镜像的方式, 构建python环境.</p>
+<h3 id="uWSGI容器"><a href="#uWSGI容器" class="headerlink" title="uWSGI容器"></a>uWSGI容器</h3><h4 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h4><p>Django运行需要使用多个第三方库, 所以必须通过建立镜像的方式, 构建python环境.</p>
 <p>在部署前, 首先进行静态资源的收集</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage collectstatic</span><br></pre></td></tr></table></figure>
 
@@ -418,7 +418,8 @@
 <p>将其放置于某个空文件夹下, 并编写python所需的第三方包列表<code>requirements.txt</code>, 放置在同一目录下, 之后构建镜像</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t uwsgi-image .</span><br></pre></td></tr></table></figure>
 
-<p>在初次启动uWSGI容器时</p>
+<hr>
+<h4 id="启动uwsgi容器"><a href="#启动uwsgi容器" class="headerlink" title="启动uwsgi容器"></a>启动uwsgi容器</h4><p>在初次启动uWSGI容器时</p>
 <ol>
 <li>通过<code>Bind-Mount</code>的形式, 将webapp映射至容器内目录, 这样可以在宿主机上更改代码.</li>
 <li>重写启动指令, 以http模式启动uWSGI, 以方便直接测试uwsgi的正确运行.</li>
@@ -426,7 +427,9 @@
 <p>假设webapp源码置于宿主机根目录下, 通过已构建的镜像运行容器:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --name uwsgi -p 8001:8001 --link redis -v /webapp:/usr/src/webapp webapp-image uwsgi --http :8001 --<span class="built_in">chdir</span> /usr/src/webapp --wsgi-file webapp/wsgi.py</span><br></pre></td></tr></table></figure>
 
-<p>当使用<code>--link</code>命令之后, 会在当前容器内生成路由,在Django项目源码内, 所有对redis实例的访问, 均将ip地址替换为<code>redis</code>, 即redis容器的容器名, 会自动链接至redis容器, 例如缓存部分应该这样设置:</p>
+<p>当使用<code>--link</code>命令之后, 会在当前容器内生成路由. </p>
+<p>在Django项目源码内, 所有对redis实例的访问, 均将ip地址替换为<code>redis</code>, 即redis容器的容器名, 会自动链接至redis容器.</p>
+<p>例如缓存部分应该这样设置:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CACHES = &#123;</span><br><span class="line">    <span class="string">"default"</span>: &#123;</span><br><span class="line">        <span class="string">"BACKEND"</span>: <span class="string">"django_redis.cache.RedisCache"</span>,</span><br><span class="line">        <span class="string">"LOCATION"</span>: <span class="string">"redis://redis/0"</span>, <span class="comment"># 此处</span></span><br><span class="line">        <span class="string">"OPTIONS"</span>: &#123;</span><br><span class="line">            <span class="string">"CLIENT_CLASS"</span>: <span class="string">"django_redis.client.DefaultClient"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"KEY_PREFIX"</span>: <span class="string">"webapp"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>而数据库部分</p>
@@ -437,21 +440,18 @@
 
 <p>或者直接通过浏览器访问远程主机, 确保运行正常.</p>
 <hr>
-<p>如果不能正常, 可以直接进入该容器, 尝试运行Django自带的WSGI服务器, 用以检查Django项目的完整性:</p>
+<h4 id="修复异常"><a href="#修复异常" class="headerlink" title="修复异常"></a>修复异常</h4><p>如果不能正常访问, 可以直接进入该容器, 尝试运行Django自带的WSGI服务器, 用以检查Django项目的完整性:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it uwsgi /bin/bash</span><br><span class="line">python manage.py runserver</span><br></pre></td></tr></table></figure>
 
 <p>测试缓存能否正常工作</p>
-<p>进入shell</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py shell</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">python manage.py shell</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> django.core.cache <span class="keyword">import</span> cache</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>cache.set(<span class="string">'my_key'</span>, <span class="string">'hello, world!'</span>, <span class="number">30</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>cache.get(<span class="string">'my_key'</span>)</span><br><span class="line">hello world!</span><br></pre></td></tr></table></figure>
 
-<p>访问缓存</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.core.cache <span class="keyword">import</span> cache</span><br><span class="line">cache.set(<span class="string">'my_key'</span>, <span class="string">'hello, world!'</span>, <span class="number">30</span>)</span><br><span class="line">cache.get(<span class="string">'my_key'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>如果使用的数据库是新建立的, 还需要进行数据库同步</p>
+<p>如果使用的MySQL数据库是新建立的, 还需要进行数据库同步</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py makemigrations &amp;&amp; python manage.py migrate</span><br></pre></td></tr></table></figure>
 
 <hr>
-<p>在测试访问一切正常后, 停止该容器, 接下来让uWSGI以socket模式运行, 并取消容器与宿主机之间的映射端口, 只允许通过容器间通信进行访问.</p>
+<h4 id="正式运行uwsgi容器"><a href="#正式运行uwsgi容器" class="headerlink" title="正式运行uwsgi容器"></a>正式运行uwsgi容器</h4><p>在确认uWSGI能够正常运行后, 停止该容器.</p>
+<p>接下来让uWSGI以socket模式运行, 并取消容器与宿主机之间的映射端口, 只允许通过<strong>容器间通信</strong>进行访问.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name uwsgi --expose 8001 --link redis -v /webapp:/usr/src/webapp uwsgi-image</span><br></pre></td></tr></table></figure>
 
 <hr>
@@ -461,11 +461,13 @@
 <li>处理任何静态资源请求</li>
 <li>以uwsgi协议转发请求至uwsgi容器</li>
 </ol>
-<p>首先编写Nginx配置文件<code>nginx.conf</code>, 置于宿主机<code>/nginx/</code>目录下</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">user</span> root;</span><br><span class="line"><span class="attribute">worker_processes</span>  <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>    mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">20m</span>;</span><br><span class="line">    <span class="attribute">gzip</span>                  <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">upstream</span> uwsgi &#123;</span><br><span class="line">        <span class="attribute">server</span> uwsgi:<span class="number">8001</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">        <span class="attribute">root</span> /nginx/home;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> /media &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /static &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /api &#123;</span><br><span class="line">            <span class="attribute">uwsgi_pass</span> uwsgi;</span><br><span class="line">            <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h5><p>首先编写<code>Nginx</code>配置文件<code>nginx.conf</code>, 置于宿主机<code>/nginx/</code>目录下</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">user</span> root;</span><br><span class="line"><span class="attribute">worker_processes</span>  <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>    mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">20m</span>;</span><br><span class="line">    <span class="attribute">gzip</span>     <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">upstream</span> uwsgi &#123;</span><br><span class="line">        <span class="attribute">server</span> uwsgi:<span class="number">8001</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">        <span class="attribute">root</span> /nginx/home;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> /media &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /static &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /api &#123;</span><br><span class="line">            <span class="attribute">uwsgi_pass</span> uwsgi;</span><br><span class="line">            <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>注意配置中, 上游服务器使用uWSGI容器名<code>uwsgi</code>, 由Docker进行连接, 其次将vue项目build之后的index.html设为Nginx的首页文件.</p>
-<p>假设vue项目的index.html置于宿主机<code>/vueproject/</code>目录下, 在运行nginx容器时将其映射至容器内指定的nginx首页文件位置.<br>并且由nginx处理静态资源请求, 所以将django项目的static文件夹和media文件夹也映射至配置文件指定的位置, 容器内根目录下:</p>
+<p>配置中, 上游服务器的地址使用uWSGI容器名<code>uwsgi</code>, 由Docker进行连接, 其次将vue项目build之后的index.html设为Nginx的首页文件.</p>
+<p>假设vue项目的index.html置于宿主机<code>/vueproject/</code>目录下, 在运行nginx容器时将其映射至容器内指定的nginx首页文件位置.</p>
+<p>由nginx处理静态资源请求, 将django项目的static文件夹和media文件夹也映射至配置文件指定的位置, 即容器内根目录下:</p>
 <p>首先测试配置文件的正确性</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm --name nginx -p 80:80 --link uwsgi -v /vueproject:/nginx/home nginx -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media nginx nginx -t</span><br></pre></td></tr></table></figure>
 
@@ -636,7 +638,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL容器"><span class="nav-number">1.</span> <span class="nav-text">MySQL容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis容器"><span class="nav-number">2.</span> <span class="nav-text">Redis容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uWSGI容器"><span class="nav-number">3.</span> <span class="nav-text">uWSGI容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx容器"><span class="nav-number">4.</span> <span class="nav-text">Nginx容器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL容器"><span class="nav-number">1.</span> <span class="nav-text">MySQL容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis容器"><span class="nav-number">2.</span> <span class="nav-text">Redis容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uWSGI容器"><span class="nav-number">3.</span> <span class="nav-text">uWSGI容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构建镜像"><span class="nav-number">3.1.</span> <span class="nav-text">构建镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动uwsgi容器"><span class="nav-number">3.2.</span> <span class="nav-text">启动uwsgi容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修复异常"><span class="nav-number">3.3.</span> <span class="nav-text">修复异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正式运行uwsgi容器"><span class="nav-number">3.4.</span> <span class="nav-text">正式运行uwsgi容器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx容器"><span class="nav-number">4.</span> <span class="nav-text">Nginx容器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#配置文件"><span class="nav-number">4.0.1.</span> <span class="nav-text">配置文件</span></a></li></ol></li></ol></div>
             
 
           </div>
