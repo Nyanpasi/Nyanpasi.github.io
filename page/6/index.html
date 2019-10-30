@@ -300,6 +300,320 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/17/RESTful风格/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/17/RESTful风格/" itemprop="url">RESTful风格</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-17T11:15:03+08:00">
+                2019-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="REST标准"><a href="#REST标准" class="headerlink" title="REST标准"></a>REST标准</h3><p>REST是REpresentational State Transfer的缩写, 意味着资源通过表现层进行状态的转移.</p>
+<p>符合REST标准的架构, 就可以称为RESTful风格的web服务.</p>
+<ol>
+<li>资源: 网络上的一个实体, 每种资源对应一个特定的URI.</li>
+<li>表现层: 对资源的描述, 可以用json, xml等形式.</li>
+<li>状态转移: 对资源当前的状态进行更改, 例如删除, 创建, 更新等.</li>
+</ol>
+<p>即客户端通过不同的Http method传递json/xml等格式的数据来告知服务端应当如何操作资源.</p>
+<hr>
+<h3 id="RESTful-设计指南"><a href="#RESTful-设计指南" class="headerlink" title="RESTful 设计指南"></a>RESTful 设计指南</h3><h4 id="协议-protocal"><a href="#协议-protocal" class="headerlink" title="协议(protocal)"></a>协议(protocal)</h4><p>总是使用HTTPS协议</p>
+<hr>
+<h4 id="域名-domain"><a href="#域名-domain" class="headerlink" title="域名(domain)"></a>域名(domain)</h4><p>尽量部署在专用域名下, 例如<code>api.example.com</code></p>
+<hr>
+<h4 id="版本-version"><a href="#版本-version" class="headerlink" title="版本(version)"></a>版本(version)</h4><p>应该包含版本号, 放在URL或HTTP头中, 例如<code>api.example.com/v1</code></p>
+<hr>
+<h4 id="路径-endpoint"><a href="#路径-endpoint" class="headerlink" title="路径(endpoint)"></a>路径(endpoint)</h4><p>指向某种资源的具体路径. 注意路径中不包含动词, 因为URI只代表资源本身, 例如:</p>
+<ul>
+<li><code>/api/v1/products/</code> 所有产品</li>
+<li><code>/api/v1/products/123</code> 主键为123的产品</li>
+</ul>
+<hr>
+<h4 id="HTTP动词-verbs"><a href="#HTTP动词-verbs" class="headerlink" title="HTTP动词(verbs)"></a>HTTP动词(verbs)</h4><p>合理使用不同的HTTP METHOD来表示对资源的操作</p>
+<ul>
+<li><code>GET</code>(retrieve or list): 取回资源, 一个或多个</li>
+<li><code>POST</code>(create): 创建资源</li>
+<li><code>PUT</code>(update): 更新现有资源, 客户端必须提供完整的资源描述.</li>
+<li><code>PATCH</code>(partical update) 部分更新现有资源, 客户端只需提供部分资源描述</li>
+<li><code>DELETE</code>(destory): 删除现有资源</li>
+</ul>
+<p>以及另外两个特殊的METHOD:</p>
+<ul>
+<li><code>HEAD</code>: 获取响应的元数据</li>
+<li><code>OPTION</code>: 获取资源的信息, 包括资源路径, 所支持的操作等等.</li>
+</ul>
+<hr>
+<h4 id="过滤-filtering"><a href="#过滤-filtering" class="headerlink" title="过滤(filtering)"></a>过滤(filtering)</h4><p>客户端可以通过指定过滤条件让服务器返回自己所需的部分资源, 例如:</p>
+<ul>
+<li><code>?limit=10</code> 限制返回资源的数量</li>
+<li><code>?offset=10</code> 从第10项开始返回资源</li>
+<li><code>?page=2&amp;page_size=100</code> 指定每页包含的数据量以及目标页</li>
+<li><code>?ordering=name</code> 指定资源排序依据</li>
+<li><code>?type=ball</code> 指定资源类别</li>
+</ul>
+<hr>
+<h4 id="状态码-status"><a href="#状态码-status" class="headerlink" title="状态码(status)"></a>状态码(status)</h4><p>使用准确的状态码来表示服务端动作, 具体根据http标准.</p>
+<hr>
+<h4 id="错误处理-error-handling"><a href="#错误处理-error-handling" class="headerlink" title="错误处理(error handling)"></a>错误处理(error handling)</h4><p>当请求出错, 服务端应当包含足够的信息指出错误之处及出错原因.</p>
+<hr>
+<h4 id="超链接-hyperlink"><a href="#超链接-hyperlink" class="headerlink" title="超链接(hyperlink)"></a>超链接(hyperlink)</h4><p>最好在响应中包含相关资源的超链接而非标识符, 使客户端能够直接请求相关资源的endpoint.</p>
+<hr>
+<h4 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h4><p>最好使用JSON, 避免使用XML.</p>
+<hr>
+<h4 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h4><p>授权应当使用<code>OAuth2.0</code>框架.</p>
+<hr>
+<h3 id="REST级别"><a href="#REST级别" class="headerlink" title="REST级别"></a>REST级别</h3><p>0级: <code>Swamp of POX</code>  传统的RPC, 基于SOAP的WS调用的服务名, 参数放在HTTP协议的body里面, 同时必须以POST方式提交, 问题在于你必须清楚的知道所有服务, 子服务, 及其参数的信息, 并且需要知道各种服务的不同点. </p>
+<p>1级: <code>Resources</code> 利用resource概念, 把所有服务都抽取成resource概念, 从body中提取到header里, 这样做的好处就是如果你知道一个服务地址, 你可能无需知道具体服务是什么, 依照资源的惯例就访问到服务, 比如/books/1. </p>
+<p>2级: <code>HTTP verbs</code> 利用HTTP动词, HTTP定义了4种动词, GET获取服务器资源, POST在服务器上创建新资源, PUT更改服务器上资源, DELETE删除服务器上资源, 任何操作都可以看成增删改查, 所以利用标准的http verb加上resource（/book/1）就能准确地操作资源, 当你不知道服务具体是什么的时候也可以轻易按照惯例访问到服务, 然而服务供应商更改服务也需要遵循惯例, 不会像RPC那样轻易更改服务接口. </p>
+<p>3级: <code>Hypermedia controls</code> 最高级别, 超媒体即应用状态引擎. 这个意思是说, 对于任何服务都存在很多子服务, 你只需要知道第一个服务的入口, 便可以依据服务返回结构的自描述性得到下一个服务的入口, 这样在服务供应商修改服务的时候, 不会影响到客户端的调用. </p>
+<hr>
+<p>参考: </p>
+<p><a href="http://restcookbook.com/Miscellaneous/richardsonmaturitymodel/" target="_blank" rel="noopener">What is the Richardson Maturity Model?</a><br><a href="https://www.iteye.com/blog/elf8848-379125" target="_blank" rel="noopener">REST和REST的四个级别</a><br><a href="http://www.ruanyifeng.com/blog/2011/09/restful.html" target="_blank" rel="noopener">理解RESTful架构-阮一峰</a><br><a href="https://zh.wikipedia.org/wiki/%E8%A1%A8%E7%8E%B0%E5%B1%82%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2" target="_blank" rel="noopener">WIKI 表现层状态转换</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/01/127.0.0.1和0.0.0.0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/01/127.0.0.1和0.0.0.0/" itemprop="url">127.0.0.1和0.0.0.0</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-01T18:09:47+08:00">
+                2019-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>127.0.0.1</code> 是环回地址, 通常分配给<code>loopback</code>处理, 对<code>127.0.0.1</code>的访问都会指向本机, 所以通常用于<strong>本机</strong>应用之间的交互, </p>
+<p>对<code>127.0.0.1</code>的请求不会出入网卡, 网络设备也不会对其路由.</p>
+<p>操作系统初始化本机的<code>TCP/IP</code>协议栈时, 设置协议栈本身的IP地址为<code>127.0.0.1</code>, 并注入路由表, 当IP层接到目的地址为该地址的的数据包时, 直接转发到本机的IP层进行处理.</p>
+<p>即, 对<code>127.0.0.1</code>的请求所使用的最底层协议栈为<code>TCP/IP</code>层,  直接在网络层和传输层之间环回, <strong>不会</strong>通过链路层和物理层.</p>
+<p>能ping通<code>127.0.0.1</code>意味着<code>TCP/IP</code>协议栈运行正常.</p>
+<p>localhost通常被设置为<code>127.0.0.1</code>的域名, 在支持<code>ipv6</code>的设备中, 同时还指向<code>[::1]</code></p>
+<p>使用localhost与127.0.0.1没有任何区别.</p>
+<hr>
+<p><code>0.0.0.0</code>指的是任意ip地址<code>IP_ADDR_ANY</code>, 也包括环回地址, 主机监听<code>0.0.0.0</code>时, 会接受目标地址为任意地址的请求.</p>
+<p><code>0.0.0.0</code>永远不能ping通.</p>
+<hr>
+<p>在<code>Docker</code>容器中, <code>127.0.0.1</code>指的是本容器的网络地址, 监听<code>127.0.0.1</code>的容器内服务, 不会接收任何非本容器内的请求, 包括其他容器的请求也不会被接收.</p>
+<hr>
+<p>参考:</p>
+<p><a href="https://www.zhihu.com/question/23940717" target="_blank" rel="noopener">知乎</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/07/python元编程相关/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -971,7 +1285,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -984,7 +1298,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

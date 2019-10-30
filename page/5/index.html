@@ -300,6 +300,289 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/01/算法基础篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/01/算法基础篇/" itemprop="url">基础算法, Python描述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-01T12:09:47+08:00">
+                2019-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
+<p>搜索过程从数组的中间元素开始, 如果中间元素正好是要查找的元素, 则搜索过程结束; 如果某一特定元素大于或者小于中间元素, 则在数组大于或小于中间元素的那一半中查找, 而且跟开始一样从中间元素开始比较. 如果在某一步骤数组为空, 则代表找不到. 这种搜索算法每一次比较都使搜索范围缩小一半. </p>
+<hr>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#循环结构实现</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_search</span><span class="params">(arr, element)</span>:</span></span><br><span class="line">    left, right = <span class="number">0</span>, len(arr)<span class="number">-1</span></span><br><span class="line">    <span class="keyword">while</span> left&lt;=right:</span><br><span class="line">        mid = (left + right)//<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> element&gt;arr[mid]:</span><br><span class="line">            left = mid+<span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> element&lt;arr[mid]:</span><br><span class="line">            right = mid<span class="number">-1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> mid</span><br><span class="line"></span><br><span class="line"><span class="comment"># 递归结构实现</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_search</span><span class="params">(arr, left, right, element)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> right&gt;=left:</span><br><span class="line">        mid = (left + right)//<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> arr[mid]&gt;element:</span><br><span class="line">            <span class="keyword">return</span> binary_search(arr, left, mid<span class="number">-1</span>, element)</span><br><span class="line">        <span class="keyword">elif</span> arr[mid]&lt;element:</span><br><span class="line">            <span class="keyword">return</span> binary_search(arr, mid+<span class="number">1</span>, right, element)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> mid</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">array = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">19</span>, <span class="number">24</span>, <span class="number">29</span>, <span class="number">45</span>, <span class="number">46</span>, <span class="number">48</span>, <span class="number">97</span>, <span class="number">111</span>, <span class="number">180</span>, <span class="number">790</span>, <span class="number">1546</span>, <span class="number">6846</span>, <span class="number">31233</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环结构</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> array:</span><br><span class="line">    print(binary_search(array, i))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 递归结构</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> array:</span><br><span class="line">    print(binary_search(array, <span class="number">0</span>, <span class="number">20</span>, i))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="边界条件"><a href="#边界条件" class="headerlink" title="边界条件"></a>边界条件</h4><p>对边界的判断包含等号, 以检查所有的元素.</p>
+<h4 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h4><p>时间复杂度为<code>O(log2(n))</code>, 空间复杂度为O(1), </p>
+<p>递归实现中空间复杂度为<code>O(log2(n))</code></p>
+<hr>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><h4 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h4><p>选择排序的核心思想是划分, 按照某个标准将待排序记录划分为”小记录”和”大记录”, 并通过递归不段划分, 最终得到一个排序序列.</p>
+<hr>
+<h4 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">partition</span><span class="params">(arr, left, right)</span>:</span></span><br><span class="line">    <span class="comment"># 一次划分函数</span></span><br><span class="line">    pivot = arr[left]</span><br><span class="line">    i, j = left, right</span><br><span class="line">    <span class="keyword">while</span> i&lt;j:</span><br><span class="line">        <span class="keyword">while</span> arr[j]&gt;=pivot <span class="keyword">and</span> i&lt;j:</span><br><span class="line">            j = j - <span class="number">1</span></span><br><span class="line">        arr[i] = arr[j]</span><br><span class="line">        <span class="keyword">while</span> arr[i]&lt;=pivot <span class="keyword">and</span> i&lt;j:</span><br><span class="line">            i = i + <span class="number">1</span></span><br><span class="line">        arr[j] = arr[i]</span><br><span class="line">    <span class="comment"># i, j相遇</span></span><br><span class="line">    arr[i] = pivot</span><br><span class="line">    <span class="keyword">return</span> i</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">quick_sort</span><span class="params">(arr, left, right)</span>:</span></span><br><span class="line">    <span class="comment"># 快速排序算法</span></span><br><span class="line">    <span class="keyword">if</span> left&lt;right:</span><br><span class="line">        pivot_position = partition(arr, left, right)</span><br><span class="line">        quick_sort(arr, left, pivot_position<span class="number">-1</span>)</span><br><span class="line">        quick_sort(arr, pivot_position+<span class="number">1</span>, right)</span><br><span class="line">    <span class="keyword">return</span> arr</span><br></pre></td></tr></table></figure>
+
+<p>一次划分过程, 会将某个元素作为标准, 将所有更小的元素置于该元素的左侧, 将所有更大的元素置于该元素的右侧, 而该元素所在的位置, 就是其最终位置.<br>首先取出某个元素作为<strong>标准</strong>, 将其暂存于变量中, 这样原位置可以视为一个空位, 初始空位在左侧<br>从最右侧开始逆序比较元素, 直至找到一个比该元素小的元素, 将其与空位交换位置, 这样空位就转移到右侧.<br>从最左侧开始顺序比较元素, 直至找到一个比该元素大的元素, 将其与新空位交换位置, 空位转移到左侧.<br>重复, 直至两侧指针相遇, 该位置即为标准元素的最终位置, 同时, 得到了两个子序列.<br>继续对两个子序列进行划分, 直至子序列被划分为单个元素, 所有元素均得到其最终位置, 排序完成.</p>
+<p>值得注意的是, 每当确认了一个元素的最终位置后, 其左右两侧的子序列都不包含该位置.</p>
+<hr>
+<h4 id="边界条件-1"><a href="#边界条件-1" class="headerlink" title="边界条件"></a>边界条件</h4><p>外层循环, 对边界的比较不包含等号, 因为相等时即找到了最终位置, 应当立即跳出<br>内层循环, 与标准元素的比较包含等号, 因为相等的元素不应该被移动. 而对边界的比较不包含等号, 原因同上.</p>
+<hr>
+<h4 id="测试-1"><a href="#测试-1" class="headerlink" title="测试"></a>测试</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test_Quick</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_Quick</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line">        test_lst = [randint(<span class="number">0</span>, <span class="number">100</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1000</span>)]</span><br><span class="line">        self.assertEqual(sorted(test_lst), QuickSort(test_lst, <span class="number">0</span>, len(test_lst)<span class="number">-1</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><h4 id="分析-2"><a href="#分析-2" class="headerlink" title="分析"></a>分析</h4><p>归并排序的本质是合并两个有序表</p>
+<p>待排序序列内包含<code>n</code>个元素, 单个元素视为有序, 将元素两两归并, 完成一遍后序列组里的排序序列的个数减半, 每个子序列的长度加倍.</p>
+<p>重复进行归并, 直至得到长度为<code>n</code>的有序序列. 这种归并方法称之为<strong>二路归并排序</strong>.</p>
+<h4 id="代码-2"><a href="#代码-2" class="headerlink" title="代码"></a>代码</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge</span><span class="params">(arr, left, mid, right)</span>:</span></span><br><span class="line">    <span class="string">""" 归并函数 """</span></span><br><span class="line">    temp = arr[:]</span><br><span class="line">    i, j = left, mid+<span class="number">1</span></span><br><span class="line">    k = left</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> i&lt;=mid <span class="keyword">and</span> j&lt;=right:</span><br><span class="line">        <span class="keyword">if</span> temp[i]&lt;temp[j]:</span><br><span class="line">            arr[k] = temp[i]</span><br><span class="line">            i, k = i+<span class="number">1</span>, k+<span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> temp[j]&lt;temp[i]:</span><br><span class="line">            arr[k] = temp[j]</span><br><span class="line">            j, k = j+<span class="number">1</span>, k+<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            arr[k] = arr[k+<span class="number">1</span>] = temp[i]</span><br><span class="line">            i, j, k = i+<span class="number">1</span>, j+<span class="number">1</span>, k+<span class="number">2</span></span><br><span class="line">    <span class="keyword">while</span> i&lt;=mid:</span><br><span class="line">        arr[k] = temp[i]</span><br><span class="line">        i, k = i+<span class="number">1</span>, k+<span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> j&lt;=right:</span><br><span class="line">        arr[k] = temp[j]</span><br><span class="line">        j, k = j+<span class="number">1</span>, k+<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">MergeSort</span><span class="params">(arr, left, right)</span>:</span></span><br><span class="line">    <span class="string">""" 归并排序 """</span></span><br><span class="line">    <span class="keyword">if</span> left&lt;right:</span><br><span class="line">        mid = (left+right)//<span class="number">2</span></span><br><span class="line">        MergeSort(arr, left, mid)</span><br><span class="line">        MergeSort(arr, mid+<span class="number">1</span>, right)</span><br><span class="line">        merge(arr, left, mid, right)</span><br></pre></td></tr></table></figure>
+
+<p>在归并函数中, 传入一个待排序序列, 但只对该待排序序列的<strong>一部分</strong>进行排序, 即下标由<code>left</code>到<code>right</code>的这一段.<br><strong>这段</strong>待排序序列由两个有序子序列组成, 以位置为<code>mid</code>的元素(包含在前一个子序列中)为界.<br>使用辅助数组<code>temp</code>复制原待排序序列的所有元素, <code>i</code>和<code>j</code>指向辅助数组中两个子序列的首元素<br><code>k</code>指针指向待排序数组的首元素, 并对原待排序序列进行更改.</p>
+<hr>
+<h4 id="边界条件-2"><a href="#边界条件-2" class="headerlink" title="边界条件"></a>边界条件</h4><p>在归并函数中, 所有对边界的判断均包含等号, 因为要保证所有元素都被遍历到, 因此在边界时不跳出</p>
+<p>在归并排序算法中, 对边界的判断不包含等号, 因为当相等时意味着子序列为单元素, 无需进行归并</p>
+<hr>
+<h4 id="复杂度分析-1"><a href="#复杂度分析-1" class="headerlink" title="复杂度分析"></a>复杂度分析</h4><p>做完第<code>k</code>遍归并后, 有序子序列的长度将为<code>2</code>的<code>k</code>次幂, 因此完成整个排序所需要做的归并遍数不会多于<code>log2(n+1)</code>, 而在每遍归并中做的比较次数为<code>O(n)</code>, 所以, 总的比较次数和移动次数均为<code>O(nlogn)</code>, 以上算法中使用一个与待排序序列长度相同的辅助表, 所以算法复杂度为<code>O(n)</code>.</p>
+<p>该算法不具有适应性.</p>
+<hr>
+<h4 id="测试-2"><a href="#测试-2" class="headerlink" title="测试"></a>测试</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">array = [<span class="number">12</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>] </span><br><span class="line">array = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">34</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">123</span>, <span class="number">34</span>, <span class="number">6</span>]</span><br><span class="line">array = [<span class="number">7</span>, <span class="number">3</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">6</span>, <span class="number">78</span>, <span class="number">2</span>, <span class="number">45</span>, <span class="number">354</span>, <span class="number">46</span>, <span class="number">46</span>, <span class="number">465</span>, <span class="number">46</span>, <span class="number">4</span>, <span class="number">654</span>, <span class="number">54</span>, <span class="number">651</span>, <span class="number">56</span>, <span class="number">16</span>, <span class="number">163</span>, <span class="number">13</span>, <span class="number">1</span>]</span><br><span class="line">MergeSort(array, <span class="number">0</span>, len(array)<span class="number">-1</span>)</span><br><span class="line">print(array)</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/01/python MRO及C3线性化算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/01/python MRO及C3线性化算法/" itemprop="url">Python MRO及C3线性化算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-01T12:09:47+08:00">
+                2019-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/01/python MRO及C3线性化算法/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/21/Epoll IO多路复用模型简介/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1285,320 +1568,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/17/RESTful风格/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/17/RESTful风格/" itemprop="url">RESTful风格</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-17T11:15:03+08:00">
-                2019-02-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="REST标准"><a href="#REST标准" class="headerlink" title="REST标准"></a>REST标准</h3><p>REST是REpresentational State Transfer的缩写, 意味着资源通过表现层进行状态的转移.</p>
-<p>符合REST标准的架构, 就可以称为RESTful风格的web服务.</p>
-<ol>
-<li>资源: 网络上的一个实体, 每种资源对应一个特定的URI.</li>
-<li>表现层: 对资源的描述, 可以用json, xml等形式.</li>
-<li>状态转移: 对资源当前的状态进行更改, 例如删除, 创建, 更新等.</li>
-</ol>
-<p>即客户端通过不同的Http method传递json/xml等格式的数据来告知服务端应当如何操作资源.</p>
-<hr>
-<h3 id="RESTful-设计指南"><a href="#RESTful-设计指南" class="headerlink" title="RESTful 设计指南"></a>RESTful 设计指南</h3><h4 id="协议-protocal"><a href="#协议-protocal" class="headerlink" title="协议(protocal)"></a>协议(protocal)</h4><p>总是使用HTTPS协议</p>
-<hr>
-<h4 id="域名-domain"><a href="#域名-domain" class="headerlink" title="域名(domain)"></a>域名(domain)</h4><p>尽量部署在专用域名下, 例如<code>api.example.com</code></p>
-<hr>
-<h4 id="版本-version"><a href="#版本-version" class="headerlink" title="版本(version)"></a>版本(version)</h4><p>应该包含版本号, 放在URL或HTTP头中, 例如<code>api.example.com/v1</code></p>
-<hr>
-<h4 id="路径-endpoint"><a href="#路径-endpoint" class="headerlink" title="路径(endpoint)"></a>路径(endpoint)</h4><p>指向某种资源的具体路径. 注意路径中不包含动词, 因为URI只代表资源本身, 例如:</p>
-<ul>
-<li><code>/api/v1/products/</code> 所有产品</li>
-<li><code>/api/v1/products/123</code> 主键为123的产品</li>
-</ul>
-<hr>
-<h4 id="HTTP动词-verbs"><a href="#HTTP动词-verbs" class="headerlink" title="HTTP动词(verbs)"></a>HTTP动词(verbs)</h4><p>合理使用不同的HTTP METHOD来表示对资源的操作</p>
-<ul>
-<li><code>GET</code>(retrieve or list): 取回资源, 一个或多个</li>
-<li><code>POST</code>(create): 创建资源</li>
-<li><code>PUT</code>(update): 更新现有资源, 客户端必须提供完整的资源描述.</li>
-<li><code>PATCH</code>(partical update) 部分更新现有资源, 客户端只需提供部分资源描述</li>
-<li><code>DELETE</code>(destory): 删除现有资源</li>
-</ul>
-<p>以及另外两个特殊的METHOD:</p>
-<ul>
-<li><code>HEAD</code>: 获取响应的元数据</li>
-<li><code>OPTION</code>: 获取资源的信息, 包括资源路径, 所支持的操作等等.</li>
-</ul>
-<hr>
-<h4 id="过滤-filtering"><a href="#过滤-filtering" class="headerlink" title="过滤(filtering)"></a>过滤(filtering)</h4><p>客户端可以通过指定过滤条件让服务器返回自己所需的部分资源, 例如:</p>
-<ul>
-<li><code>?limit=10</code> 限制返回资源的数量</li>
-<li><code>?offset=10</code> 从第10项开始返回资源</li>
-<li><code>?page=2&amp;page_size=100</code> 指定每页包含的数据量以及目标页</li>
-<li><code>?ordering=name</code> 指定资源排序依据</li>
-<li><code>?type=ball</code> 指定资源类别</li>
-</ul>
-<hr>
-<h4 id="状态码-status"><a href="#状态码-status" class="headerlink" title="状态码(status)"></a>状态码(status)</h4><p>使用准确的状态码来表示服务端动作, 具体根据http标准.</p>
-<hr>
-<h4 id="错误处理-error-handling"><a href="#错误处理-error-handling" class="headerlink" title="错误处理(error handling)"></a>错误处理(error handling)</h4><p>当请求出错, 服务端应当包含足够的信息指出错误之处及出错原因.</p>
-<hr>
-<h4 id="超链接-hyperlink"><a href="#超链接-hyperlink" class="headerlink" title="超链接(hyperlink)"></a>超链接(hyperlink)</h4><p>最好在响应中包含相关资源的超链接而非标识符, 使客户端能够直接请求相关资源的endpoint.</p>
-<hr>
-<h4 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h4><p>最好使用JSON, 避免使用XML.</p>
-<hr>
-<h4 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h4><p>授权应当使用<code>OAuth2.0</code>框架.</p>
-<hr>
-<h3 id="REST级别"><a href="#REST级别" class="headerlink" title="REST级别"></a>REST级别</h3><p>0级: <code>Swamp of POX</code>  传统的RPC, 基于SOAP的WS调用的服务名, 参数放在HTTP协议的body里面, 同时必须以POST方式提交, 问题在于你必须清楚的知道所有服务, 子服务, 及其参数的信息, 并且需要知道各种服务的不同点. </p>
-<p>1级: <code>Resources</code> 利用resource概念, 把所有服务都抽取成resource概念, 从body中提取到header里, 这样做的好处就是如果你知道一个服务地址, 你可能无需知道具体服务是什么, 依照资源的惯例就访问到服务, 比如/books/1. </p>
-<p>2级: <code>HTTP verbs</code> 利用HTTP动词, HTTP定义了4种动词, GET获取服务器资源, POST在服务器上创建新资源, PUT更改服务器上资源, DELETE删除服务器上资源, 任何操作都可以看成增删改查, 所以利用标准的http verb加上resource（/book/1）就能准确地操作资源, 当你不知道服务具体是什么的时候也可以轻易按照惯例访问到服务, 然而服务供应商更改服务也需要遵循惯例, 不会像RPC那样轻易更改服务接口. </p>
-<p>3级: <code>Hypermedia controls</code> 最高级别, 超媒体即应用状态引擎. 这个意思是说, 对于任何服务都存在很多子服务, 你只需要知道第一个服务的入口, 便可以依据服务返回结构的自描述性得到下一个服务的入口, 这样在服务供应商修改服务的时候, 不会影响到客户端的调用. </p>
-<hr>
-<p>参考: </p>
-<p><a href="http://restcookbook.com/Miscellaneous/richardsonmaturitymodel/" target="_blank" rel="noopener">What is the Richardson Maturity Model?</a><br><a href="https://www.iteye.com/blog/elf8848-379125" target="_blank" rel="noopener">REST和REST的四个级别</a><br><a href="http://www.ruanyifeng.com/blog/2011/09/restful.html" target="_blank" rel="noopener">理解RESTful架构-阮一峰</a><br><a href="https://zh.wikipedia.org/wiki/%E8%A1%A8%E7%8E%B0%E5%B1%82%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2" target="_blank" rel="noopener">WIKI 表现层状态转换</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/01/127.0.0.1和0.0.0.0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/01/127.0.0.1和0.0.0.0/" itemprop="url">127.0.0.1和0.0.0.0</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-01T18:09:47+08:00">
-                2019-02-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><code>127.0.0.1</code> 是环回地址, 通常分配给<code>loopback</code>处理, 对<code>127.0.0.1</code>的访问都会指向本机, 所以通常用于<strong>本机</strong>应用之间的交互, </p>
-<p>对<code>127.0.0.1</code>的请求不会出入网卡, 网络设备也不会对其路由.</p>
-<p>操作系统初始化本机的<code>TCP/IP</code>协议栈时, 设置协议栈本身的IP地址为<code>127.0.0.1</code>, 并注入路由表, 当IP层接到目的地址为该地址的的数据包时, 直接转发到本机的IP层进行处理.</p>
-<p>即, 对<code>127.0.0.1</code>的请求所使用的最底层协议栈为<code>TCP/IP</code>层,  直接在网络层和传输层之间环回, <strong>不会</strong>通过链路层和物理层.</p>
-<p>能ping通<code>127.0.0.1</code>意味着<code>TCP/IP</code>协议栈运行正常.</p>
-<p>localhost通常被设置为<code>127.0.0.1</code>的域名, 在支持<code>ipv6</code>的设备中, 同时还指向<code>[::1]</code></p>
-<p>使用localhost与127.0.0.1没有任何区别.</p>
-<hr>
-<p><code>0.0.0.0</code>指的是任意ip地址<code>IP_ADDR_ANY</code>, 也包括环回地址, 主机监听<code>0.0.0.0</code>时, 会接受目标地址为任意地址的请求.</p>
-<p><code>0.0.0.0</code>永远不能ping通.</p>
-<hr>
-<p>在<code>Docker</code>容器中, <code>127.0.0.1</code>指的是本容器的网络地址, 监听<code>127.0.0.1</code>的容器内服务, 不会接收任何非本容器内的请求, 包括其他容器的请求也不会被接收.</p>
-<hr>
-<p>参考:</p>
-<p><a href="https://www.zhihu.com/question/23940717" target="_blank" rel="noopener">知乎</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1649,7 +1618,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1662,7 +1631,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
