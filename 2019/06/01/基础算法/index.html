@@ -109,11 +109,11 @@
 <meta name="keywords" content="python,算法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基础算法, Python描述">
-<meta property="og:url" content="http://yoursite.com/2019/06/01/算法基础篇/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/06/01/基础算法/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="二分法分析二分查找算法(binary search algorithm), 也称折半搜索算法, 用于在一个有序序列查找目标元素. 搜索过程从数组的中间元素开始, 如果中间元素正好是要查找的元素, 则搜索过程结束; 如果某一特定元素大于或者小于中间元素, 则在数组大于或小于中间元素的那一半中查找, 而且跟开始一样从中间元素开始比较. 如果在某一步骤数组为空, 则代表找不到. 这种搜索算法每一次比较都">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-28T15:22:11.228Z">
+<meta property="og:updated_time" content="2019-10-30T09:18:51.742Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基础算法, Python描述">
 <meta name="twitter:description" content="二分法分析二分查找算法(binary search algorithm), 也称折半搜索算法, 用于在一个有序序列查找目标元素. 搜索过程从数组的中间元素开始, 如果中间元素正好是要查找的元素, 则搜索过程结束; 如果某一特定元素大于或者小于中间元素, 则在数组大于或小于中间元素的那一半中查找, 而且跟开始一样从中间元素开始比较. 如果在某一步骤数组为空, 则代表找不到. 这种搜索算法每一次比较都">
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/06/01/算法基础篇/">
+  <link rel="canonical" href="http://yoursite.com/2019/06/01/基础算法/">
 
 
 
@@ -301,7 +301,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/01/算法基础篇/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/01/基础算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -407,7 +407,7 @@
 <h4 id="边界条件-2"><a href="#边界条件-2" class="headerlink" title="边界条件"></a>边界条件</h4><p>在归并函数中, 所有对边界的判断均包含等号, 因为要保证所有元素都被遍历到, 因此在边界时不跳出</p>
 <p>在归并排序算法中, 对边界的判断不包含等号, 因为当相等时意味着子序列为单元素, 无需进行归并</p>
 <hr>
-<h4 id="复杂度分析-1"><a href="#复杂度分析-1" class="headerlink" title="复杂度分析"></a>复杂度分析</h4><p>做完第<code>k</code>遍归并后, 有序子序列的长度将为<code>2</code>的<code>k</code>次幂, 因此完成整个排序所需要做的归并遍数不会多于<code>log2(n+1)</code>, 而在每遍归并中做的比较次数为<code>O(n)</code>, 所以, 总的比较次数和移动次数均为<code>O(nlogn)</code>, 以上算法中使用一个与待排序序列长度相同的辅助表, 所以算法复杂度为<code>O(n)</code>.</p>
+<h4 id="复杂度分析-1"><a href="#复杂度分析-1" class="headerlink" title="复杂度分析"></a>复杂度分析</h4><p>做完第<code>k</code>遍归并后, 有序子序列的长度将为<code>2</code>的<code>k</code>次幂, 因此完成整个排序所需要做的归并遍数不会多于<code>log2(n+1)</code>, 而在每遍归并中做的比较次数为<code>O(n)</code>, 所以, 总的比较次数和移动次数均为<code>O(nlogn)</code>.</p>
 <p>该算法不具有适应性.</p>
 <hr>
 <h4 id="测试-2"><a href="#测试-2" class="headerlink" title="测试"></a>测试</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">array = [<span class="number">12</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>] </span><br><span class="line">array = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">34</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">123</span>, <span class="number">34</span>, <span class="number">6</span>]</span><br><span class="line">array = [<span class="number">7</span>, <span class="number">3</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">6</span>, <span class="number">78</span>, <span class="number">2</span>, <span class="number">45</span>, <span class="number">354</span>, <span class="number">46</span>, <span class="number">46</span>, <span class="number">465</span>, <span class="number">46</span>, <span class="number">4</span>, <span class="number">654</span>, <span class="number">54</span>, <span class="number">651</span>, <span class="number">56</span>, <span class="number">16</span>, <span class="number">163</span>, <span class="number">13</span>, <span class="number">1</span>]</span><br><span class="line">MergeSort(array, <span class="number">0</span>, len(array)<span class="number">-1</span>)</span><br><span class="line">print(array)</span><br></pre></td></tr></table></figure>
@@ -445,8 +445,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/21/Epoll IO多路复用模型简介/" rel="next" title="Epoll IO多路复用模型">
-                <i class="fa fa-chevron-left"></i> Epoll IO多路复用模型
+              <a href="/2019/06/01/python MRO及C3线性化算法/" rel="next" title="Python MRO及C3线性化算法">
+                <i class="fa fa-chevron-left"></i> Python MRO及C3线性化算法
               </a>
             
           </div>
@@ -455,8 +455,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/06/01/python MRO及C3线性化算法/" rel="prev" title="Python MRO及C3线性化算法">
-                Python MRO及C3线性化算法 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/06/01/python多继承协同任务/" rel="prev" title="Python多继承协同任务">
+                Python多继承协同任务 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -534,7 +534,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

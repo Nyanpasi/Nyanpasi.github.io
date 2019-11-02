@@ -115,7 +115,7 @@
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190703163701716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190703171840419.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L255YW5fcGFzcw==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-10-20T04:00:43.698Z">
+<meta property="og:updated_time" content="2019-10-30T09:13:13.416Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Epoll IO多路复用模型">
 <meta name="twitter:description" content="Send和Recv做了什么send和recv只是内核缓冲区和应用程序缓冲区之间的搬运工, 严格来讲send()和recv()并不具备发送和接收功能.  当我们调用send时, 是将应用程序缓冲区的数据拷贝到内核缓冲区, 内核缓冲区的数据通过网卡, 穿过网络, 传输到另一侧主机的网卡上, 然后进入另一侧主机内核缓冲区, 然后由程序调用recv将数据取回应用程序缓冲区.">
@@ -393,7 +393,7 @@
 <h3 id="多路复用IO"><a href="#多路复用IO" class="headerlink" title="多路复用IO"></a>多路复用IO</h3><p>操作将I/O状态的变化封装为事件, 并提供了专门的系统模块<code>select</code>来让应用程序可以接收事件通知, <code>Epoll</code>是改进版的<code>select</code>. </p>
 <p>应用程序可以通过<code>epoll</code>注册文件描述符和回调函数, 由epoll负责监测这些文件的I/O变化. </p>
 <p>当进行epoll调用时, epoll就返回可用的(指可读/可写, 取决于注册时要求监听的事件类型)文件描述符, 程序就可以获得已就绪的文件. </p>
-<p>调用epoll的过程是阻塞的, 但除非<strong>所有</strong>注册文件所等待的事件均没有发生时, epoll调用才会令程序阻塞, 只要有<strong>任意</strong>一个等待的事件发生, epoll就将其返回给程序. </p>
+<p>调用epoll的过程是阻塞的, 但除非<strong>所有</strong>文件等待的事件均没有发生时, epoll调用才会令程序阻塞, 只要有<strong>任意</strong>一个等待的事件发生, epoll就将其返回给程序. </p>
 <p>因此, 程序在<code>send</code>之后, 不再自己尝试<code>recv</code>, 而是将其注册入epoll,然后继续执行, 程序可以继续将多个文件描述符及其等待的事件注册入epoll, 然后在恰当的时机(例如完成本轮循环后)通过epoll调用来获取就绪的文件描述符.</p>
 <p>当程序获得就绪的文件描述符时, 就可以直接调用recv来从内存缓冲区中拷贝数据到应用程序缓冲区. 这样我们只需要等待上述的<strong>第2段</strong>时间.</p>
 <p>通过epoll来监测<strong>多个</strong>事件, 而只要<strong>任意一个</strong>事件发生, 程序就不会被阻塞, 这就是所谓<strong>多路复用</strong>. </p>
@@ -424,7 +424,7 @@
 <p>鉴于以上特性, epoll可以高效处理数以百万计的socket句柄, 与select相比有飞跃般的提升. </p>
 <hr>
 <h3 id="Nginx相关"><a href="#Nginx相关" class="headerlink" title="Nginx相关"></a>Nginx相关</h3><p>严格来说Epoll是同步阻塞模型, 因为在进行IO操作时还是要阻塞, 只是可以实现单线程内的<strong>IO复用</strong>.</p>
-<p>也正是因为如此, Nginx的worker进程数量通常应当与处理机数量保持一致, 但如果任务是IO密集型, 就要启动比处理机数量略多的worker进程(1.5到2倍之间). </p>
+<p>因此, Nginx的worker进程数量通常应当与处理机数量保持一致, 但如果任务是IO密集型, 就要启动比处理机数量略多的worker进程(1.5到2倍之间). </p>
 <hr>
 <p>参考<br><a href="https://www.cnblogs.com/lojunren/p/3856290.html" target="_blank" rel="noopener">Linux下的I/O复用与epoll详解</a><br><a href="https://blog.csdn.net/stpeace/article/details/43719449" target="_blank" rel="noopener">send和recv</a><br><a href="https://www.programering.com/a/MDOxgzMwATQ.html" target="_blank" rel="noopener">Five kinds of I/O model under Unix</a><br><a href="https://www.cnblogs.com/longjiang-uestc/p/9605283.html" target="_blank" rel="noopener">epoll机制详解</a></p>
 <!-- more -->
@@ -469,8 +469,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/06/01/算法基础篇/" rel="prev" title="基础算法, Python描述">
-                基础算法, Python描述 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/06/01/python MRO及C3线性化算法/" rel="prev" title="Python MRO及C3线性化算法">
+                Python MRO及C3线性化算法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -548,7 +548,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
