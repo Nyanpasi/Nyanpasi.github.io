@@ -3678,6 +3678,48 @@
       </tags>
   </entry>
   <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基础算法, Python描述</title>
     <url>/2019/06/01/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
@@ -3724,48 +3766,6 @@
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4541,11 +4541,128 @@
       </tags>
   </entry>
   <entry>
-    <title>数据库系统基础</title>
-    <url>/2019/01/25/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[]]></content>
+    <title>关系型数据库系统基础</title>
+    <url>/2019/01/25/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL/</url>
+    <content><![CDATA[<h3 id="事务及其ACID特性"><a href="#事务及其ACID特性" class="headerlink" title="事务及其ACID特性"></a>事务及其ACID特性</h3><p>事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成.</p>
+<p>ACID特性:</p>
+<ul>
+<li>原子性(<code>Atomicity</code>): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行.</li>
+<li>一致性(<code>Consistency</code>): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束.</li>
+<li>隔离性(<code>Isolution</code>): 多个事务并发执行时, 一个事务的执行不应影响其他事务的执行.</li>
+<li>持久性(<code>Durability</code>): 已被提交的事务对数据库的修改应当永远保存在数据库中.</li>
+</ul>
+<hr>
+<h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><p><strong>事务</strong>是并发控制的基本单位, 数据库需要保证事务的隔离性和一致性.</p>
+<p>数据不一致包括:</p>
+<ol>
+<li>丢失修改(<code>lost update</code>): </li>
+<li>脏数据(<code>dirty read</code>): 在某事务未完成之时, 其读取的数据被另一事务的撤销操作所修改, 数据不一致.</li>
+<li>不可重复读(<code>non-repeatable read</code>): 同一事务中第二次读时数据被修改 </li>
+<li>幻读(<code>Phantom read</code>): 同一事务两次读获得的记录不同(数据条目的增加或减少)</li>
+</ol>
+<p>数据不一致的主要原因是并发操作破坏了事务的<strong>隔离性</strong></p>
+<p>事务的隔离级别:</p>
+<ol>
+<li>读未提交(<code>Read uncommitted</code>): 事务可以读取到其他事务未提交的数据, 这一级别可能引起脏数据</li>
+<li>读提交(<code>Read committed</code>): 事务仅可读取到其他事务已提交的数据. 这一级别解决了脏数据问题</li>
+<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了可重复度问题</li>
+<li>可串行化(<code>Serializable</code>): 所有事务的执行结果可以等价为按照某个次序<strong>串行</strong>执行, 这一级别解决了幻读问题.</li>
+</ol>
+<p>隔离级别的达成是结果. </p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复度</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>读已提交</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>可重复读</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>可串行化</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+</tr>
+</tbody></table>
+<p>并发控制就是要用正确的方式调度并发操作, 使一个用户事务的执行不受其他事务的干扰.</p>
+<p>并发控制的主要技术有:</p>
+<ol>
+<li>封锁(<code>locking</code>)</li>
+<li>时间戳(<code>timestamp</code>)</li>
+<li>乐观控制法(<code>optimistic</code>)</li>
+<li>多版本并发控制(<code>multi-version concurrency control, MVCC</code>)</li>
+</ol>
+<hr>
+<h3 id="封锁"><a href="#封锁" class="headerlink" title="封锁"></a>封锁</h3><h4 id="封锁类型"><a href="#封锁类型" class="headerlink" title="封锁类型"></a>封锁类型</h4><p>基本的封锁类型有两种:</p>
+<ol>
+<li>排他锁(exclusive locks, 简称<code>X</code>锁), 又称<strong>写锁</strong></li>
+<li>共享锁(share locks, 简称<code>S</code>锁), 又称<strong>读锁</strong></li>
+</ol>
+<p>如果某事务T对数据对象A加上<code>X</code>锁, 则只允许T事务读取和修改A, 其他任何事务不能再对A加任何类型的锁, 直至T释放A上的锁. 如果某事务T对数据对象A加上<code>S</code>锁, 则事务T可以读取A, 但不能修改A, 其他事务可以继续对A加<code>S</code>锁, 但不能加<code>X</code>锁, 直至T释放A上的S锁为止.</p>
+<p>即: 数据加了X锁后, 不可再加任何锁. 数据加了S锁之后, 只允许再加S锁.</p>
+<hr>
+<h4 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h4><p>封锁协议是对事务对象加锁时约定的规则, 包括加锁时机, 加锁类型, 和持锁时间:</p>
+<ol>
+<li>一级封锁协议: 修改前加<code>X</code>锁, 整个事务结束后释放<code>X</code>锁. </li>
+<li>二级封锁协议: 在一级封锁的基础上, 读时加S锁, <strong>读操作</strong>结束后释放<code>S</code>锁. </li>
+<li>三级封锁协议: 在一级封锁的基础上, 读时加S锁, <strong>整个事务</strong>结束后释放<code>S</code>锁 </li>
+</ol>
+<p>三级封锁协议并不能解决幻读的问题, 因为只能保证已存的记录不会在读事务的过程中被修改或删除, 但无法保证不新增记录. MySQL解决幻读的方式是<strong>间隙锁</strong>.</p>
+<hr>
+<h4 id="两段锁"><a href="#两段锁" class="headerlink" title="两段锁"></a>两段锁</h4><p>两段锁协议则限制了加锁解锁顺序, 所有事务必须分两个阶段对数据项加锁和解锁: </p>
+<ol>
+<li>扩展阶段: 对任何数据进行读写之前, 首先要获得对该数据的封锁. </li>
+<li>收缩阶段: 在释放一个封锁之后, 事务不再申请和获得任何其他封锁.</li>
+</ol>
+<p>遵守两段锁协议是达成可串行化调度的充分条件, 但非必要条件.</p>
+<hr>
+<h4 id="封锁粒度"><a href="#封锁粒度" class="headerlink" title="封锁粒度"></a>封锁粒度</h4><p>封锁对象的大小称为<strong>封锁粒度</strong>(<code>granularity</code>), 封锁对象可以是<strong>逻辑单元</strong>和<strong>物理单元</strong>.</p>
+<p>逻辑单元包括:</p>
+<ul>
+<li>属性值</li>
+<li>属性值的集合</li>
+<li>元组</li>
+<li>关系</li>
+<li>索引项</li>
+<li>整个索引</li>
+<li>整个数据库</li>
+</ul>
+<p>物理单元包括:</p>
+<ul>
+<li>页(数据页 &amp; 索引页)</li>
+<li>物理记录</li>
+</ul>
+<p>封锁粒度与系统的并发度和并发控制的开销密切相关. </p>
+<p>一个理想的数据库系统应当同时支持多种封锁粒度以供不同的事务使用, 即<strong>多粒度封锁</strong>(<code>multiple granularity locking</code>).</p>
+<p>在多粒度封锁中一个数据对象的封锁方式:</p>
+<ol>
+<li>显式封锁: 应事务的要求, 直接为数据对象加锁</li>
+<li>隐式封锁: 对数据对象的上级节点加锁, 而使该数据对象也被封锁. 例如加了表锁后, 表中所有行都被加了行锁.</li>
+</ol>
+<p>为了快速检出隐式封锁, </p>
+]]></content>
       <tags>
         <tag>数据库</tag>
+        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>

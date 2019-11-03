@@ -94,7 +94,7 @@
 
 
 
-  <meta name="keywords" content="Docker,">
+  <meta name="keywords" content="数据库,MySQL,">
 
 
 
@@ -105,18 +105,18 @@
 
 
 
-<meta name="description" content="容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求. 由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换? 答案是: 通过UnionFS将宿主机操作系统中的文件系统的文件/目录挂载到容器中, 就能够让容器和宿主机共享该文件/目录.">
-<meta name="keywords" content="Docker">
+<meta name="description" content="事务及其ACID特性事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成. ACID特性:  原子性(Atomicity): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行. 一致性(Consistency): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束. 隔离性(Isolution)">
+<meta name="keywords" content="数据库,MySQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker数据管理">
-<meta property="og:url" content="http://yoursite.com/2019/02/19/Docker数据管理/index.html">
+<meta property="og:title" content="关系型数据库系统基础">
+<meta property="og:url" content="http://yoursite.com/2019/01/25/数据库基础之MySQL/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求. 由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换? 答案是: 通过UnionFS将宿主机操作系统中的文件系统的文件/目录挂载到容器中, 就能够让容器和宿主机共享该文件/目录.">
+<meta property="og:description" content="事务及其ACID特性事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成. ACID特性:  原子性(Atomicity): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行. 一致性(Consistency): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束. 隔离性(Isolution)">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-18T12:04:22.522Z">
+<meta property="og:updated_time" content="2019-11-03T10:19:04.425Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Docker数据管理">
-<meta name="twitter:description" content="容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求. 由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换? 答案是: 通过UnionFS将宿主机操作系统中的文件系统的文件/目录挂载到容器中, 就能够让容器和宿主机共享该文件/目录.">
+<meta name="twitter:title" content="关系型数据库系统基础">
+<meta name="twitter:description" content="事务及其ACID特性事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成. ACID特性:  原子性(Atomicity): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行. 一致性(Consistency): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束. 隔离性(Isolution)">
 
 
 
@@ -146,13 +146,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/02/19/Docker数据管理/">
+  <link rel="canonical" href="http://yoursite.com/2019/01/25/数据库基础之MySQL/">
 
 
 
 
 
-  <title>Docker数据管理 | 紫秋的个人博客</title>
+  <title>关系型数据库系统基础 | 紫秋的个人博客</title>
   
 
 
@@ -301,7 +301,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/19/Docker数据管理/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/数据库基础之MySQL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -318,7 +318,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Docker数据管理</h1>
+          <h1 class="post-title" itemprop="name headline">关系型数据库系统基础</h1>
         
 
         <div class="post-meta">
@@ -330,8 +330,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-19T11:15:03+08:00">
-                2019-02-19
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T11:58:21+08:00">
+                2019-01-25
               </time>
             
 
@@ -373,123 +373,122 @@
       
 
       
-        <p>容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求.</p>
-<p>由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换?</p>
-<p>答案是: 通过<code>UnionFS</code>将宿主机操作系统中的文件系统的文件/目录<strong>挂载</strong>到容器中, 就能够让容器和宿主机共享该文件/目录.</p>
-<a id="more"></a>
-
+        <h3 id="事务及其ACID特性"><a href="#事务及其ACID特性" class="headerlink" title="事务及其ACID特性"></a>事务及其ACID特性</h3><p>事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成.</p>
+<p>ACID特性:</p>
+<ul>
+<li>原子性(<code>Atomicity</code>): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行.</li>
+<li>一致性(<code>Consistency</code>): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束.</li>
+<li>隔离性(<code>Isolution</code>): 多个事务并发执行时, 一个事务的执行不应影响其他事务的执行.</li>
+<li>持久性(<code>Durability</code>): 已被提交的事务对数据库的修改应当永远保存在数据库中.</li>
+</ul>
 <hr>
-<p>三种挂载文件的方式:</p>
+<h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><p><strong>事务</strong>是并发控制的基本单位, 数据库需要保证事务的隔离性和一致性.</p>
+<p>数据不一致包括:</p>
 <ol>
-<li><code>Bind Mount</code></li>
-<li><code>Volume</code></li>
-<li><code>Tmpfs Mount</code></li>
+<li>丢失修改(<code>lost update</code>): </li>
+<li>脏数据(<code>dirty read</code>): 在某事务未完成之时, 其读取的数据被另一事务的撤销操作所修改, 数据不一致.</li>
+<li>不可重复读(<code>non-repeatable read</code>): 同一事务中第二次读时数据被修改 </li>
+<li>幻读(<code>Phantom read</code>): 同一事务两次读获得的记录不同(数据条目的增加或减少)</li>
 </ol>
-<hr>
-<p><code>Bind Mount</code>: 能够直接将宿主操作系统中的目录和文件挂载到容器内的文件系统中, 通过指定容器外的路径和容器内的路径, 就可以形成挂载映射关系, 在容器内外对文件的读写, 都是相互可见的, Docker之外的应用程序也可以更改这些数据.</p>
-<hr>
-<p><code>Volume</code>: 也是从宿主操作系统中挂载目录到容器内, 只不过这个挂载的目录由 Docker 进行管理, 我们只需要指定容器内的目录, 不需要关心具体挂载到了宿主操作系统中的哪里. 非Docker程序不能更改这些数据.</p>
-<hr>
-<p><code>Tmpfs Mount</code>: 支持挂载系统内存中的一部分到容器的文件系统里, 不过由于内存和容器的特征, 它的存储并不是持久的, 其中的内容会随着容器的停止而消失. </p>
-<hr>
-<h3 id="Bind-Mount"><a href="#Bind-Mount" class="headerlink" title="Bind Mount"></a>Bind Mount</h3><p>使用<code>-v</code>或<code>--volume</code>选项即可指定内外目录的映射关系. 格式为 <code>&lt;host-path&gt;:&lt;container-path&gt;</code>, 为了避免混淆, 必须使用绝对路径.</p>
-<p>例如: </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name some-nginx -v /some/content:/usr/share/nginx/html -d nginx</span><br></pre></td></tr></table></figure>
-
-<p>之后使用<code>docker inspect &lt;NAME|ID&gt;</code>命令, 在<code>Mounts</code>一节中即可查看挂载信息.</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">    <span class="string">"Mounts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"Type"</span>: <span class="string">"bind"</span>,</span><br><span class="line">            <span class="string">"Source"</span>: <span class="string">"/some/content"</span>,</span><br><span class="line">            <span class="string">"Destination"</span>: <span class="string">"/usr/share/nginx/html"</span>,</span><br><span class="line">            <span class="string">"Mode"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="string">"RW"</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="string">"Propagation"</span>: <span class="string">"rprivate"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
-
-<p>在使用<code>Bind Mount</code>方式进行挂载时, 默认容器对该文件是可读可写的, 在挂载信息中, <code>RW</code>(Read and Write)属性的值为<code>true</code></p>
-<p>如果只允许容器内对该共享文件只读, 则在映射路径后添加<code>:ro</code>标识</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name some-nginx -v /some/content:/usr/share/nginx/html:ro -d nginx</span><br></pre></td></tr></table></figure>
-
-<p>此时<code>Mounts</code>信息中, <code>Mode</code>属性为<code>ro</code>, <code>RW</code>属性为<code>false</code>.</p>
-<p>在开发过程中, 对于可能经常需要手动修改的配置文件, 比较适合这种挂载方式, 安全性较低, 但是方便.</p>
-<hr>
-<h3 id="Volume"><a href="#Volume" class="headerlink" title="Volume"></a>Volume</h3><hr>
-<h4 id="挂载数据卷"><a href="#挂载数据卷" class="headerlink" title="挂载数据卷"></a>挂载数据卷</h4><p>数据卷方式指定容器内哪个目录需要被挂载即可, Docker会自动将其挂载至宿主机的某个目录上. 使用<code>-v</code>或<code>--volume</code>指定容器内目录.</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name some-nginx -v /usr/share/nginx/html -d nginx</span><br></pre></td></tr></table></figure>
-
-<p>虽然使用的选项(<code>-v</code>)与<code>Bind Mount</code>的方式相同, 但是因为路径的格式不同, 因此可以直接区分两种方式.</p>
-<p>使用<code>docker inspect ID|NAME</code>指令查看具体挂载信息:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">    <span class="string">"Mounts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"Type"</span>: <span class="string">"volume"</span>,</span><br><span class="line">            <span class="string">"Name"</span>: <span class="string">"fc67d7d8da5f8822bbe885c77fe1027893dda88d9dab07352852cf3271547c59"</span>,</span><br><span class="line">            <span class="string">"Source"</span>: <span class="string">"/var/lib/docker/volumes/fc67d7d8da5f8822bbe885c77fe1027893dda88d9dab07352852cf3271547c59/_data"</span>,</span><br><span class="line">            <span class="string">"Destination"</span>: <span class="string">"/usr/share/nginx/html"</span>,</span><br><span class="line">            <span class="string">"Driver"</span>: <span class="string">"local"</span>,</span><br><span class="line">            <span class="string">"Mode"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="string">"RW"</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="string">"Propagation"</span>: <span class="string">""</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
-
-<p><code>Source</code>属性的值为Docker分配的宿主机的具体挂载目录, 位于Docker的资源目录下, 当然, 我们无需关心这个目录, 在操作数据卷时, 一律通过docker相关的指令进行.</p>
-<p><code>Name</code>属性为该数据卷的别名, 可以通过创建时<code>-v &lt;name&gt;:&lt;container-path&gt;</code>的方式给出, 由于在<code>Bind Mount</code>的方式中<code>host-path</code>部分必须使用绝对路径, 因此此处也不会引起混淆.</p>
-<p>通过数据卷别名, 我们可以明确地引用指定命名数据卷, 因此可以方便地实现数据卷共享等功能, 例如:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run -d --name webapp -v html:/webapp/html webapp:latest</span><br><span class="line">$ sudo docker run -d --name nginx -v html:/usr/share/nginx/html:ro nginx:1.12</span><br></pre></td></tr></table></figure>
-
-<p>在以上两个容器, 共享<code>html</code>这个数据卷: 第一次挂载数据卷时, 创建别名为<code>html</code>的数据卷, 第二次挂载同名数据卷时, Docker检索到该数据卷已存在, 直接引用该命名数据卷.</p>
-<hr>
-<h4 id="docker-volume-相关指令"><a href="#docker-volume-相关指令" class="headerlink" title="docker volume 相关指令"></a>docker volume 相关指令</h4><table>
+<p>数据不一致的主要原因是并发操作破坏了事务的<strong>隔离性</strong></p>
+<p>事务的隔离级别:</p>
+<ol>
+<li>读未提交(<code>Read uncommitted</code>): 事务可以读取到其他事务未提交的数据, 这一级别可能引起脏数据</li>
+<li>读提交(<code>Read committed</code>): 事务仅可读取到其他事务已提交的数据. 这一级别解决了脏数据问题</li>
+<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了可重复度问题</li>
+<li>可串行化(<code>Serializable</code>): 所有事务的执行结果可以等价为按照某个次序<strong>串行</strong>执行, 这一级别解决了幻读问题.</li>
+</ol>
+<p>隔离级别的达成是结果. </p>
+<table>
 <thead>
 <tr>
-<th>指令</th>
-<th>作用</th>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复度</th>
+<th>幻读</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><code>docker volume create &lt;name&gt;</code></td>
-<td>直接创建数据卷, 不依赖任何容器</td>
+<td>读未提交</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
 </tr>
 <tr>
-<td><code>docker volume inspect &lt;name&gt;[s]</code></td>
-<td>查看指定数据卷的详细信息, 一个或多个</td>
+<td>读已提交</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
 </tr>
 <tr>
-<td><code>docker volume ls</code></td>
-<td>列出现存数据卷</td>
+<td>可重复读</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
 </tr>
 <tr>
-<td><code>docker volume rm &lt;name&gt;[s]</code></td>
-<td>删除指定数据卷, 一个或多个</td>
-</tr>
-<tr>
-<td><code>docker volume prune</code></td>
-<td>删除未被任何容器使用的数据卷</td>
+<td>可串行化</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
 </tr>
 </tbody></table>
-<hr>
-<p>在删除数据卷时, 可以</p>
+<p>并发控制就是要用正确的方式调度并发操作, 使一个用户事务的执行不受其他事务的干扰.</p>
+<p>并发控制的主要技术有:</p>
 <ol>
-<li>直接通过<code>docker volume rm &lt;name&gt;</code>指令来删除指定的数据卷, 如果该数据卷未被任何现存容器所引用, 则删除成功. </li>
-<li>在删除容器时, 使用<code>-v</code>选项来删除与本容器相关的数据卷, 例如: <code>docker rm -v &lt;container-name&gt;</code>. </li>
-<li>使用<code>docker volume prune</code>删除未被任何容器所使用的数据卷.</li>
+<li>封锁(<code>locking</code>)</li>
+<li>时间戳(<code>timestamp</code>)</li>
+<li>乐观控制法(<code>optimistic</code>)</li>
+<li>多版本并发控制(<code>multi-version concurrency control, MVCC</code>)</li>
 </ol>
-<p>注:<code>prune</code>指令不仅可用于数据卷, 还可以用于镜像, 容器, 网络或所有docker相关对象, 具体查看<a href="https://docs.docker.com/config/pruning/" target="_blank" rel="noopener">官方文档</a>.</p>
 <hr>
-<h4 id="数据卷容器-Data-Container"><a href="#数据卷容器-Data-Container" class="headerlink" title="数据卷容器(Data Container)"></a>数据卷容器(<code>Data Container</code>)</h4><p>建立一个容器, 在创建时通过<code>-v</code>选项随之创建一个数据卷, 我们创建该容器的目的就是为了定义一个或多个数据卷并通过该容器引用这些数据卷, 这样的容器就叫做数据卷容器.</p>
-<p>使用任意镜像都可以创建数据卷容器, 该容器甚至可以不运行:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker create --name appdata -v /webapp/storage ubuntu</span><br></pre></td></tr></table></figure>
-
-<p>该数据卷无需别名, 因为所有对该数据卷的引用都是使用<code>--volume-from</code>指令通过数据卷容器进行的, 例如:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name webapp --volumes-from appdata webapp:latest</span><br></pre></td></tr></table></figure>
-
-<p>通过这种方式引用数据卷时, 无需再定义该数据卷在容器内的映射目录, 会自动应用至<strong>定义</strong>该数据卷时的路径.</p>
-<p>相较于命名数据卷的方式, 数据卷容器隐藏了数据卷的配置和定义, 只需要使用数据卷来应用, 因此可以更方便地进行迁移.</p>
-<h4 id="备份数据卷"><a href="#备份数据卷" class="headerlink" title="备份数据卷"></a>备份数据卷</h4><p>创建一个数据卷容器</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /dbdata --name dbstore ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
-
-<p>假设该数据卷容器中在运行一段时间后获得了部分数据, 我们将这些数据打包, 则执行下一条命令, 包括:</p>
+<h3 id="封锁"><a href="#封锁" class="headerlink" title="封锁"></a>封锁</h3><h4 id="封锁类型"><a href="#封锁类型" class="headerlink" title="封锁类型"></a>封锁类型</h4><p>基本的封锁类型有两种:</p>
 <ol>
-<li>创建一个新的临时容器, 挂载<code>dbstore</code>中的数据卷</li>
-<li>映射一个容器内目录<code>/backup</code>到宿主机当前目录</li>
-<li>使用<code>tar</code>命令, 将<code>dbstore</code>的数据卷打包至<code>/backup</code>目录</li>
+<li>排他锁(exclusive locks, 简称<code>X</code>锁), 又称<strong>写锁</strong></li>
+<li>共享锁(share locks, 简称<code>S</code>锁), 又称<strong>读锁</strong></li>
 </ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm --volumes-from dbstore -v $(<span class="built_in">pwd</span>):/backup ubuntu tar cvf /backup/backup.tar /dbdata</span><br></pre></td></tr></table></figure>
-
-<p>之后, 我们就可以在宿主机的当前目录获得打包后的数据卷.</p>
+<p>如果某事务T对数据对象A加上<code>X</code>锁, 则只允许T事务读取和修改A, 其他任何事务不能再对A加任何类型的锁, 直至T释放A上的锁. 如果某事务T对数据对象A加上<code>S</code>锁, 则事务T可以读取A, 但不能修改A, 其他事务可以继续对A加<code>S</code>锁, 但不能加<code>X</code>锁, 直至T释放A上的S锁为止.</p>
+<p>即: 数据加了X锁后, 不可再加任何锁. 数据加了S锁之后, 只允许再加S锁.</p>
 <hr>
-<h4 id="恢复数据卷"><a href="#恢复数据卷" class="headerlink" title="恢复数据卷"></a>恢复数据卷</h4><p>将打包后的数据恢复至一个新建容器内的数据卷内, 创建容器<code>dbstore2</code>, 同时创建一个与之相关的数据卷<code>/dbdata</code>:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /dbdata --name dbstore2 ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
-
-<p>然后解压打包文件的内容至新容器<code>dbsotre2</code>的数据卷目录内:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm --volumes-from dbstore2 -v $(<span class="built_in">pwd</span>):/backup ubuntu bash -c <span class="string">"cd /dbdata &amp;&amp; tar xvf /backup/backup.tar --strip 1"</span></span><br></pre></td></tr></table></figure>
-
-<p>查看官方文档 <a href="https://docs.docker.com/storage/volumes/" target="_blank" rel="noopener">Backup, restore, or migrate data volumes</a></p>
+<h4 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h4><p>封锁协议是对事务对象加锁时约定的规则, 包括加锁时机, 加锁类型, 和持锁时间:</p>
+<ol>
+<li>一级封锁协议: 修改前加<code>X</code>锁, 整个事务结束后释放<code>X</code>锁. </li>
+<li>二级封锁协议: 在一级封锁的基础上, 读时加S锁, <strong>读操作</strong>结束后释放<code>S</code>锁. </li>
+<li>三级封锁协议: 在一级封锁的基础上, 读时加S锁, <strong>整个事务</strong>结束后释放<code>S</code>锁 </li>
+</ol>
+<p>三级封锁协议并不能解决幻读的问题, 因为只能保证已存的记录不会在读事务的过程中被修改或删除, 但无法保证不新增记录. MySQL解决幻读的方式是<strong>间隙锁</strong>.</p>
 <hr>
-<p>参考:</p>
-<p><a href="https://boxboat.com/2016/06/18/docker-data-containers-and-named-volumes/" target="_blank" rel="noopener">Docker Data Containers and Named Volumes</a><br><a href="https://juejin.im/book/5b7ba116e51d4556f30b476c/section/5b8381abe51d4538de11609a" target="_blank" rel="noopener">开发者必备的 Docker 实践指南</a></p>
+<h4 id="两段锁"><a href="#两段锁" class="headerlink" title="两段锁"></a>两段锁</h4><p>两段锁协议则限制了加锁解锁顺序, 所有事务必须分两个阶段对数据项加锁和解锁: </p>
+<ol>
+<li>扩展阶段: 对任何数据进行读写之前, 首先要获得对该数据的封锁. </li>
+<li>收缩阶段: 在释放一个封锁之后, 事务不再申请和获得任何其他封锁.</li>
+</ol>
+<p>遵守两段锁协议是达成可串行化调度的充分条件, 但非必要条件.</p>
+<hr>
+<h4 id="封锁粒度"><a href="#封锁粒度" class="headerlink" title="封锁粒度"></a>封锁粒度</h4><p>封锁对象的大小称为<strong>封锁粒度</strong>(<code>granularity</code>), 封锁对象可以是<strong>逻辑单元</strong>和<strong>物理单元</strong>.</p>
+<p>逻辑单元包括:</p>
+<ul>
+<li>属性值</li>
+<li>属性值的集合</li>
+<li>元组</li>
+<li>关系</li>
+<li>索引项</li>
+<li>整个索引</li>
+<li>整个数据库</li>
+</ul>
+<p>物理单元包括:</p>
+<ul>
+<li>页(数据页 &amp; 索引页)</li>
+<li>物理记录</li>
+</ul>
+<p>封锁粒度与系统的并发度和并发控制的开销密切相关. </p>
+<p>一个理想的数据库系统应当同时支持多种封锁粒度以供不同的事务使用, 即<strong>多粒度封锁</strong>(<code>multiple granularity locking</code>).</p>
+<p>在多粒度封锁中一个数据对象的封锁方式:</p>
+<ol>
+<li>显式封锁: 应事务的要求, 直接为数据对象加锁</li>
+<li>隐式封锁: 对数据对象的上级节点加锁, 而使该数据对象也被封锁. 例如加了表锁后, 表中所有行都被加了行锁.</li>
+</ol>
+<p>为了快速检出隐式封锁, </p>
 
       
     </div>
@@ -507,7 +506,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Docker/" rel="tag"># Docker</a>
+            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
           
         </div>
       
@@ -520,8 +521,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/02/18/Docker基本原理/" rel="next" title="Docker基本原理">
-                <i class="fa fa-chevron-left"></i> Docker基本原理
+              <a href="/2019/01/07/python元编程相关/" rel="next" title="Python元编程">
+                <i class="fa fa-chevron-left"></i> Python元编程
               </a>
             
           </div>
@@ -530,8 +531,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/02/20/Dockerfile的编写/" rel="prev" title="Dockerfile及常用命令">
-                Dockerfile及常用命令 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/01/127.0.0.1和0.0.0.0/" rel="prev" title="127.0.0.1和0.0.0.0">
+                127.0.0.1和0.0.0.0 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -655,7 +656,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bind-Mount"><span class="nav-number">1.</span> <span class="nav-text">Bind Mount</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Volume"><span class="nav-number">2.</span> <span class="nav-text">Volume</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#挂载数据卷"><span class="nav-number">2.1.</span> <span class="nav-text">挂载数据卷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#docker-volume-相关指令"><span class="nav-number">2.2.</span> <span class="nav-text">docker volume 相关指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据卷容器-Data-Container"><span class="nav-number">2.3.</span> <span class="nav-text">数据卷容器(Data Container)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#备份数据卷"><span class="nav-number">2.4.</span> <span class="nav-text">备份数据卷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#恢复数据卷"><span class="nav-number">2.5.</span> <span class="nav-text">恢复数据卷</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务及其ACID特性"><span class="nav-number">1.</span> <span class="nav-text">事务及其ACID特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发控制"><span class="nav-number">2.</span> <span class="nav-text">并发控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#封锁"><span class="nav-number">3.</span> <span class="nav-text">封锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#封锁类型"><span class="nav-number">3.1.</span> <span class="nav-text">封锁类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#封锁协议"><span class="nav-number">3.2.</span> <span class="nav-text">封锁协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两段锁"><span class="nav-number">3.3.</span> <span class="nav-text">两段锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#封锁粒度"><span class="nav-number">3.4.</span> <span class="nav-text">封锁粒度</span></a></li></ol></li></ol></div>
             
 
           </div>
