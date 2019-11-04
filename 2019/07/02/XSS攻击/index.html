@@ -2,10 +2,8 @@
 
 
 
-  
 
-
-<html class="theme-next mist use-motion" lang="zh">
+<html class="theme-next mist" lang="zh">
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -94,7 +92,7 @@
 
 
 
-  <meta name="keywords" content="前端安全,XSS,">
+  <meta name="keywords" content="XSS,前端安全,">
 
 
 
@@ -106,7 +104,7 @@
 
 
 <meta name="description" content="XSS(Cross Site Script)跨站脚本攻击，属于一种注入攻击，黑客通过”HTML注入”篡改了网页，插入恶意脚本，从而在用户浏览网页时，控制用户浏览器。 前提条件:  向web页面注入恶意html代码 恶意代码能被浏览器成功执行">
-<meta name="keywords" content="前端安全,XSS">
+<meta name="keywords" content="XSS,前端安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="XSS攻击原理和防御">
 <meta property="og:url" content="http://yoursite.com/2019/07/02/XSS攻击/index.html">
@@ -129,7 +127,7 @@
     sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
     tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
       author: 'Author'
@@ -410,9 +408,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/前端安全/" rel="tag"># 前端安全</a>
-          
             <a href="/tags/XSS/" rel="tag"># XSS</a>
+          
+            <a href="/tags/前端安全/" rel="tag"># 前端安全</a>
           
         </div>
       
@@ -505,7 +503,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -518,7 +516,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -577,6 +575,14 @@
 
 
 
+
+
+  <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
 
         
 <div class="busuanzi-count">

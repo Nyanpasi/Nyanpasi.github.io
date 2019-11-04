@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next mist" lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Helvetica:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据库,Redis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
+<meta name="keywords" content="数据库,Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis基础">
+<meta property="og:url" content="http://yoursite.com/2019/01/25/Redis基础/index.html">
+<meta property="og:site_name" content="紫秋的个人博客">
+<meta property="og:description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-11-04T11:42:19.247Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis基础">
+<meta name="twitter:description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/25/Redis基础/">
+
+
+
+
+
+  <title>Redis基础 | 紫秋的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">紫秋的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">孤独患者自我拉扯</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T12:59:21+08:00">
+                2019-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><span>该文章被访问</span>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h3><p><code>Redis</code>的键为字符串, 而值有5种基本数据类型:</p>
+<ol>
+<li>字符串(<code>String</code>)</li>
+<li>列表(<code>List</code>)</li>
+<li>字典(<code>Hash</code>)</li>
+<li>集合(<code>Set</code>)</li>
+<li>有序集合(<code>Sorted Set</code>)</li>
+</ol>
+<hr>
+<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>Redis</code>字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配.</p>
+<p>当字符串长度小于<code>1M</code>时, 扩容都是加倍现有的空间, 如果超过<code>1M</code>, 扩容时一次只会多扩1M的空间.</p>
+<p>需要注意的是字符串最大长度为<code>512M</code>.</p>
+<p>另外, 字符串的索引从<code>0</code>开始。</p>
+<hr>
+<h4 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h4><p><code>Redis</code>的列表为双向链表, 首尾插入和删除较快, 而定位操作慢.</p>
+<p>数据较少时, 使用连续内存存储, 这个结构是<code>ziplist</code>, 数据较多时, 使用多个链接起来的ziplist组成的quicklist.</p>
+<p>使用列表可以方便地实现队列或者栈.</p>
+<hr>
+<h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
+<p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
+<hr>
+<h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
+<p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
+<p>因此, <code>rehash</code>动作并不是一次性、集中式地完成, 而是<strong>分多次</strong>、<strong>渐进式</strong>地完成的.</p>
+<hr>
+<h4 id="集合-set"><a href="#集合-set" class="headerlink" title="集合(set)"></a>集合(set)</h4><p>一个值为<code>null</code>的字典.</p>
+<hr>
+<h4 id="有序集合-zset"><a href="#有序集合-zset" class="headerlink" title="有序集合(zset)"></a>有序集合(zset)</h4><p>每个元素都关联一个double类型的分数, redis通过分数进行集合成员的排序</p>
+<p>元素与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
+<p>查询某个元素的score, 直接通过dict查询, 时间复杂度为O(1)</p>
+<hr>
+<h5 id="跳跃列表-skiplist"><a href="#跳跃列表-skiplist" class="headerlink" title="跳跃列表(skiplist)"></a>跳跃列表(skiplist)</h5><p>zset内部排序功能是通过<strong>跳跃列表</strong>实现, </p>
+<p>跳跃列表本质上是一种查找结构, 用于解决查找问题.</p>
+<p>具体的实现是一个多层链表, 分为不同的层级, 相同层级的元素都使用指针进行连接.</p>
+<p>因此某些节点同时归属于不同层级, 该节点也就包含多个后向指针.</p>
+<p>每个节点至少包含一个前向指针, 并包含至少一个, 可能多个后向指针, 具体取决于该节点究竟同时在多少层.</p>
+<ol>
+<li>最底层即<code>L0</code>层, 包含所有的元素</li>
+<li>次底层即<code>L1</code>层, 每个元素有<code>50%</code>的机会进入这一层</li>
+<li>第三层即<code>L2</code>层, 每个元素有<code>25%</code>的机会进入这一层</li>
+<li>以此类推, 最多有32层.</li>
+</ol>
+<p>显然, 最底层是一个<strong>双向链表</strong>, 而上层则不然.</p>
+<p>每次的搜索过程从<strong>现存的</strong>最高层开始, 向下逐级搜索.</p>
+<p>由于所有节点的晋升依赖于概率, 无需维持各层之间的数量约束关系, 因此插入效率比平衡树类型的索引要高.</p>
+<p>而查找的平均时间复杂度是O(logn), 与平衡树类型相当.</p>
+<p>查询元素名次, 通过分数反查元素范围等, 因为要使用<code>skiplist</code>, 所以时间复杂度为<code>O(logn+M)</code>, <code>M</code>是要返回的元素的个数.</p>
+<hr>
+<h3 id="Redis淘汰策略"><a href="#Redis淘汰策略" class="headerlink" title="Redis淘汰策略"></a>Redis淘汰策略</h3><p>六种淘汰机制, 使用<code>maxmemory-policy</code>设置项进行设置</p>
+<table>
+<thead>
+<tr>
+<th>maxmemory-policy</th>
+<th>执行策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>noeviction</code></td>
+<td>不进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-lru</code></td>
+<td>对<strong>所有</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-random</code></td>
+<td>对<strong>所有</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-lru</code></td>
+<td>对<strong>易失</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-random</code></td>
+<td>对<strong>易失</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-ttl</code></td>
+<td>对<strong>易失</strong><code>key</code>按照生存时间最少进行淘汰</td>
+</tr>
+</tbody></table>
+<p>注:</p>
+<ol>
+<li><code>LRU</code>(Least Recently Used) 最近最少使用</li>
+<li><code>TTL</code>(Time To Live) 生存时间</li>
+<li><code>volatile</code>: 设置了超时的<code>key</code>被视为<code>volatile</code>, 即<strong>易失的</strong></li>
+</ol>
+<hr>
+<h3 id="Redis-持久化机制"><a href="#Redis-持久化机制" class="headerlink" title="Redis 持久化机制"></a>Redis 持久化机制</h3><ol>
+<li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
+<li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
+</ol>
+<p>RDB的优势在于:</p>
+<ol>
+<li>只包含一个文件, 方便备份.</li>
+<li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
+<li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
+<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行保存工作, 父进程无需执行任何<code>IO</code>.</li>
+</ol>
+<p>RDB的劣势在于:</p>
+<ol>
+<li>保存一份<code>RDB</code>总是要间隔一段时间, 例如<code>5</code>分钟, 如果发生故障, 这段时间的数据会被丢失.</li>
+<li>当数据集非常大的时候, <code>fork</code>过程可能非常耗时, 会在一段时间(<code>n</code>毫秒到<code>1</code>秒)内停止处理客户端请求.</li>
+</ol>
+<p>AOF的优势在于:</p>
+<ol>
+<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔1秒钟), 这样在故障时丢失数据量更少.</li>
+<li>如果<code>AOF</code>文件过大, Redis可以对其进行重写, 仅包含恢复当前数据集所需的最小命令集合.</li>
+<li>有序地保存了所有写入操作, 且非常容易被人读懂, 因此更容易对其进行分析.</li>
+</ol>
+<p>AOF的劣势在于:</p>
+<ol>
+<li>对于相同数据集的备份, AOF文件的体积通常要大于<code>RDB</code>文件.</li>
+<li>根据使用的<code>fsync</code>策略, Redis在使用<code>AOF</code>备份的速度可能慢于使用<code>RDB</code>的速度.</li>
+</ol>
+<p>默认的备份方式是<code>RDB</code>方式.</p>
+<hr>
+<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
+<p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
+<hr>
+<h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
+<p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
+<p>为了确保在程序出错时, 锁一定被释放, 还应该为其设置超时时间, 并且, 抢锁和设置超时需要为原子操作.</p>
+<p>在<code>redis2.8</code>版本之后, 可以使用<code>set</code>指令的<strong>拓展参数</strong>实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set lock true ex 5 nx</span><br></pre></td></tr></table></figure>
+
+<p>当然, 在正常情况下, 我们通过<code>del lock</code>来释放锁, 因此超时时间不应过低, 同时任务执行预期时间不应过长.</p>
+<hr>
+<h3 id="Redis为什么设计为单线程"><a href="#Redis为什么设计为单线程" class="headerlink" title="Redis为什么设计为单线程?"></a>Redis为什么设计为单线程?</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
+<p>因此, 只有在有必要进行<strong>多任务</strong>而不是增加效率的情况下, 才会启动多个线程.</p>
+<p>如果想利用多核, 可以启动多个Redis实例. </p>
+<hr>
+<p>参考:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/25/Mysql基础/" rel="next" title="MySQL相关">
+                <i class="fa fa-chevron-left"></i> MySQL相关
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/01/127.0.0.1和0.0.0.0/" rel="prev" title="127.0.0.1和0.0.0.0">
+                127.0.0.1和0.0.0.0 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">紫秋</p>
+              <p class="site-description motion-element" itemprop="description">技术</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本数据类型"><span class="nav-number">1.</span> <span class="nav-text">基本数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串"><span class="nav-number">1.1.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列表-List"><span class="nav-number">1.2.</span> <span class="nav-text">列表(List)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字典-hash"><span class="nav-number">1.3.</span> <span class="nav-text">字典(hash)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#渐进式rehash"><span class="nav-number">1.3.1.</span> <span class="nav-text">渐进式rehash</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合-set"><span class="nav-number">1.4.</span> <span class="nav-text">集合(set)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有序集合-zset"><span class="nav-number">1.5.</span> <span class="nav-text">有序集合(zset)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#跳跃列表-skiplist"><span class="nav-number">1.5.1.</span> <span class="nav-text">跳跃列表(skiplist)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis淘汰策略"><span class="nav-number">2.</span> <span class="nav-text">Redis淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-持久化机制"><span class="nav-number">3.</span> <span class="nav-text">Redis 持久化机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">4.</span> <span class="nav-text">Redis事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis实现分布式锁"><span class="nav-number">5.</span> <span class="nav-text">Redis实现分布式锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis为什么设计为单线程"><span class="nav-number">6.</span> <span class="nav-text">Redis为什么设计为单线程?</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">紫秋</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+
+  <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
+<!-- 页面点击小红心 -->

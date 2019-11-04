@@ -1824,7 +1824,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #7f2567;
+  background: #5bf9ab;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2905,4 +2905,13 @@ hr {
     width: auto;
     text-align: center;
   }
+}
+.mermaid {
+  background: transparent;
+}
+strong {
+  font-size: 0.96em;
+}
+p {
+  font-family: Menlo, "Ubuntu Mono", Consolas, "Courier New", "Microsoft Yahei", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif !important;
 }

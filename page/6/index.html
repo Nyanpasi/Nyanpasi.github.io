@@ -2,10 +2,8 @@
 
 
 
-  
 
-
-<html class="theme-next mist use-motion" lang="zh">
+<html class="theme-next mist" lang="zh">
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -127,7 +125,7 @@
     sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
     tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
       author: 'Author'
@@ -286,6 +284,130 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/18/Docker基本原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/18/Docker基本原理/" itemprop="url">Docker基本原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-18T11:15:03+08:00">
+                2019-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>容器是一种轻量级, 可移植, 自包含的软件打包技术, 使应用程序可以在几乎任何地方以相同的方式运行. <code>Docker</code>是容器技术的一个实现.</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/18/Docker基本原理/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -614,7 +736,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/数据库基础之MySQL/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis基础/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -633,7 +755,386 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/25/数据库基础之MySQL/" itemprop="url">关系型数据库系统基础</a></h1>
+                <a class="post-title-link" href="/2019/01/25/Redis基础/" itemprop="url">Redis基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T12:59:21+08:00">
+                2019-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h3><p><code>Redis</code>的键为字符串, 而值有5种基本数据类型:</p>
+<ol>
+<li>字符串(<code>String</code>)</li>
+<li>列表(<code>List</code>)</li>
+<li>字典(<code>Hash</code>)</li>
+<li>集合(<code>Set</code>)</li>
+<li>有序集合(<code>Sorted Set</code>)</li>
+</ol>
+<hr>
+<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>Redis</code>字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配.</p>
+<p>当字符串长度小于<code>1M</code>时, 扩容都是加倍现有的空间, 如果超过<code>1M</code>, 扩容时一次只会多扩1M的空间.</p>
+<p>需要注意的是字符串最大长度为<code>512M</code>.</p>
+<p>另外, 字符串的索引从<code>0</code>开始。</p>
+<hr>
+<h4 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h4><p><code>Redis</code>的列表为双向链表, 首尾插入和删除较快, 而定位操作慢.</p>
+<p>数据较少时, 使用连续内存存储, 这个结构是<code>ziplist</code>, 数据较多时, 使用多个链接起来的ziplist组成的quicklist.</p>
+<p>使用列表可以方便地实现队列或者栈.</p>
+<hr>
+<h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
+<p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
+<hr>
+<h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
+<p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
+<p>因此, <code>rehash</code>动作并不是一次性、集中式地完成, 而是<strong>分多次</strong>、<strong>渐进式</strong>地完成的.</p>
+<hr>
+<h4 id="集合-set"><a href="#集合-set" class="headerlink" title="集合(set)"></a>集合(set)</h4><p>一个值为<code>null</code>的字典.</p>
+<hr>
+<h4 id="有序集合-zset"><a href="#有序集合-zset" class="headerlink" title="有序集合(zset)"></a>有序集合(zset)</h4><p>每个元素都关联一个double类型的分数, redis通过分数进行集合成员的排序</p>
+<p>元素与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
+<p>查询某个元素的score, 直接通过dict查询, 时间复杂度为O(1)</p>
+<hr>
+<h5 id="跳跃列表-skiplist"><a href="#跳跃列表-skiplist" class="headerlink" title="跳跃列表(skiplist)"></a>跳跃列表(skiplist)</h5><p>zset内部排序功能是通过<strong>跳跃列表</strong>实现, </p>
+<p>跳跃列表本质上是一种查找结构, 用于解决查找问题.</p>
+<p>具体的实现是一个多层链表, 分为不同的层级, 相同层级的元素都使用指针进行连接.</p>
+<p>因此某些节点同时归属于不同层级, 该节点也就包含多个后向指针.</p>
+<p>每个节点至少包含一个前向指针, 并包含至少一个, 可能多个后向指针, 具体取决于该节点究竟同时在多少层.</p>
+<ol>
+<li>最底层即<code>L0</code>层, 包含所有的元素</li>
+<li>次底层即<code>L1</code>层, 每个元素有<code>50%</code>的机会进入这一层</li>
+<li>第三层即<code>L2</code>层, 每个元素有<code>25%</code>的机会进入这一层</li>
+<li>以此类推, 最多有32层.</li>
+</ol>
+<p>显然, 最底层是一个<strong>双向链表</strong>, 而上层则不然.</p>
+<p>每次的搜索过程从<strong>现存的</strong>最高层开始, 向下逐级搜索.</p>
+<p>由于所有节点的晋升依赖于概率, 无需维持各层之间的数量约束关系, 因此插入效率比平衡树类型的索引要高.</p>
+<p>而查找的平均时间复杂度是O(logn), 与平衡树类型相当.</p>
+<p>查询元素名次, 通过分数反查元素范围等, 因为要使用<code>skiplist</code>, 所以时间复杂度为<code>O(logn+M)</code>, <code>M</code>是要返回的元素的个数.</p>
+<hr>
+<h3 id="Redis淘汰策略"><a href="#Redis淘汰策略" class="headerlink" title="Redis淘汰策略"></a>Redis淘汰策略</h3><p>六种淘汰机制, 使用<code>maxmemory-policy</code>设置项进行设置</p>
+<table>
+<thead>
+<tr>
+<th>maxmemory-policy</th>
+<th>执行策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>noeviction</code></td>
+<td>不进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-lru</code></td>
+<td>对<strong>所有</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-random</code></td>
+<td>对<strong>所有</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-lru</code></td>
+<td>对<strong>易失</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-random</code></td>
+<td>对<strong>易失</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-ttl</code></td>
+<td>对<strong>易失</strong><code>key</code>按照生存时间最少进行淘汰</td>
+</tr>
+</tbody></table>
+<p>注:</p>
+<ol>
+<li><code>LRU</code>(Least Recently Used) 最近最少使用</li>
+<li><code>TTL</code>(Time To Live) 生存时间</li>
+<li><code>volatile</code>: 设置了超时的<code>key</code>被视为<code>volatile</code>, 即<strong>易失的</strong></li>
+</ol>
+<hr>
+<h3 id="Redis-持久化机制"><a href="#Redis-持久化机制" class="headerlink" title="Redis 持久化机制"></a>Redis 持久化机制</h3><ol>
+<li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
+<li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
+</ol>
+<p>RDB的优势在于:</p>
+<ol>
+<li>只包含一个文件, 方便备份.</li>
+<li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
+<li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
+<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行保存工作, 父进程无需执行任何<code>IO</code>.</li>
+</ol>
+<p>RDB的劣势在于:</p>
+<ol>
+<li>保存一份<code>RDB</code>总是要间隔一段时间, 例如<code>5</code>分钟, 如果发生故障, 这段时间的数据会被丢失.</li>
+<li>当数据集非常大的时候, <code>fork</code>过程可能非常耗时, 会在一段时间(<code>n</code>毫秒到<code>1</code>秒)内停止处理客户端请求.</li>
+</ol>
+<p>AOF的优势在于:</p>
+<ol>
+<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔1秒钟), 这样在故障时丢失数据量更少.</li>
+<li>如果<code>AOF</code>文件过大, Redis可以对其进行重写, 仅包含恢复当前数据集所需的最小命令集合.</li>
+<li>有序地保存了所有写入操作, 且非常容易被人读懂, 因此更容易对其进行分析.</li>
+</ol>
+<p>AOF的劣势在于:</p>
+<ol>
+<li>对于相同数据集的备份, AOF文件的体积通常要大于<code>RDB</code>文件.</li>
+<li>根据使用的<code>fsync</code>策略, Redis在使用<code>AOF</code>备份的速度可能慢于使用<code>RDB</code>的速度.</li>
+</ol>
+<p>默认的备份方式是<code>RDB</code>方式.</p>
+<hr>
+<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
+<p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
+<hr>
+<h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
+<p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
+<p>为了确保在程序出错时, 锁一定被释放, 还应该为其设置超时时间, 并且, 抢锁和设置超时需要为原子操作.</p>
+<p>在<code>redis2.8</code>版本之后, 可以使用<code>set</code>指令的<strong>拓展参数</strong>实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set lock true ex 5 nx</span><br></pre></td></tr></table></figure>
+
+<p>当然, 在正常情况下, 我们通过<code>del lock</code>来释放锁, 因此超时时间不应过低, 同时任务执行预期时间不应过长.</p>
+<hr>
+<h3 id="Redis为什么设计为单线程"><a href="#Redis为什么设计为单线程" class="headerlink" title="Redis为什么设计为单线程?"></a>Redis为什么设计为单线程?</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
+<p>因此, 只有在有必要进行<strong>多任务</strong>而不是增加效率的情况下, 才会启动多个线程.</p>
+<p>如果想利用多核, 可以启动多个Redis实例. </p>
+<hr>
+<p>参考:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Mysql基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/25/Mysql基础/" itemprop="url">MySQL相关</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T11:59:21+08:00">
+                2019-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h3><ol>
+<li>B-Tree型</li>
+<li>哈希索引</li>
+<li>空间索引</li>
+<li>全文索引</li>
+</ol>
+<p>对于小型表, 适合全表扫描<br>对于中大型表, 使用索引最有效<br>对于超大型表, 使用分区技术合适</p>
+<h4 id="B-Tree型索引"><a href="#B-Tree型索引" class="headerlink" title="B-Tree型索引"></a>B-Tree型索引</h4>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/关系型数据库基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/25/关系型数据库基础/" itemprop="url">关系型数据库系统基础</a></h1>
         
 
         <div class="post-meta">
@@ -684,8 +1185,7 @@
 
       
         
-          
-            <h3 id="事务及其ACID特性"><a href="#事务及其ACID特性" class="headerlink" title="事务及其ACID特性"></a>事务及其ACID特性</h3><p>事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成.</p>
+          <h3 id="事务及其ACID特性"><a href="#事务及其ACID特性" class="headerlink" title="事务及其ACID特性"></a>事务及其ACID特性</h3><p>事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成.</p>
 <p>ACID特性:</p>
 <ul>
 <li>原子性(<code>Atomicity</code>): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行.</li>
@@ -693,116 +1193,13 @@
 <li>隔离性(<code>Isolution</code>): 多个事务并发执行时, 一个事务的执行不应影响其他事务的执行.</li>
 <li>持久性(<code>Durability</code>): 已被提交的事务对数据库的修改应当永远保存在数据库中.</li>
 </ul>
-<hr>
-<h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><p><strong>事务</strong>是并发控制的基本单位, 数据库需要保证事务的隔离性和一致性.</p>
-<p>数据不一致包括:</p>
-<ol>
-<li>丢失修改(<code>lost update</code>): </li>
-<li>脏数据(<code>dirty read</code>): 在某事务未完成之时, 其读取的数据被另一事务的撤销操作所修改, 数据不一致.</li>
-<li>不可重复读(<code>non-repeatable read</code>): 同一事务中第二次读时数据被修改 </li>
-<li>幻读(<code>Phantom read</code>): 同一事务两次读获得的记录不同(数据条目的增加或减少)</li>
-</ol>
-<p>数据不一致的主要原因是并发操作破坏了事务的<strong>隔离性</strong></p>
-<p>事务的隔离级别:</p>
-<ol>
-<li>读未提交(<code>Read uncommitted</code>): 事务可以读取到其他事务未提交的数据, 这一级别可能引起脏数据</li>
-<li>读提交(<code>Read committed</code>): 事务仅可读取到其他事务已提交的数据. 这一级别解决了脏数据问题</li>
-<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了可重复度问题</li>
-<li>可串行化(<code>Serializable</code>): 所有事务的执行结果可以等价为按照某个次序<strong>串行</strong>执行, 这一级别解决了幻读问题.</li>
-</ol>
-<p>隔离级别的达成是结果. </p>
-<table>
-<thead>
-<tr>
-<th>隔离级别</th>
-<th>脏读</th>
-<th>不可重复度</th>
-<th>幻读</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>读未提交</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>读已提交</td>
-<td>×</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>可重复读</td>
-<td>×</td>
-<td>×</td>
-<td>√</td>
-</tr>
-<tr>
-<td>可串行化</td>
-<td>×</td>
-<td>×</td>
-<td>×</td>
-</tr>
-</tbody></table>
-<p>并发控制就是要用正确的方式调度并发操作, 使一个用户事务的执行不受其他事务的干扰.</p>
-<p>并发控制的主要技术有:</p>
-<ol>
-<li>封锁(<code>locking</code>)</li>
-<li>时间戳(<code>timestamp</code>)</li>
-<li>乐观控制法(<code>optimistic</code>)</li>
-<li>多版本并发控制(<code>multi-version concurrency control, MVCC</code>)</li>
-</ol>
-<hr>
-<h3 id="封锁"><a href="#封锁" class="headerlink" title="封锁"></a>封锁</h3><h4 id="封锁类型"><a href="#封锁类型" class="headerlink" title="封锁类型"></a>封锁类型</h4><p>基本的封锁类型有两种:</p>
-<ol>
-<li>排他锁(exclusive locks, 简称<code>X</code>锁), 又称<strong>写锁</strong></li>
-<li>共享锁(share locks, 简称<code>S</code>锁), 又称<strong>读锁</strong></li>
-</ol>
-<p>如果某事务T对数据对象A加上<code>X</code>锁, 则只允许T事务读取和修改A, 其他任何事务不能再对A加任何类型的锁, 直至T释放A上的锁. 如果某事务T对数据对象A加上<code>S</code>锁, 则事务T可以读取A, 但不能修改A, 其他事务可以继续对A加<code>S</code>锁, 但不能加<code>X</code>锁, 直至T释放A上的S锁为止.</p>
-<p>即: 数据加了X锁后, 不可再加任何锁. 数据加了S锁之后, 只允许再加S锁.</p>
-<hr>
-<h4 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h4><p>封锁协议是对事务对象加锁时约定的规则, 包括加锁时机, 加锁类型, 和持锁时间:</p>
-<ol>
-<li>一级封锁协议: 修改前加<code>X</code>锁, 整个事务结束后释放<code>X</code>锁. </li>
-<li>二级封锁协议: 在一级封锁的基础上, 读时加S锁, <strong>读操作</strong>结束后释放<code>S</code>锁. </li>
-<li>三级封锁协议: 在一级封锁的基础上, 读时加S锁, <strong>整个事务</strong>结束后释放<code>S</code>锁 </li>
-</ol>
-<p>三级封锁协议并不能解决幻读的问题, 因为只能保证已存的记录不会在读事务的过程中被修改或删除, 但无法保证不新增记录. MySQL解决幻读的方式是<strong>间隙锁</strong>.</p>
-<hr>
-<h4 id="两段锁"><a href="#两段锁" class="headerlink" title="两段锁"></a>两段锁</h4><p>两段锁协议则限制了加锁解锁顺序, 所有事务必须分两个阶段对数据项加锁和解锁: </p>
-<ol>
-<li>扩展阶段: 对任何数据进行读写之前, 首先要获得对该数据的封锁. </li>
-<li>收缩阶段: 在释放一个封锁之后, 事务不再申请和获得任何其他封锁.</li>
-</ol>
-<p>遵守两段锁协议是达成可串行化调度的充分条件, 但非必要条件.</p>
-<hr>
-<h4 id="封锁粒度"><a href="#封锁粒度" class="headerlink" title="封锁粒度"></a>封锁粒度</h4><p>封锁对象的大小称为<strong>封锁粒度</strong>(<code>granularity</code>), 封锁对象可以是<strong>逻辑单元</strong>和<strong>物理单元</strong>.</p>
-<p>逻辑单元包括:</p>
-<ul>
-<li>属性值</li>
-<li>属性值的集合</li>
-<li>元组</li>
-<li>关系</li>
-<li>索引项</li>
-<li>整个索引</li>
-<li>整个数据库</li>
-</ul>
-<p>物理单元包括:</p>
-<ul>
-<li>页(数据页 &amp; 索引页)</li>
-<li>物理记录</li>
-</ul>
-<p>封锁粒度与系统的并发度和并发控制的开销密切相关. </p>
-<p>一个理想的数据库系统应当同时支持多种封锁粒度以供不同的事务使用, 即<strong>多粒度封锁</strong>(<code>multiple granularity locking</code>).</p>
-<p>在多粒度封锁中一个数据对象的封锁方式:</p>
-<ol>
-<li>显式封锁: 应事务的要求, 直接为数据对象加锁</li>
-<li>隐式封锁: 对数据对象的上级节点加锁, 而使该数据对象也被封锁. 例如加了表锁后, 表中所有行都被加了行锁.</li>
-</ol>
-<p>为了快速检出隐式封锁, </p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/25/关系型数据库基础/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1346,135 +1743,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/" itemprop="url">神吧人员清单(技术无关)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2011-07-31T00:00:00+08:00">
-                2011-07-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>别看你▧▧▧▧▧, 小心啊▧▧▧▧▧!</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1520,7 +1793,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1533,7 +1806,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -1592,6 +1865,14 @@
 
 
 
+
+
+  <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
 
         
 <div class="busuanzi-count">

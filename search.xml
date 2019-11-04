@@ -1470,93 +1470,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11. 序列化器 Validator</title>
-    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
-    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
-<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
-<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
-<a id="more"></a>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
-
-<p>运行 python manage.py shell</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
-<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset：划定唯一约束的范围</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
-</ol>
-<p>示例代码:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset: 用于验证的查询集</li>
-<li>fields: 联合唯一约束的字段列表</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
-<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
-<p>实例化时的参数</p>
-<ol>
-<li>queryset： 用于验证的查询集</li>
-<li>field： 字段名, 必须为序列化器中的字段</li>
-<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
-<li>message:可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
-<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
-<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
-<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
-
-<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
-<hr>
-<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
-<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
-<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
-<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
-<hr>
-<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
-<hr>
-<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
-<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
-<hr>
-<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
-
-<p>使用<code>set_context()</code></p>
-<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>django-rest-framework中文文档</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>10.2 序列化器字段:关系字段 Serializer Field</title>
     <url>/2019/10/03/10.2%20%E5%BA%8F%E5%88%97%E5%8C%96%E5%99%A8%E5%AD%97%E6%AE%B5-%E5%85%B3%E7%B3%BB%E5%AD%97%E6%AE%B5/</url>
     <content><![CDATA[<p>关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段.</p>
@@ -1704,6 +1617,93 @@
 <p>如果要声明一个指向使用了中间模型的<code>ManyToManyField</code>字段的序列化器关系字段, 确保设置<code>read_only=True</code>.</p>
 <p>如果想序列化包含在中间模型的额外字段的序列化结果, 可以将中间模型作为<a href="https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects" target="_blank" rel="noopener">嵌套对象</a>进行序列化. </p>
 ]]></content>
+      <tags>
+        <tag>django-rest-framework中文文档</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11. 序列化器 Validator</title>
+    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
+    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
+<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
+<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
+
+<p>运行 python manage.py shell</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset：划定唯一约束的范围</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset: 用于验证的查询集</li>
+<li>fields: 联合唯一约束的字段列表</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
+<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
+<p>实例化时的参数</p>
+<ol>
+<li>queryset： 用于验证的查询集</li>
+<li>field： 字段名, 必须为序列化器中的字段</li>
+<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
+<li>message:可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
+<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
+<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
+<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
+<hr>
+<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
+<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
+<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
+<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
+<hr>
+<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
+<hr>
+<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
+<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
+<hr>
+<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>set_context()</code></p>
+<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>django-rest-framework中文文档</tag>
       </tags>
@@ -3271,8 +3271,27 @@
     <content><![CDATA[<p>暂时未搬运.</p>
 ]]></content>
       <tags>
-        <tag>SQL</tag>
         <tag>数据库</tag>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DRF为同一ViewSet的不同action执行不同限流</title>
+    <url>/2019/07/20/DRF%E4%B8%BA%E4%B8%8D%E5%90%8C%E7%9A%84action%E6%89%A7%E8%A1%8C%E4%B8%8D%E5%90%8C%E7%9A%84%E9%99%90%E6%B5%81/</url>
+    <content><![CDATA[<p>首先, 重写<code>get_throttles()</code>方法</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooViewSet</span><span class="params">(viewsets.ModelViewSet)</span>:</span></span><br><span class="line">    queryset = Foo.objects.all()</span><br><span class="line">    serializer_class = FooSerializer</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_throttles</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> self.action <span class="keyword">in</span> [<span class="string">'delete'</span>, <span class="string">'validate'</span>]:</span><br><span class="line">            self.throttle_scope = <span class="string">'foo.'</span> + self.action</span><br><span class="line">        <span class="keyword">return</span> super().get_throttles()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @action(detail=False)</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> Response(<span class="string">'Validation!'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在某个请求检查限流时, 更改其View实例的<code>throttle_scope</code>属性.</p>
+<p>并在<code>settings</code>中为其<code>throttle_scope</code>单独指定限流频率:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line">    <span class="string">'DEFAULT_THROTTLE_CLASSES'</span>: (</span><br><span class="line">        <span class="string">'rest_framework.throttling.UserRateThrottle'</span>,</span><br><span class="line">        <span class="string">'rest_framework.throttling.ScopedRateThrottle'</span>,</span><br><span class="line">    ),</span><br><span class="line">    <span class="string">'DEFAULT_THROTTLE_RATES'</span>: &#123;</span><br><span class="line">        <span class="string">'user'</span>: <span class="string">'5000/day'</span>,</span><br><span class="line">        <span class="string">'foo.delete'</span>: <span class="string">'100/day'</span>,</span><br><span class="line">        <span class="string">'foo.validate'</span>: <span class="string">'10000/day'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于View在每次处理请求时都被重新实例化, 因此并不会影响到其他请求的执行.</p>
+<p>参考:</p>
+<p><a href="https://www.pedaldrivenprogramming.com/2017/05/throttling-django-rest-framwork-viewsets/" target="_blank" rel="noopener">Throttling Specific Actions in Django Rest Framework Viewsets</a></p>
+]]></content>
+      <tags>
+        <tag>Django</tag>
+        <tag>DRF</tag>
       </tags>
   </entry>
   <entry>
@@ -3545,8 +3564,8 @@
 </ol>
 ]]></content>
       <tags>
-        <tag>前端安全</tag>
         <tag>XSS</tag>
+        <tag>前端安全</tag>
       </tags>
   </entry>
   <entry>
@@ -3615,8 +3634,8 @@
 <p><a href="http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html" target="_blank" rel="noopener">Cookie 的 SameSite 属性</a><br><a href="https://vsupalov.com/avoid-csrf-errors-axios-django/" target="_blank" rel="noopener">How to avoid CSRF errors with axios and Django?</a><br><a href="https://stackoverflow.com/questions/39254562/csrf-with-django-reactredux-using-axios" target="_blank" rel="noopener">CSRF with Django, React+Redux using Axios</a></p>
 ]]></content>
       <tags>
-        <tag>CSRF</tag>
         <tag>前端安全</tag>
+        <tag>CSRF</tag>
       </tags>
   </entry>
   <entry>
@@ -3678,48 +3697,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基础算法, Python描述</title>
     <url>/2019/06/01/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
@@ -3766,6 +3743,48 @@
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4541,8 +4560,167 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis基础</title>
+    <url>/2019/01/25/Redis%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h3 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h3><p><code>Redis</code>的键为字符串, 而值有5种基本数据类型:</p>
+<ol>
+<li>字符串(<code>String</code>)</li>
+<li>列表(<code>List</code>)</li>
+<li>字典(<code>Hash</code>)</li>
+<li>集合(<code>Set</code>)</li>
+<li>有序集合(<code>Sorted Set</code>)</li>
+</ol>
+<hr>
+<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>Redis</code>字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配.</p>
+<p>当字符串长度小于<code>1M</code>时, 扩容都是加倍现有的空间, 如果超过<code>1M</code>, 扩容时一次只会多扩1M的空间.</p>
+<p>需要注意的是字符串最大长度为<code>512M</code>.</p>
+<p>另外, 字符串的索引从<code>0</code>开始。</p>
+<hr>
+<h4 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h4><p><code>Redis</code>的列表为双向链表, 首尾插入和删除较快, 而定位操作慢.</p>
+<p>数据较少时, 使用连续内存存储, 这个结构是<code>ziplist</code>, 数据较多时, 使用多个链接起来的ziplist组成的quicklist.</p>
+<p>使用列表可以方便地实现队列或者栈.</p>
+<hr>
+<h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
+<p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
+<hr>
+<h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
+<p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
+<p>因此, <code>rehash</code>动作并不是一次性、集中式地完成, 而是<strong>分多次</strong>、<strong>渐进式</strong>地完成的.</p>
+<hr>
+<h4 id="集合-set"><a href="#集合-set" class="headerlink" title="集合(set)"></a>集合(set)</h4><p>一个值为<code>null</code>的字典.</p>
+<hr>
+<h4 id="有序集合-zset"><a href="#有序集合-zset" class="headerlink" title="有序集合(zset)"></a>有序集合(zset)</h4><p>每个元素都关联一个double类型的分数, redis通过分数进行集合成员的排序</p>
+<p>元素与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
+<p>查询某个元素的score, 直接通过dict查询, 时间复杂度为O(1)</p>
+<hr>
+<h5 id="跳跃列表-skiplist"><a href="#跳跃列表-skiplist" class="headerlink" title="跳跃列表(skiplist)"></a>跳跃列表(skiplist)</h5><p>zset内部排序功能是通过<strong>跳跃列表</strong>实现, </p>
+<p>跳跃列表本质上是一种查找结构, 用于解决查找问题.</p>
+<p>具体的实现是一个多层链表, 分为不同的层级, 相同层级的元素都使用指针进行连接.</p>
+<p>因此某些节点同时归属于不同层级, 该节点也就包含多个后向指针.</p>
+<p>每个节点至少包含一个前向指针, 并包含至少一个, 可能多个后向指针, 具体取决于该节点究竟同时在多少层.</p>
+<ol>
+<li>最底层即<code>L0</code>层, 包含所有的元素</li>
+<li>次底层即<code>L1</code>层, 每个元素有<code>50%</code>的机会进入这一层</li>
+<li>第三层即<code>L2</code>层, 每个元素有<code>25%</code>的机会进入这一层</li>
+<li>以此类推, 最多有32层.</li>
+</ol>
+<p>显然, 最底层是一个<strong>双向链表</strong>, 而上层则不然.</p>
+<p>每次的搜索过程从<strong>现存的</strong>最高层开始, 向下逐级搜索.</p>
+<p>由于所有节点的晋升依赖于概率, 无需维持各层之间的数量约束关系, 因此插入效率比平衡树类型的索引要高.</p>
+<p>而查找的平均时间复杂度是O(logn), 与平衡树类型相当.</p>
+<p>查询元素名次, 通过分数反查元素范围等, 因为要使用<code>skiplist</code>, 所以时间复杂度为<code>O(logn+M)</code>, <code>M</code>是要返回的元素的个数.</p>
+<hr>
+<h3 id="Redis淘汰策略"><a href="#Redis淘汰策略" class="headerlink" title="Redis淘汰策略"></a>Redis淘汰策略</h3><p>六种淘汰机制, 使用<code>maxmemory-policy</code>设置项进行设置</p>
+<table>
+<thead>
+<tr>
+<th>maxmemory-policy</th>
+<th>执行策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>noeviction</code></td>
+<td>不进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-lru</code></td>
+<td>对<strong>所有</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-random</code></td>
+<td>对<strong>所有</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-lru</code></td>
+<td>对<strong>易失</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-random</code></td>
+<td>对<strong>易失</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-ttl</code></td>
+<td>对<strong>易失</strong><code>key</code>按照生存时间最少进行淘汰</td>
+</tr>
+</tbody></table>
+<p>注:</p>
+<ol>
+<li><code>LRU</code>(Least Recently Used) 最近最少使用</li>
+<li><code>TTL</code>(Time To Live) 生存时间</li>
+<li><code>volatile</code>: 设置了超时的<code>key</code>被视为<code>volatile</code>, 即<strong>易失的</strong></li>
+</ol>
+<hr>
+<h3 id="Redis-持久化机制"><a href="#Redis-持久化机制" class="headerlink" title="Redis 持久化机制"></a>Redis 持久化机制</h3><ol>
+<li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
+<li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
+</ol>
+<p>RDB的优势在于:</p>
+<ol>
+<li>只包含一个文件, 方便备份.</li>
+<li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
+<li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
+<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行保存工作, 父进程无需执行任何<code>IO</code>.</li>
+</ol>
+<p>RDB的劣势在于:</p>
+<ol>
+<li>保存一份<code>RDB</code>总是要间隔一段时间, 例如<code>5</code>分钟, 如果发生故障, 这段时间的数据会被丢失.</li>
+<li>当数据集非常大的时候, <code>fork</code>过程可能非常耗时, 会在一段时间(<code>n</code>毫秒到<code>1</code>秒)内停止处理客户端请求.</li>
+</ol>
+<p>AOF的优势在于:</p>
+<ol>
+<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔1秒钟), 这样在故障时丢失数据量更少.</li>
+<li>如果<code>AOF</code>文件过大, Redis可以对其进行重写, 仅包含恢复当前数据集所需的最小命令集合.</li>
+<li>有序地保存了所有写入操作, 且非常容易被人读懂, 因此更容易对其进行分析.</li>
+</ol>
+<p>AOF的劣势在于:</p>
+<ol>
+<li>对于相同数据集的备份, AOF文件的体积通常要大于<code>RDB</code>文件.</li>
+<li>根据使用的<code>fsync</code>策略, Redis在使用<code>AOF</code>备份的速度可能慢于使用<code>RDB</code>的速度.</li>
+</ol>
+<p>默认的备份方式是<code>RDB</code>方式.</p>
+<hr>
+<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
+<p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
+<hr>
+<h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
+<p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
+<p>为了确保在程序出错时, 锁一定被释放, 还应该为其设置超时时间, 并且, 抢锁和设置超时需要为原子操作.</p>
+<p>在<code>redis2.8</code>版本之后, 可以使用<code>set</code>指令的<strong>拓展参数</strong>实现:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">set lock true ex 5 nx</span><br></pre></td></tr></table></figure>
+
+<p>当然, 在正常情况下, 我们通过<code>del lock</code>来释放锁, 因此超时时间不应过低, 同时任务执行预期时间不应过长.</p>
+<hr>
+<h3 id="Redis为什么设计为单线程"><a href="#Redis为什么设计为单线程" class="headerlink" title="Redis为什么设计为单线程?"></a>Redis为什么设计为单线程?</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
+<p>因此, 只有在有必要进行<strong>多任务</strong>而不是增加效率的情况下, 才会启动多个线程.</p>
+<p>如果想利用多核, 可以启动多个Redis实例. </p>
+<hr>
+<p>参考:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
+]]></content>
+      <tags>
+        <tag>数据库</tag>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL相关</title>
+    <url>/2019/01/25/Mysql%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h3 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h3><ol>
+<li>B-Tree型</li>
+<li>哈希索引</li>
+<li>空间索引</li>
+<li>全文索引</li>
+</ol>
+<p>对于小型表, 适合全表扫描<br>对于中大型表, 使用索引最有效<br>对于超大型表, 使用分区技术合适</p>
+<h4 id="B-Tree型索引"><a href="#B-Tree型索引" class="headerlink" title="B-Tree型索引"></a>B-Tree型索引</h4>]]></content>
+      <tags>
+        <tag>数据库</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关系型数据库系统基础</title>
-    <url>/2019/01/25/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL/</url>
+    <url>/2019/01/25/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h3 id="事务及其ACID特性"><a href="#事务及其ACID特性" class="headerlink" title="事务及其ACID特性"></a>事务及其ACID特性</h3><p>事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成.</p>
 <p>ACID特性:</p>
 <ul>
@@ -4551,6 +4729,8 @@
 <li>隔离性(<code>Isolution</code>): 多个事务并发执行时, 一个事务的执行不应影响其他事务的执行.</li>
 <li>持久性(<code>Durability</code>): 已被提交的事务对数据库的修改应当永远保存在数据库中.</li>
 </ul>
+<a id="more"></a>
+
 <hr>
 <h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><p><strong>事务</strong>是并发控制的基本单位, 数据库需要保证事务的隔离性和一致性.</p>
 <p>数据不一致包括:</p>
@@ -4558,7 +4738,7 @@
 <li>丢失修改(<code>lost update</code>): </li>
 <li>脏数据(<code>dirty read</code>): 在某事务未完成之时, 其读取的数据被另一事务的撤销操作所修改, 数据不一致.</li>
 <li>不可重复读(<code>non-repeatable read</code>): 同一事务中第二次读时数据被修改 </li>
-<li>幻读(<code>Phantom read</code>): 同一事务两次读获得的记录不同(数据条目的增加或减少)</li>
+<li>幻读(<code>phantom read</code>): 同一事务两次读获得的记录不同(数据条目的增加或减少)</li>
 </ol>
 <p>数据不一致的主要原因是并发操作破坏了事务的<strong>隔离性</strong></p>
 <p>事务的隔离级别:</p>
@@ -4658,7 +4838,168 @@
 <li>显式封锁: 应事务的要求, 直接为数据对象加锁</li>
 <li>隐式封锁: 对数据对象的上级节点加锁, 而使该数据对象也被封锁. 例如加了表锁后, 表中所有行都被加了行锁.</li>
 </ol>
-<p>为了快速检出隐式封锁, </p>
+<p>由于隐式封锁的存在, 在尝试为某个数据对象R加锁时, 首先检查显式封锁冲突, 然后检查隐式封锁冲突, 包括:</p>
+<ol>
+<li>R的上级节点</li>
+<li>R的所有下级节点</li>
+</ol>
+<p>为了快速检出隐式封锁冲突, 引进了<strong>意向锁</strong>, 在对任一节点加锁时, 必须<strong>先</strong>对其上级节点加意向锁, 类型包括:</p>
+<ol>
+<li>意向共享锁(Intent Share Lock, IS锁)</li>
+<li>意向排他锁(Intent Exclusive Lock, IX锁)</li>
+<li>共享意向排他锁(Share Intent Exclusive Lock, SIX锁)</li>
+</ol>
+<p>对数据对象加<code>IS</code>锁意味着拟向其后裔节点加S锁<br>对数据对象</p>
+<table>
+<thead>
+<tr>
+<th>意向锁类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>意向共享锁(<code>Intent Share Lock</code>, <code>IS</code>锁)</td>
+<td>拟向其后裔节点加<code>S</code>锁</td>
+</tr>
+<tr>
+<td>意向排他锁(<code>Intent Exclusive Lock</code>, <code>IX</code>锁)</td>
+<td>拟向其后裔节点加<code>X</code>锁</td>
+</tr>
+<tr>
+<td>共享意向排他锁(<code>Share Intent Exclusive Lock</code>, <code>SIX</code>锁)</td>
+<td>为该节点加<code>S</code>锁, 再加<code>IX</code>锁</td>
+</tr>
+</tbody></table>
+<p>锁强度偏序关系:</p>
+<pre class="mermaid">graph TD;
+X-->SIX;
+SIX-->S;
+SIX-->IX;
+S-->IS;
+IX-->IS;</pre>
+<p>在申请一个锁的时候, 使用强度更高的锁代替弱锁是安全的, 反之则不然.</p>
+<p>锁相容矩阵:</p>
+<table>
+<thead>
+<tr>
+<th>事务T1/事务T2</th>
+<th>S</th>
+<th>X</th>
+<th>IS</th>
+<th>IX</th>
+<th>SIX</th>
+<th>-</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S</td>
+<td>√</td>
+<td><code>×</code></td>
+<td>√</td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td>√</td>
+</tr>
+<tr>
+<td>X</td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td>√</td>
+</tr>
+<tr>
+<td>IS</td>
+<td>√</td>
+<td><code>×</code></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>IX</td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td>√</td>
+<td>√</td>
+<td><code>×</code></td>
+<td>√</td>
+</tr>
+<tr>
+<td>SIX</td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td>√</td>
+<td><code>×</code></td>
+<td><code>×</code></td>
+<td>√</td>
+</tr>
+<tr>
+<td>-</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+</tbody></table>
+<p>引入了意向锁之后, 只要意向锁和显式封锁不出现冲突, 则不会出现冲突.</p>
+<hr>
+<h3 id="其他并发控制机制"><a href="#其他并发控制机制" class="headerlink" title="其他并发控制机制"></a>其他并发控制机制</h3><ol>
+<li>时间戳：每个事务加上时间戳, 按照时间戳来解决事务的冲突操作</li>
+<li>乐观控制法：自由执行, 仅在提交时进行正确性检查, 如果发现发生过冲突影响了可串行性, 则回滚事务.</li>
+<li>多版本并发控制：多个快照, 事务在不同副本中执行. 解决了写/读不可同时进行的冲突, 提高了效率, 但会出现大量无效版本. </li>
+<li>改进的多版本并发控制：只读事务采用多版本时间戳, 更新事务采用二段锁协议(<code>2PL</code>), 这样的混合协议称之为<code>MV2PL</code>.</li>
+</ol>
+<hr>
+<h3 id="分布式数据库系统"><a href="#分布式数据库系统" class="headerlink" title="分布式数据库系统"></a>分布式数据库系统</h3><h4 id="基本特性"><a href="#基本特性" class="headerlink" title="基本特性"></a>基本特性</h4><ol>
+<li>物理分布性</li>
+<li>逻辑整体性</li>
+<li>站点自洽性</li>
+</ol>
+<p>由此引申出的其他特点包括:</p>
+<ol>
+<li>数据分布透明性</li>
+<li>按既定协议达成共识的机制</li>
+<li>适当的数据冗余度</li>
+<li>事务管理的分布性</li>
+</ol>
+<hr>
+<h4 id="CAP理论"><a href="#CAP理论" class="headerlink" title="CAP理论"></a>CAP理论</h4><p>在一个分布式系统中, 以下三者不可兼得, 满足其中任意两项会损害第三项:</p>
+<ul>
+<li>数据一致性(<code>Consistency</code>)</li>
+<li>系统可用性(<code>Availablity</code>)</li>
+<li>分区容错性(<code>Parition tolerance</code>)</li>
+</ul>
+<p>需要明确的是, 分区容错性是必须被满足的.</p>
+<hr>
+<h5 id="数据一致性"><a href="#数据一致性" class="headerlink" title="数据一致性"></a>数据一致性</h5><p>数据在多个副本之间是否能保持一致的特性. 多个副本存在于不同节点时, 如果对其进行更新后, 所有用户都可以获得最新值, 则可以称为具有<strong>强一致性</strong>.</p>
+<hr>
+<h5 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h5><p>系统服务必须一直处于可用的状态, 对于用户的每个操作请求必须在<strong>有限时间</strong>内成功<strong>返回结果</strong>. </p>
+<hr>
+<h5 id="分区容错性"><a href="#分区容错性" class="headerlink" title="分区容错性"></a>分区容错性</h5><p>在某个分区出现故障之后, 其中的数据仍然可用. 这要求必须将数据副本保存在多个节点中, 以在某个分区出错时仍然能提供正常服务.</p>
+<hr>
+<h3 id="数据库设计三大范式"><a href="#数据库设计三大范式" class="headerlink" title="数据库设计三大范式"></a>数据库设计三大范式</h3><ol>
+<li>1NF: 所有字段值都是不可分解的原子值</li>
+<li>2NF: 有主键, 且所有列依赖于主键而非主键的一部分, 即主键无冗余</li>
+<li>3NF: 任意列<strong>只依赖</strong>于主键, 不存在传递依赖</li>
+</ol>
+<hr>
+<h3 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h3><p>存储过程(<code>Stored Procedure</code>)是一连串封装的SQL语句集, 可以视为数据库系统的<strong>函数</strong>或子程序.</p>
+<p>这些SQL语句集经编译创建并保存在数据库中, 用户可通过指定存储过程的名字并给定参数(需要时)来调用执行.</p>
+<p>优点:</p>
+<ol>
+<li>可以使用控制流编写, 可以完成复杂的判断和运算, 增强了SQL语言的功能和灵活性.</li>
+<li>能够实现较快的执行速度, 因为存储过程是预编译的, 不必每次都进行SQL的编译和优化.</li>
+<li>直接调用存储过程名, 就可以执行存储在数据库中的存储过程, 减少传输的网络负载.</li>
+<li>可以封装复杂的逻辑, 简化编写SQL的过程.</li>
+</ol>
+<hr>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>参考:</p>
+<p><a href="https://www.zhihu.com/question/54105974" target="_blank" rel="noopener">知乎: CAP</a></p>
 ]]></content>
       <tags>
         <tag>数据库</tag>
