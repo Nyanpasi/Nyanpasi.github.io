@@ -504,6 +504,7 @@ code {
   background: rgba(255,192,203,0.1);
   border-radius: 3px;
   font-size: 13px;
+  font-size: 0.9em;
 }
 pre {
   padding: 10px;
@@ -1824,7 +1825,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #5bf9ab;
+  background: #ffe388;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2911,6 +2912,7 @@ hr {
 }
 strong {
   font-size: 0.96em;
+  font-family: "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif !important;
 }
 p {
   font-family: Menlo, "Ubuntu Mono", Consolas, "Courier New", "Microsoft Yahei", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif !important;

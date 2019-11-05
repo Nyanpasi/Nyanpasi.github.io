@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="以Next主题为例, 只提供了五种代码高亮样式, 在都不满足需要的情况下, 可能需要进行自定义. 因为Next并没有提供接口, 所以需要直接修改相关css代码.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-14T17:28:11.361Z">
+<meta property="og:updated_time" content="2019-11-04T16:30:02.292Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo自定义代码高亮">
 <meta name="twitter:description" content="以Next主题为例, 只提供了五种代码高亮样式, 在都不满足需要的情况下, 可能需要进行自定义. 因为Next并没有提供接口, 所以需要直接修改相关css代码.">
@@ -378,10 +378,10 @@
 <hr>
 <h3 id="行内代码"><a href="#行内代码" class="headerlink" title="行内代码"></a>行内代码</h3><p>被一对反引号标记的行内代码, 默认情况下是灰色背景, 文本颜色不变, 如果需要修改, 则找到<code>&lt;code&gt;</code>选择器部分:</p>
 <p>行内代码高亮的css部分定义在<code>next/source.css/_common/component/highlight/highlight.styl</code>中.</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: $code-foreground;</span><br><span class="line">  <span class="attribute">background</span>: $code-background;</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  font-size $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: $code-foreground;</span><br><span class="line">  <span class="attribute">background</span>: $code-background;</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  <span class="attribute">font-size</span>: $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>例如更改行内代码样式为红色文本, 淡红色背景, 则重设<code>color</code>和<code>background</code>属性:</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">rgba</span>(255,192,203, 0.1);</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  font-size $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">code</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">word-wrap</span>: break-word;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">rgba</span>(255,192,203, 0.1);</span><br><span class="line">  <span class="attribute">border-radius</span>: $code-border-radius;</span><br><span class="line">  <span class="attribute">font-size</span>: $code-font-size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>具体显示效果如本文所示.</p>
 <hr>
@@ -515,7 +515,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

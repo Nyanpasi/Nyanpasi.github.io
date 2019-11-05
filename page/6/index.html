@@ -835,14 +835,14 @@
 <h4 id="集合-set"><a href="#集合-set" class="headerlink" title="集合(set)"></a>集合(set)</h4><p>一个值为<code>null</code>的字典.</p>
 <hr>
 <h4 id="有序集合-zset"><a href="#有序集合-zset" class="headerlink" title="有序集合(zset)"></a>有序集合(zset)</h4><p>每个元素都关联一个double类型的分数, redis通过分数进行集合成员的排序</p>
-<p>元素与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
+<p>键与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
 <p>查询某个元素的score, 直接通过dict查询, 时间复杂度为O(1)</p>
 <hr>
 <h5 id="跳跃列表-skiplist"><a href="#跳跃列表-skiplist" class="headerlink" title="跳跃列表(skiplist)"></a>跳跃列表(skiplist)</h5><p>zset内部排序功能是通过<strong>跳跃列表</strong>实现, </p>
 <p>跳跃列表本质上是一种查找结构, 用于解决查找问题.</p>
 <p>具体的实现是一个多层链表, 分为不同的层级, 相同层级的元素都使用指针进行连接.</p>
 <p>因此某些节点同时归属于不同层级, 该节点也就包含多个后向指针.</p>
-<p>每个节点至少包含一个前向指针, 并包含至少一个, 可能多个后向指针, 具体取决于该节点究竟同时在多少层.</p>
+<p>每个节点至少包含一个前向指针, 并包含至少一个(可能多个)后向指针, 具体取决于该节点究竟同时在多少层.</p>
 <ol>
 <li>最底层即<code>L0</code>层, 包含所有的元素</li>
 <li>次底层即<code>L1</code>层, 每个元素有<code>50%</code>的机会进入这一层</li>
@@ -899,6 +899,7 @@
 <li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
 <li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
 </ol>
+<hr>
 <p>RDB的优势在于:</p>
 <ol>
 <li>只包含一个文件, 方便备份.</li>
@@ -911,9 +912,10 @@
 <li>保存一份<code>RDB</code>总是要间隔一段时间, 例如<code>5</code>分钟, 如果发生故障, 这段时间的数据会被丢失.</li>
 <li>当数据集非常大的时候, <code>fork</code>过程可能非常耗时, 会在一段时间(<code>n</code>毫秒到<code>1</code>秒)内停止处理客户端请求.</li>
 </ol>
+<hr>
 <p>AOF的优势在于:</p>
 <ol>
-<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔1秒钟), 这样在故障时丢失数据量更少.</li>
+<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔<code>1s</code>), 这样在故障时丢失数据量更少.</li>
 <li>如果<code>AOF</code>文件过大, Redis可以对其进行重写, 仅包含恢复当前数据集所需的最小命令集合.</li>
 <li>有序地保存了所有写入操作, 且非常容易被人读懂, 因此更容易对其进行分析.</li>
 </ol>
@@ -927,6 +929,16 @@
 <h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
 <p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
 <hr>
+<h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><p>一个包含去重功能的计数器, 去重依据是设置值时的参数.</p>
+<hr>
+<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>用以检索一个元素是否在某一个集合中, </p>
+<p>值得注意的是, 布隆过滤器的数据结构中并不保存任何数据, 只是能够判断该数据是否被传入过.</p>
+<p>因此, 实例化一个布隆过滤器, 在存储一条记录时之前先添加入布隆过滤器, 之后每次请求先检验该数据是否存在</p>
+<p>如果存在, 在走缓存-&gt;数据库的查询流程, 如果不存在, 则直接返回.</p>
+<p>布隆过滤器有一定误判几率, 某个不存在的记录可能被判定为存在, 但被布隆判为不存在的元素肯定不存在.</p>
+<p>布隆过滤器所使用空间的大小与其误判率的要求相关, 当数据越来越多后, 为了维持误判率其占用空间也会上升.</p>
+<p>布隆过滤器空间利用率很高, 当维持<code>1%</code>误判率时, 每个元素的判定所需空间约为9.6比特.</p>
+<hr>
 <h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
 <p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
 <p>为了确保在程序出错时, 锁一定被释放, 还应该为其设置超时时间, 并且, 抢锁和设置超时需要为原子操作.</p>
@@ -938,6 +950,7 @@
 <h3 id="Redis为什么设计为单线程"><a href="#Redis为什么设计为单线程" class="headerlink" title="Redis为什么设计为单线程?"></a>Redis为什么设计为单线程?</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
 <p>因此, 只有在有必要进行<strong>多任务</strong>而不是增加效率的情况下, 才会启动多个线程.</p>
 <p>如果想利用多核, 可以启动多个Redis实例. </p>
+<p>注: 这里的单线程指的是Redis进行数据操作的是单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
 <hr>
 <p>参考:</p>
 <p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
@@ -1626,7 +1639,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux基础/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/21/缓存的问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -1645,7 +1658,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/21/Linux基础/" itemprop="url">Linux基础命令</a></h1>
+                <a class="post-title-link" href="/2018/09/21/缓存的问题/" itemprop="url">缓存雪崩, 击穿, 穿透</a></h1>
         
 
         <div class="post-meta">
@@ -1657,8 +1670,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:04:17+08:00">
-                2018-05-21
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-21T11:04:17+08:00">
+                2018-09-21
               </time>
             
 
@@ -1697,18 +1710,40 @@
       
         
           
-            <ol>
-<li>重命名文件?</li>
+            <h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉.</p>
+<p>缓存雪崩的原因包括:</p>
+<ol>
+<li>大量key在同一时间超时</li>
+<li>缓存服务器宕机</li>
 </ol>
-<p>没有重命名的命令, 直接使用<code>mv filename &lt;newname&gt;</code>即可.</p>
-<ol start="2">
-<li>如何删除文件和文件夹?</li>
+<hr>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期.</p>
+<p>对热点数据, 不设置过期时间, 当内容变化时只进行更新操作.</p>
+<p>使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之后, 对请求进行限流, 并尽快重建缓存.</p>
+<hr>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>用户对数据库中不存在的数据发起频繁请求.</p>
+<p>由于该数据不存在, 因此缓存中肯定不包含该数据, 这样仍然必须到数据库层次进行查询.</p>
+<p>相当于用户请求直接穿透了缓存到达数据库, 如果频繁进行穿透, 数据库会很快挂掉</p>
+<hr>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><ol>
+<li>缓存空值, 将请求的不存在的key设置为null并置于缓存中.</li>
+<li>布隆过滤器, 首先判断该key的存在与否, 然后再决定是否进行<strong>缓存-&gt;数据库</strong>的查询.</li>
 </ol>
-<p><code>rm -fr &lt;dirname&gt;</code> 免确认递归删除文件夹<br><code>rm -f &lt;filename&gt;</code> 免确认删除文件</p>
-<ol start="3">
-<li>更改文件权限</li>
-</ol>
-
+<p>以上两者可以结合进行.</p>
+<hr>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某个key被大规模请求, 每时每刻都承受着大量的压力. </p>
+<p>当这个key失效的瞬间, 由于并发请求的数量极多, 因此该key还未来及重建的时候, 大量的请求就已经到达数据库.</p>
+<hr>
+<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="使用互斥锁"><a href="#使用互斥锁" class="headerlink" title="使用互斥锁"></a>使用互斥锁</h5><p>在从缓存中取数据失败时, 并不直接请求数据库, 而是设置一个与该key相关的lock(例如使用redis分布式锁).</p>
+<p>所有请求必须先请求到这个锁, 然后才能访问数据库. 如果抢锁失败, 就重新请求缓存.</p>
+<p>这样, 大量的请求只有一个能到达数据库, 等缓存重新建立起来之后, 这些请求重新从缓存中获得数据.</p>
+<hr>
+<h5 id="刷新key的超时时间"><a href="#刷新key的超时时间" class="headerlink" title="刷新key的超时时间"></a>刷新key的超时时间</h5><p>在<code>key</code>的<code>value</code>中保存一个值, 这个值指示着key的超时时间, 每次获得value的时候都检查这个值.</p>
+<p>如果该值少于某个阈值, 立即刷新其超时时间, 这样保证热点数据能够一直存在于缓存.</p>
+<hr>
+<h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
+<hr>
+<h3 id><a href="#" class="headerlink" title></a></h3>
           
         
       
@@ -1793,7 +1828,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
