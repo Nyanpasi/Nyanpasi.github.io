@@ -3697,6 +3697,48 @@
       </tags>
   </entry>
   <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基础算法, Python描述</title>
     <url>/2019/06/01/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
@@ -3743,48 +3785,6 @@
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4570,7 +4570,7 @@
   </entry>
   <entry>
     <title>Redis主从复制和哨兵</title>
-    <url>/2019/01/25/Redis%E9%85%8D%E7%BD%AE%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E5%93%A8%E5%85%B5/</url>
+    <url>/2019/01/25/Redis%E9%85%8D%E7%BD%AE%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E3%80%81%E5%93%A8%E5%85%B5%E5%92%8C%E9%9B%86%E7%BE%A4/</url>
     <content><![CDATA[<h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><p>配置slave实例与master实例无关, 直接启动slave实例即可</p>
 <p>为了免去link的烦恼, 定义一个网络<code>redis-net</code>并将所有master和slave放在该net上.</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker network create redis-net</span><br></pre></td></tr></table></figure>
@@ -4588,15 +4588,16 @@
 <p>因为要进行主从切换, 因此, 如果需要设置密码, 主从设置<strong>同样的密码</strong>.</p>
 <p>因为sentinel保存master的密码, 将某个slave提升为master之后, 则使用该密码进行连接新的master.</p>
 <p>如果设置不一样的密码, 则无法将设置不同密码的slave提升为master.</p>
+<p>另外, salve实例默认为只读实例, 不允许进行写操作.</p>
 <hr>
 <h3 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h3><p><code>sentinel</code>提供执行三个任务:</p>
 <ol>
 <li>监控(<code>Monitoring</code>): 不断检查主从服务器是否正常运行.</li>
 <li>通知(<code>Notification</code>): 被监控的主从服务器出现问题时发送通知</li>
 <li>自动迁移(<code>Automatic failover</code>): 在主服务器出错时切换主服务器, 并将请求导向新的<code>master</code></li>
-<li>提供设置(<code>Configuration Provider</code>): 当新的slave加入集群时提供master的信息.</li>
+<li>提供设置(<code>Configuration Provider</code>): 当新的slave加入时提供master的信息.</li>
 </ol>
-<p>在开启主从复制后, master 中包含各个 slave 的信息.</p>
+<p>在开启主从复制后, sentinel通过 master 获得各个 slave 的信息.</p>
 <p>哨兵是一个以特殊模式启动的redis服务器, 默认运行在26379端口.</p>
 <p>首先编写一个dockerfile</p>
 <figure class="highlight docker"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> redis</span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> sentinel.conf /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> chmod 777 /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [ <span class="string">"redis-server"</span>, <span class="string">"/usr/local/etc/redis/sentinel.conf"</span>, <span class="string">"--sentinel"</span>]</span></span><br></pre></td></tr></table></figure>
@@ -4604,7 +4605,7 @@
 <p>sentinel.conf内容</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sentinel monitor your-master master 6379 2</span><br><span class="line">sentinel down-after-milliseconds your-master 60000</span><br><span class="line">sentinel failover-timeout your-master 180000</span><br><span class="line">sentinel parallel-syncs your-master 1</span><br><span class="line">sentinel auth-pass your-master your-password</span><br></pre></td></tr></table></figure>
 
-<p>其中, your-master这部分, 指的是登记的一个master的别名, 之后, 我们使用这个别名来指定该master, 或应该成为master的实例.</p>
+<p>其中, your-master这部分, 指的是登记的一个master的别名, 之后, 我们使用别名来指定该master.</p>
 <p>以上两个文件, <code>dockfile</code>以及<code>sentinel.conf</code>放置在<code>/redis</code>下</p>
 <p>构建一个镜像:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd /redis</span><br><span class="line">docker build -t sentinel-image .</span><br></pre></td></tr></table></figure>
@@ -4634,10 +4635,11 @@
 <p>之后重启master</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker restart master</span><br></pre></td></tr></table></figure>
 
+<p>名为master的容器再次响应, 但这次是作为slave的角色.</p>
 <hr>
 <h3 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h3><p>运行在内部网络的sentinel获得的是作为master的容器在该自定义网络中的ip地址.</p>
-<p>因此, 无法正常获得可以被外部连接的redis服务器地址, 即使进行了端口映射, 但也无法通过这个来获取外部地址. </p>
-<p>除非, 所有进行redis调用的程序也运行在该内部网络才可以正常使用.</p>
+<p>因此, 无法正常获得可以被外部连接的redis服务器地址, 即使进行了端口映射也获取可供外部连接的地址. </p>
+<p>因此, 所有进行redis调用的程序也运行在该内部网络才可以正常使用.</p>
 <p>如果要在外部进行访问, 直接将多个redis容器运行在host网络的不同端口即可.</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --network</span><br></pre></td></tr></table></figure>
 
@@ -4645,7 +4647,50 @@
 <hr>
 <h3 id="其他使用过的指令"><a href="#其他使用过的指令" class="headerlink" title="其他使用过的指令"></a>其他使用过的指令</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker rmi sentinel-image</span><br><span class="line">docker stop master</span><br><span class="line">docker rm master</span><br><span class="line">docker stop slave1</span><br><span class="line">docker stop slave2</span><br><span class="line">docker stop sentinel</span><br><span class="line">docker stop sentinel2</span><br><span class="line">docker stop sentinel3</span><br><span class="line"><span class="built_in">cd</span> /redis</span><br><span class="line">rm -f sentinel.conf</span><br><span class="line">rm -f dockerfile</span><br></pre></td></tr></table></figure>
 
+<hr>
+<h3 id="使用cluster"><a href="#使用cluster" class="headerlink" title="使用cluster"></a>使用cluster</h3><p>sentinel解决于高可用的问题, 但redis的容量仍然受限于单机内存的大小, 我们需要一个分片机制, 将key分别存储在多个分布于不同机器的redis实例上.</p>
+<p>这样, redis的容量就可以得到极大的扩展.</p>
+<p>在建立集群后, 我们为每一个节点设置主从复制, 保证每个节点的高可用.</p>
+<p>在以下示例中, 所有docker容器运行在host网络上.</p>
+<hr>
+<h4 id="创建多个redis实例"><a href="#创建多个redis实例" class="headerlink" title="创建多个redis实例"></a>创建多个redis实例</h4><p>作为节点的redis实例的设置项可能包括:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cluster-enabled yes  </span><br><span class="line">cluster-config-file nodes.conf  </span><br><span class="line">cluster-node-timeout 5000  </span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<p>指定相关的集群设置文件为<code>node.conf</code>, 当然这个文件目前并不存在, 也永远不用手动管理. 在建立集群之后, 这个文件被自动产生, 记录并随时更新该节点的状态信息.</p>
+<p>每个redis实例以cluster启动时都会赋予自己一个id, 这个id唯一标识这个节点, 而不是ip和port, 这两者可能变化(例如节点发生主从切换), 但id是一个节点生命周期中的<strong>唯一标识</strong>, 被称为<code>Node ID</code>.</p>
+<p>按照以上设置, 使用docker启动多个实例.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7000</span><br></pre></td></tr></table></figure>
+
+<p>运行6次, 每次修改端口号, 6个reids实例运行在7000到7005端口上.</p>
+<hr>
+<h4 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h4><p>创建集群是将这些实例联系成为整体, 并分配每个实例应当负责的slot.</p>
+<p>根据<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">最新官方教程(5.0+版本)</a>, 创建集群应当使用redis-cli的子命令进行</p>
+<p>使用临时容器在host网络上运行一个redis-cli, 并运行创建集群命令:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli --cluster create \</span><br><span class="line">47.94.152.34:7000 47.94.152.34:7001 47.94.152.34:7002 47.94.152.34:7003 47.94.152.34:7004 47.94.152.34:7005 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<p><code>--cluster-replicas 1</code> 含义为每个节点应当有1个slave.</p>
+<p>输出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; Performing <span class="built_in">hash</span> slots allocation on 6 nodes...</span><br><span class="line">Master[0] -&gt; Slots 0 - 5460</span><br><span class="line">Master[1] -&gt; Slots 5461 - 10922</span><br><span class="line">Master[2] -&gt; Slots 10923 - 16383</span><br><span class="line">Adding replica 127.0.0.1:7004 to 127.0.0.1:7000</span><br><span class="line">Adding replica 127.0.0.1:7005 to 127.0.0.1:7001</span><br><span class="line">Adding replica 127.0.0.1:7003 to 127.0.0.1:7002</span><br><span class="line">&gt;&gt;&gt; Trying to optimize slaves allocation <span class="keyword">for</span> anti-affinity</span><br><span class="line">[WARNING] Some slaves are <span class="keyword">in</span> the same host as their master</span><br><span class="line">M: 4556eeec75d445df71994f5a7d3512fd7a2e3a89 127.0.0.1:7000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">M: 0630973a700db520d322f6a8346609fc9d654eb2 127.0.0.1:7001</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">M: 4455cbae4a932f9ab500199a985cc257a1d723eb 127.0.0.1:7002</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">S: 66971cef39c785adb14ef1906e69a0361251c03c 127.0.0.1:7003</span><br><span class="line">   replicates 4455cbae4a932f9ab500199a985cc257a1d723eb</span><br><span class="line">S: 661c1985a85065e83bd76dc70542fa605cad7685 127.0.0.1:7004</span><br><span class="line">   replicates 4556eeec75d445df71994f5a7d3512fd7a2e3a89</span><br><span class="line">S: af3f6efb4b6473dd4b466169ad7742363714b7ac 127.0.0.1:7005</span><br><span class="line">   replicates 0630973a700db520d322f6a8346609fc9d654eb2</span><br><span class="line">Can I <span class="built_in">set</span> the above configuration? (<span class="built_in">type</span> <span class="string">'yes'</span> to accept): yes</span><br><span class="line">&gt;&gt;&gt; Nodes configuration updated</span><br><span class="line">&gt;&gt;&gt; Assign a different config epoch to each node</span><br><span class="line">&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span><br><span class="line">Waiting <span class="keyword">for</span> the cluster to join</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 127.0.0.1:7000)</span><br><span class="line">M: 4556eeec75d445df71994f5a7d3512fd7a2e3a89 127.0.0.1:7000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 661c1985a85065e83bd76dc70542fa605cad7685 127.0.0.1:7004</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 4556eeec75d445df71994f5a7d3512fd7a2e3a89</span><br><span class="line">S: 66971cef39c785adb14ef1906e69a0361251c03c 127.0.0.1:7003</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 4455cbae4a932f9ab500199a985cc257a1d723eb</span><br><span class="line">M: 0630973a700db520d322f6a8346609fc9d654eb2 127.0.0.1:7001</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: af3f6efb4b6473dd4b466169ad7742363714b7ac 127.0.0.1:7005</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 0630973a700db520d322f6a8346609fc9d654eb2</span><br><span class="line">M: 4455cbae4a932f9ab500199a985cc257a1d723eb 127.0.0.1:7002</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check <span class="keyword">for</span> open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+
+<p>创建cluster还可以使用脚本方式, 不赘述.</p>
+<hr>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>当存储或者取出数据时, 集群与单个redis实例操作不同,</p>
+<p>当链接至任何一个数据库进行读写时, 除非slot正好在当前实例中, 否则返回的是一个提示该数据存储位置的异常响应</p>
+<p>所以我们需要一些可用的客户端来封装命令, 以最小化这些差异并提供方便的接口.</p>
+<p>例如python的<code>redis-py-cluster</code>包.</p>
+<p>创建一个python容器并进入shell</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm python /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>安装依赖包, 并进入python命令行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install redis-py-cluster</span><br><span class="line">python</span><br></pre></td></tr></table></figure>
+
+<p>尝试进行集群操作:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> rediscluster <span class="keyword">import</span> RedisCluster</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>startup_nodes = [</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7000"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7001"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7002"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7003"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7004"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7005"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc = RedisCluster(startup_nodes=startup_nodes, decode_responses=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'hello'</span>, <span class="string">'world!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'delanka'</span>, <span class="string">'hana!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'hello'</span>)</span><br><span class="line"><span class="string">'world!'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'delanka'</span>)</span><br><span class="line"><span class="string">'hana!'</span></span><br></pre></td></tr></table></figure>
+
+<hr>
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://medium.com/@mustafa.ileri/redis-clustering-with-redis-sentinel-on-docker-1090ab876f97" target="_blank" rel="noopener">Redis Clustering With Redis Sentinel On Docker</a></p>
+<p><a href="https://medium.com/commencis/creating-redis-cluster-using-docker-67f65545796d" target="_blank" rel="noopener">https://medium.com/commencis/creating-redis-cluster-using-docker-67f65545796d</a></p>
+<p><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a></p>
 ]]></content>
       <tags>
         <tag>数据库</tag>
@@ -5266,6 +5311,47 @@ IX-->IS;</pre>
       </tags>
   </entry>
   <entry>
+    <title>缓存雪崩, 击穿, 穿透</title>
+    <url>/2018/09/21/%E7%BC%93%E5%AD%98%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉.</p>
+<p>缓存雪崩的原因包括:</p>
+<ol>
+<li>大量key在同一时间超时</li>
+<li>缓存服务器宕机</li>
+</ol>
+<hr>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期.</p>
+<p>对热点数据, 不设置过期时间, 当内容变化时只进行更新操作.</p>
+<p>使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之后, 对请求进行限流, 并尽快重建缓存.</p>
+<hr>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>用户对数据库中不存在的数据发起频繁请求.</p>
+<p>由于该数据不存在, 因此缓存中肯定不包含该数据, 这样仍然必须到数据库层次进行查询.</p>
+<p>相当于用户请求直接穿透了缓存到达数据库, 如果频繁进行穿透, 数据库会很快挂掉</p>
+<hr>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><ol>
+<li>缓存空值, 将请求的不存在的key设置为null并置于缓存中.</li>
+<li>布隆过滤器, 首先判断该key的存在与否, 然后再决定是否进行<strong>缓存-&gt;数据库</strong>的查询.</li>
+</ol>
+<p>以上两者可以结合进行.</p>
+<hr>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某个key被大规模请求, 每时每刻都承受着大量的压力. </p>
+<p>当这个key失效的瞬间, 由于并发请求的数量极多, 因此该key还未来及重建的时候, 大量的请求就已经到达数据库.</p>
+<hr>
+<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="使用互斥锁"><a href="#使用互斥锁" class="headerlink" title="使用互斥锁"></a>使用互斥锁</h5><p>在从缓存中取数据失败时, 并不直接请求数据库, 而是设置一个与该key相关的lock(例如使用redis分布式锁).</p>
+<p>所有请求必须先请求到这个锁, 然后才能访问数据库. 如果抢锁失败, 就重新请求缓存.</p>
+<p>这样, 大量的请求只有一个能到达数据库, 等缓存重新建立起来之后, 这些请求重新从缓存中获得数据.</p>
+<hr>
+<h5 id="刷新key的超时时间"><a href="#刷新key的超时时间" class="headerlink" title="刷新key的超时时间"></a>刷新key的超时时间</h5><p>在<code>key</code>的<code>value</code>中保存一个值, 这个值指示着key的超时时间, 每次获得value的时候都检查这个值.</p>
+<p>如果该值少于某个阈值, 立即刷新其超时时间, 这样保证热点数据能够一直存在于缓存.</p>
+<hr>
+<h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
+<hr>
+]]></content>
+      <tags>
+        <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux定时任务</title>
     <url>/2018/09/21/Linux%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</url>
     <content><![CDATA[<p>cron守护进程可以在指定日期和时间执行命令, 可以利用corn执行定时任务.</p>
@@ -5404,47 +5490,6 @@ IX-->IS;</pre>
       <tags>
         <tag>Linux</tag>
         <tag>定时任务</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>缓存雪崩, 击穿, 穿透</title>
-    <url>/2018/09/21/%E7%BC%93%E5%AD%98%E7%9A%84%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉.</p>
-<p>缓存雪崩的原因包括:</p>
-<ol>
-<li>大量key在同一时间超时</li>
-<li>缓存服务器宕机</li>
-</ol>
-<hr>
-<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期.</p>
-<p>对热点数据, 不设置过期时间, 当内容变化时只进行更新操作.</p>
-<p>使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之后, 对请求进行限流, 并尽快重建缓存.</p>
-<hr>
-<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>用户对数据库中不存在的数据发起频繁请求.</p>
-<p>由于该数据不存在, 因此缓存中肯定不包含该数据, 这样仍然必须到数据库层次进行查询.</p>
-<p>相当于用户请求直接穿透了缓存到达数据库, 如果频繁进行穿透, 数据库会很快挂掉</p>
-<hr>
-<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><ol>
-<li>缓存空值, 将请求的不存在的key设置为null并置于缓存中.</li>
-<li>布隆过滤器, 首先判断该key的存在与否, 然后再决定是否进行<strong>缓存-&gt;数据库</strong>的查询.</li>
-</ol>
-<p>以上两者可以结合进行.</p>
-<hr>
-<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某个key被大规模请求, 每时每刻都承受着大量的压力. </p>
-<p>当这个key失效的瞬间, 由于并发请求的数量极多, 因此该key还未来及重建的时候, 大量的请求就已经到达数据库.</p>
-<hr>
-<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="使用互斥锁"><a href="#使用互斥锁" class="headerlink" title="使用互斥锁"></a>使用互斥锁</h5><p>在从缓存中取数据失败时, 并不直接请求数据库, 而是设置一个与该key相关的lock(例如使用redis分布式锁).</p>
-<p>所有请求必须先请求到这个锁, 然后才能访问数据库. 如果抢锁失败, 就重新请求缓存.</p>
-<p>这样, 大量的请求只有一个能到达数据库, 等缓存重新建立起来之后, 这些请求重新从缓存中获得数据.</p>
-<hr>
-<h5 id="刷新key的超时时间"><a href="#刷新key的超时时间" class="headerlink" title="刷新key的超时时间"></a>刷新key的超时时间</h5><p>在<code>key</code>的<code>value</code>中保存一个值, 这个值指示着key的超时时间, 每次获得value的时候都检查这个值.</p>
-<p>如果该值少于某个阈值, 立即刷新其超时时间, 这样保证热点数据能够一直存在于缓存.</p>
-<hr>
-<h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
-<hr>
-]]></content>
-      <tags>
-        <tag>缓存</tag>
       </tags>
   </entry>
   <entry>

@@ -855,7 +855,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis配置主从复制和哨兵/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis配置主从复制、哨兵和集群/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -874,7 +874,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/25/Redis配置主从复制和哨兵/" itemprop="url">Redis主从复制和哨兵</a></h1>
+                <a class="post-title-link" href="/2019/01/25/Redis配置主从复制、哨兵和集群/" itemprop="url">Redis主从复制和哨兵</a></h1>
         
 
         <div class="post-meta">
@@ -943,15 +943,16 @@
 <p>因为要进行主从切换, 因此, 如果需要设置密码, 主从设置<strong>同样的密码</strong>.</p>
 <p>因为sentinel保存master的密码, 将某个slave提升为master之后, 则使用该密码进行连接新的master.</p>
 <p>如果设置不一样的密码, 则无法将设置不同密码的slave提升为master.</p>
+<p>另外, salve实例默认为只读实例, 不允许进行写操作.</p>
 <hr>
 <h3 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h3><p><code>sentinel</code>提供执行三个任务:</p>
 <ol>
 <li>监控(<code>Monitoring</code>): 不断检查主从服务器是否正常运行.</li>
 <li>通知(<code>Notification</code>): 被监控的主从服务器出现问题时发送通知</li>
 <li>自动迁移(<code>Automatic failover</code>): 在主服务器出错时切换主服务器, 并将请求导向新的<code>master</code></li>
-<li>提供设置(<code>Configuration Provider</code>): 当新的slave加入集群时提供master的信息.</li>
+<li>提供设置(<code>Configuration Provider</code>): 当新的slave加入时提供master的信息.</li>
 </ol>
-<p>在开启主从复制后, master 中包含各个 slave 的信息.</p>
+<p>在开启主从复制后, sentinel通过 master 获得各个 slave 的信息.</p>
 <p>哨兵是一个以特殊模式启动的redis服务器, 默认运行在26379端口.</p>
 <p>首先编写一个dockerfile</p>
 <figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> redis</span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> sentinel.conf /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> chmod 777 /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [ <span class="string">"redis-server"</span>, <span class="string">"/usr/local/etc/redis/sentinel.conf"</span>, <span class="string">"--sentinel"</span>]</span></span><br></pre></td></tr></table></figure>
@@ -959,7 +960,7 @@
 <p>sentinel.conf内容</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sentinel monitor your-master master 6379 2</span><br><span class="line">sentinel down-after-milliseconds your-master 60000</span><br><span class="line">sentinel failover-timeout your-master 180000</span><br><span class="line">sentinel parallel-syncs your-master 1</span><br><span class="line">sentinel auth-pass your-master your-password</span><br></pre></td></tr></table></figure>
 
-<p>其中, your-master这部分, 指的是登记的一个master的别名, 之后, 我们使用这个别名来指定该master, 或应该成为master的实例.</p>
+<p>其中, your-master这部分, 指的是登记的一个master的别名, 之后, 我们使用别名来指定该master.</p>
 <p>以上两个文件, <code>dockfile</code>以及<code>sentinel.conf</code>放置在<code>/redis</code>下</p>
 <p>构建一个镜像:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /redis</span><br><span class="line">docker build -t sentinel-image .</span><br></pre></td></tr></table></figure>
@@ -989,10 +990,11 @@
 <p>之后重启master</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart master</span><br></pre></td></tr></table></figure>
 
+<p>名为master的容器再次响应, 但这次是作为slave的角色.</p>
 <hr>
 <h3 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h3><p>运行在内部网络的sentinel获得的是作为master的容器在该自定义网络中的ip地址.</p>
-<p>因此, 无法正常获得可以被外部连接的redis服务器地址, 即使进行了端口映射, 但也无法通过这个来获取外部地址. </p>
-<p>除非, 所有进行redis调用的程序也运行在该内部网络才可以正常使用.</p>
+<p>因此, 无法正常获得可以被外部连接的redis服务器地址, 即使进行了端口映射也获取可供外部连接的地址. </p>
+<p>因此, 所有进行redis调用的程序也运行在该内部网络才可以正常使用.</p>
 <p>如果要在外部进行访问, 直接将多个redis容器运行在host网络的不同端口即可.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --network</span><br></pre></td></tr></table></figure>
 
@@ -1000,7 +1002,50 @@
 <hr>
 <h3 id="其他使用过的指令"><a href="#其他使用过的指令" class="headerlink" title="其他使用过的指令"></a>其他使用过的指令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">docker rmi sentinel-image</span><br><span class="line">docker stop master</span><br><span class="line">docker rm master</span><br><span class="line">docker stop slave1</span><br><span class="line">docker stop slave2</span><br><span class="line">docker stop sentinel</span><br><span class="line">docker stop sentinel2</span><br><span class="line">docker stop sentinel3</span><br><span class="line"><span class="built_in">cd</span> /redis</span><br><span class="line">rm -f sentinel.conf</span><br><span class="line">rm -f dockerfile</span><br></pre></td></tr></table></figure>
 
+<hr>
+<h3 id="使用cluster"><a href="#使用cluster" class="headerlink" title="使用cluster"></a>使用cluster</h3><p>sentinel解决于高可用的问题, 但redis的容量仍然受限于单机内存的大小, 我们需要一个分片机制, 将key分别存储在多个分布于不同机器的redis实例上.</p>
+<p>这样, redis的容量就可以得到极大的扩展.</p>
+<p>在建立集群后, 我们为每一个节点设置主从复制, 保证每个节点的高可用.</p>
+<p>在以下示例中, 所有docker容器运行在host网络上.</p>
+<hr>
+<h4 id="创建多个redis实例"><a href="#创建多个redis实例" class="headerlink" title="创建多个redis实例"></a>创建多个redis实例</h4><p>作为节点的redis实例的设置项可能包括:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cluster-enabled yes  </span><br><span class="line">cluster-config-file nodes.conf  </span><br><span class="line">cluster-node-timeout 5000  </span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<p>指定相关的集群设置文件为<code>node.conf</code>, 当然这个文件目前并不存在, 也永远不用手动管理. 在建立集群之后, 这个文件被自动产生, 记录并随时更新该节点的状态信息.</p>
+<p>每个redis实例以cluster启动时都会赋予自己一个id, 这个id唯一标识这个节点, 而不是ip和port, 这两者可能变化(例如节点发生主从切换), 但id是一个节点生命周期中的<strong>唯一标识</strong>, 被称为<code>Node ID</code>.</p>
+<p>按照以上设置, 使用docker启动多个实例.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7000</span><br></pre></td></tr></table></figure>
+
+<p>运行6次, 每次修改端口号, 6个reids实例运行在7000到7005端口上.</p>
+<hr>
+<h4 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h4><p>创建集群是将这些实例联系成为整体, 并分配每个实例应当负责的slot.</p>
+<p>根据<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">最新官方教程(5.0+版本)</a>, 创建集群应当使用redis-cli的子命令进行</p>
+<p>使用临时容器在host网络上运行一个redis-cli, 并运行创建集群命令:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli --cluster create \</span><br><span class="line">47.94.152.34:7000 47.94.152.34:7001 47.94.152.34:7002 47.94.152.34:7003 47.94.152.34:7004 47.94.152.34:7005 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<p><code>--cluster-replicas 1</code> 含义为每个节点应当有1个slave.</p>
+<p>输出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; Performing <span class="built_in">hash</span> slots allocation on 6 nodes...</span><br><span class="line">Master[0] -&gt; Slots 0 - 5460</span><br><span class="line">Master[1] -&gt; Slots 5461 - 10922</span><br><span class="line">Master[2] -&gt; Slots 10923 - 16383</span><br><span class="line">Adding replica 127.0.0.1:7004 to 127.0.0.1:7000</span><br><span class="line">Adding replica 127.0.0.1:7005 to 127.0.0.1:7001</span><br><span class="line">Adding replica 127.0.0.1:7003 to 127.0.0.1:7002</span><br><span class="line">&gt;&gt;&gt; Trying to optimize slaves allocation <span class="keyword">for</span> anti-affinity</span><br><span class="line">[WARNING] Some slaves are <span class="keyword">in</span> the same host as their master</span><br><span class="line">M: 4556eeec75d445df71994f5a7d3512fd7a2e3a89 127.0.0.1:7000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">M: 0630973a700db520d322f6a8346609fc9d654eb2 127.0.0.1:7001</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">M: 4455cbae4a932f9ab500199a985cc257a1d723eb 127.0.0.1:7002</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">S: 66971cef39c785adb14ef1906e69a0361251c03c 127.0.0.1:7003</span><br><span class="line">   replicates 4455cbae4a932f9ab500199a985cc257a1d723eb</span><br><span class="line">S: 661c1985a85065e83bd76dc70542fa605cad7685 127.0.0.1:7004</span><br><span class="line">   replicates 4556eeec75d445df71994f5a7d3512fd7a2e3a89</span><br><span class="line">S: af3f6efb4b6473dd4b466169ad7742363714b7ac 127.0.0.1:7005</span><br><span class="line">   replicates 0630973a700db520d322f6a8346609fc9d654eb2</span><br><span class="line">Can I <span class="built_in">set</span> the above configuration? (<span class="built_in">type</span> <span class="string">'yes'</span> to accept): yes</span><br><span class="line">&gt;&gt;&gt; Nodes configuration updated</span><br><span class="line">&gt;&gt;&gt; Assign a different config epoch to each node</span><br><span class="line">&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span><br><span class="line">Waiting <span class="keyword">for</span> the cluster to join</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 127.0.0.1:7000)</span><br><span class="line">M: 4556eeec75d445df71994f5a7d3512fd7a2e3a89 127.0.0.1:7000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 661c1985a85065e83bd76dc70542fa605cad7685 127.0.0.1:7004</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 4556eeec75d445df71994f5a7d3512fd7a2e3a89</span><br><span class="line">S: 66971cef39c785adb14ef1906e69a0361251c03c 127.0.0.1:7003</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 4455cbae4a932f9ab500199a985cc257a1d723eb</span><br><span class="line">M: 0630973a700db520d322f6a8346609fc9d654eb2 127.0.0.1:7001</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: af3f6efb4b6473dd4b466169ad7742363714b7ac 127.0.0.1:7005</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 0630973a700db520d322f6a8346609fc9d654eb2</span><br><span class="line">M: 4455cbae4a932f9ab500199a985cc257a1d723eb 127.0.0.1:7002</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check <span class="keyword">for</span> open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+
+<p>创建cluster还可以使用脚本方式, 不赘述.</p>
+<hr>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>当存储或者取出数据时, 集群与单个redis实例操作不同,</p>
+<p>当链接至任何一个数据库进行读写时, 除非slot正好在当前实例中, 否则返回的是一个提示该数据存储位置的异常响应</p>
+<p>所以我们需要一些可用的客户端来封装命令, 以最小化这些差异并提供方便的接口.</p>
+<p>例如python的<code>redis-py-cluster</code>包.</p>
+<p>创建一个python容器并进入shell</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm python /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>安装依赖包, 并进入python命令行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install redis-py-cluster</span><br><span class="line">python</span><br></pre></td></tr></table></figure>
+
+<p>尝试进行集群操作:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> rediscluster <span class="keyword">import</span> RedisCluster</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>startup_nodes = [</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7000"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7001"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7002"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7003"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7004"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7005"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc = RedisCluster(startup_nodes=startup_nodes, decode_responses=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'hello'</span>, <span class="string">'world!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'delanka'</span>, <span class="string">'hana!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'hello'</span>)</span><br><span class="line"><span class="string">'world!'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'delanka'</span>)</span><br><span class="line"><span class="string">'hana!'</span></span><br></pre></td></tr></table></figure>
+
+<hr>
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://medium.com/@mustafa.ileri/redis-clustering-with-redis-sentinel-on-docker-1090ab876f97" target="_blank" rel="noopener">Redis Clustering With Redis Sentinel On Docker</a></p>
+<p><a href="https://medium.com/commencis/creating-redis-cluster-using-docker-67f65545796d" target="_blank" rel="noopener">https://medium.com/commencis/creating-redis-cluster-using-docker-67f65545796d</a></p>
+<p><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a></p>
 
           
         
