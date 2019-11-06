@@ -298,6 +298,282 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/21/Linux定时任务/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/21/Linux定时任务/" itemprop="url">Linux定时任务</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-21T11:04:17+08:00">
+                2018-09-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>cron守护进程可以在指定日期和时间执行命令, 可以利用corn执行定时任务.</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/09/21/Linux定时任务/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/21/缓存的问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/21/缓存的问题/" itemprop="url">缓存雪崩, 击穿, 穿透</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-21T11:04:17+08:00">
+                2018-09-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉.</p>
+<p>缓存雪崩的原因包括:</p>
+<ol>
+<li>大量key在同一时间超时</li>
+<li>缓存服务器宕机</li>
+</ol>
+<hr>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期.</p>
+<p>对热点数据, 不设置过期时间, 当内容变化时只进行更新操作.</p>
+<p>使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之后, 对请求进行限流, 并尽快重建缓存.</p>
+<hr>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>用户对数据库中不存在的数据发起频繁请求.</p>
+<p>由于该数据不存在, 因此缓存中肯定不包含该数据, 这样仍然必须到数据库层次进行查询.</p>
+<p>相当于用户请求直接穿透了缓存到达数据库, 如果频繁进行穿透, 数据库会很快挂掉</p>
+<hr>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><ol>
+<li>缓存空值, 将请求的不存在的key设置为null并置于缓存中.</li>
+<li>布隆过滤器, 首先判断该key的存在与否, 然后再决定是否进行<strong>缓存-&gt;数据库</strong>的查询.</li>
+</ol>
+<p>以上两者可以结合进行.</p>
+<hr>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某个key被大规模请求, 每时每刻都承受着大量的压力. </p>
+<p>当这个key失效的瞬间, 由于并发请求的数量极多, 因此该key还未来及重建的时候, 大量的请求就已经到达数据库.</p>
+<hr>
+<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="使用互斥锁"><a href="#使用互斥锁" class="headerlink" title="使用互斥锁"></a>使用互斥锁</h5><p>在从缓存中取数据失败时, 并不直接请求数据库, 而是设置一个与该key相关的lock(例如使用redis分布式锁).</p>
+<p>所有请求必须先请求到这个锁, 然后才能访问数据库. 如果抢锁失败, 就重新请求缓存.</p>
+<p>这样, 大量的请求只有一个能到达数据库, 等缓存重新建立起来之后, 这些请求重新从缓存中获得数据.</p>
+<hr>
+<h5 id="刷新key的超时时间"><a href="#刷新key的超时时间" class="headerlink" title="刷新key的超时时间"></a>刷新key的超时时间</h5><p>在<code>key</code>的<code>value</code>中保存一个值, 这个值指示着key的超时时间, 每次获得value的时候都检查这个值.</p>
+<p>如果该值少于某个阈值, 立即刷新其超时时间, 这样保证热点数据能够一直存在于缓存.</p>
+<hr>
+<h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
+<hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux基础/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -589,7 +865,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

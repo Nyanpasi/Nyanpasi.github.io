@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="事务及其ACID特性事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成. ACID特性:  原子性(Atomicity): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行. 一致性(Consistency): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束. 隔离性(Isolution)">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-03T14:00:54.551Z">
+<meta property="og:updated_time" content="2019-11-06T08:20:48.443Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关系型数据库系统基础">
 <meta name="twitter:description" content="事务及其ACID特性事务是数据库管理系统执行过程中的一个逻辑单位, 由一个有限的数据库操作序列组成. ACID特性:  原子性(Atomicity): 事务作为一个整体被执行, 包含在其中的对数据库的操作要么全部被执行, 要么都不执行. 一致性(Consistency): 事务应确保数据库的状态从一个一致状态转换为另一个一致状态, 一致状态的含义是数据满足完整性约束. 隔离性(Isolution)">
@@ -395,7 +395,7 @@
 <ol>
 <li>读未提交(<code>Read uncommitted</code>): 事务可以读取到其他事务未提交的数据, 这一级别可能引起脏数据</li>
 <li>读提交(<code>Read committed</code>): 事务仅可读取到其他事务已提交的数据. 这一级别解决了脏数据问题</li>
-<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了可重复度问题</li>
+<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了不可重复读问题</li>
 <li>可串行化(<code>Serializable</code>): 所有事务的执行结果可以等价为按照某个次序<strong>串行</strong>执行, 这一级别解决了幻读问题.</li>
 </ol>
 <p>隔离级别的达成是结果. </p>
@@ -404,7 +404,7 @@
 <tr>
 <th>隔离级别</th>
 <th>脏读</th>
-<th>不可重复度</th>
+<th>不可重复读</th>
 <th>幻读</th>
 </tr>
 </thead>
@@ -771,7 +771,7 @@ IX-->IS;</pre>
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

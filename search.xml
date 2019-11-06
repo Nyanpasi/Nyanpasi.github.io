@@ -3397,6 +3397,71 @@
       </tags>
   </entry>
   <entry>
+    <title>Django Contenttype</title>
+    <url>/2019/07/03/Django%20contenttype/</url>
+    <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
+<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
+<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
+<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
+<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
+<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
+<hr>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
+<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
+<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
+<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
+<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
+<hr>
+<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
+<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
+<ol>
+<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
+<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
+<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
+</ol>
+<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
+<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
+<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
+<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
+<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
+<hr>
+<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
+
+<p>相关模型</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+
+<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
+
+<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
+
+<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>下面使用反向关联名和反向查询名完成相同操作:</p>
+<p>创建标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
+<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
+]]></content>
+      <tags>
+        <tag>Django</tag>
+        <tag>Contenttype</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django+Mysql实现赞踩系统</title>
     <url>/2019/07/03/Django%E7%82%B9%E8%B5%9E%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<p>主要包括两个部分: </p>
@@ -3472,71 +3537,6 @@
       <tags>
         <tag>Django</tag>
         <tag>赞踩系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Django Contenttype</title>
-    <url>/2019/07/03/Django%20contenttype/</url>
-    <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
-<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
-<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
-<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
-<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
-<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
-<hr>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
-<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
-<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
-<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
-<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
-<hr>
-<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
-<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
-<ol>
-<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
-<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
-<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
-</ol>
-<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
-<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
-<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
-<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
-<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
-<hr>
-<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
-
-<p>相关模型</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
-
-<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>下面使用反向关联名和反向查询名完成相同操作:</p>
-<p>创建标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
-<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
-]]></content>
-      <tags>
-        <tag>Django</tag>
-        <tag>Contenttype</tag>
       </tags>
   </entry>
   <entry>
@@ -3697,48 +3697,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基础算法, Python描述</title>
     <url>/2019/06/01/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
@@ -3785,6 +3743,48 @@
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4560,6 +4560,99 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis主从复制和哨兵</title>
+    <url>/2019/01/25/redis%20%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E9%9B%86%E7%BE%A4/</url>
+    <content><![CDATA[]]></content>
+      <tags>
+        <tag>数据库</tag>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis主从复制和哨兵</title>
+    <url>/2019/01/25/Redis%E9%85%8D%E7%BD%AE%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E5%93%A8%E5%85%B5/</url>
+    <content><![CDATA[<h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><p>配置slave实例与master实例无关, 直接启动slave实例即可</p>
+<p>为了免去link的烦恼, 定义一个网络<code>redis-net</code>并将所有master和slave放在该net上.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker network create redis-net</span><br></pre></td></tr></table></figure>
+
+<p>首先启动一个<code>master</code>实例, </p>
+<figure class="highlight docker"><table><tr><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> -d --name master --network redis-net --expose 6379 -p 6379:6379 redis redis-server --requirepass your-password</span></span><br></pre></td></tr></table></figure>
+
+<p>然后启动两个<code>slave</code>实例</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm --name slave1 --expose 6379 -p 6380:6379 --network redis-net redis redis-server --slaveof master 6379 --masterauth your-password --requirepass your-password</span><br><span class="line">docker run -d --rm --name slave2 --expose 6379 -p 6381:6379 --network redis-net redis redis-server --slaveof master 6379 --masterauth your-password --requirepass your-password</span><br></pre></td></tr></table></figure>
+
+<p>使用python脚本查看是否成功进行了主从复制</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"></span><br><span class="line">master = redis.Redis(host=<span class="string">'47.94.152.34'</span>, port=<span class="number">6379</span>, db=<span class="number">0</span>, password=<span class="string">'your-password'</span>)</span><br><span class="line">master.set(<span class="string">'name'</span>, <span class="string">'hello, world!'</span>)</span><br><span class="line">name = master.get(<span class="string">'name'</span>)</span><br><span class="line">print(name)</span><br><span class="line"></span><br><span class="line">slave = redis.Redis(host=<span class="string">'47.94.152.34'</span>, port=<span class="number">6380</span>, db=<span class="number">0</span>, password=<span class="string">'your-password'</span>)</span><br><span class="line">name_in_slave = slave.get(<span class="string">'name'</span>)</span><br><span class="line">print(name_in_slave)</span><br><span class="line"></span><br><span class="line">slave2 = redis.Redis(host=<span class="string">'47.94.152.34'</span>, port=<span class="number">6381</span>, db=<span class="number">0</span>, password=<span class="string">'your-password'</span>)</span><br><span class="line">name_in_slave2 = slave2.get(<span class="string">'name'</span>)</span><br><span class="line">print(name_in_slave2)</span><br></pre></td></tr></table></figure>
+
+<p><em>单独指定某几个设置项在启动时使用<code>redis-server --options</code>指定即可<a href="https://www.mankier.com/1/redis-server" target="_blank" rel="noopener">链接</a></em></p>
+<p>因为要进行主从切换, 因此, 如果需要设置密码, 主从设置<strong>同样的密码</strong>.</p>
+<p>因为sentinel保存master的密码, 将某个slave提升为master之后, 则使用该密码进行连接新的master.</p>
+<p>如果设置不一样的密码, 则无法将设置不同密码的slave提升为master.</p>
+<hr>
+<h3 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h3><p><code>sentinel</code>提供执行三个任务:</p>
+<ol>
+<li>监控(<code>Monitoring</code>): 不断检查主从服务器是否正常运行.</li>
+<li>通知(<code>Notification</code>): 被监控的主从服务器出现问题时发送通知</li>
+<li>自动迁移(<code>Automatic failover</code>): 在主服务器出错时切换主服务器, 并将请求导向新的<code>master</code></li>
+<li>提供设置(<code>Configuration Provider</code>): 当新的slave加入集群时提供master的信息.</li>
+</ol>
+<p>在开启主从复制后, master 中包含各个 slave 的信息.</p>
+<p>哨兵是一个以特殊模式启动的redis服务器, 默认运行在26379端口.</p>
+<p>首先编写一个dockerfile</p>
+<figure class="highlight docker"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> redis</span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> sentinel.conf /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> chmod 777 /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [ <span class="string">"redis-server"</span>, <span class="string">"/usr/local/etc/redis/sentinel.conf"</span>, <span class="string">"--sentinel"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>sentinel.conf内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sentinel monitor your-master master 6379 2</span><br><span class="line">sentinel down-after-milliseconds your-master 60000</span><br><span class="line">sentinel failover-timeout your-master 180000</span><br><span class="line">sentinel parallel-syncs your-master 1</span><br><span class="line">sentinel auth-pass your-master your-password</span><br></pre></td></tr></table></figure>
+
+<p>其中, your-master这部分, 指的是登记的一个master的别名, 之后, 我们使用这个别名来指定该master, 或应该成为master的实例.</p>
+<p>以上两个文件, <code>dockfile</code>以及<code>sentinel.conf</code>放置在<code>/redis</code>下</p>
+<p>构建一个镜像:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd /redis</span><br><span class="line">docker build -t sentinel-image .</span><br></pre></td></tr></table></figure>
+
+<p>运行容器:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm --name sentinel --network redis-net --expose 26379 -p 26379:26379 sentinel-image</span><br></pre></td></tr></table></figure>
+
+<p>用临时容器启动一个客户端:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network redis-net --name redis-cli redis redis-cli -h sentinel -p 26379</span><br></pre></td></tr></table></figure>
+
+<p>尝试获得所有master</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sentinel masters</span><br></pre></td></tr></table></figure>
+
+<p>列出指定master的slave</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sentinel slaves your-master</span><br></pre></td></tr></table></figure>
+
+<p>尝试手动进行故障转移</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sentinel failover your-master</span><br></pre></td></tr></table></figure>
+
+<p>开启新的sentinel</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm --name sentinel2 --network redis-net --expose 26379 -p 26380:26379 sentinel-image</span><br><span class="line">docker run -d --rm --name sentinel3 --network redis-net --expose 26379 -p 26381:26379 sentinel-image</span><br></pre></td></tr></table></figure>
+
+<p>将master挂掉</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker stop master</span><br></pre></td></tr></table></figure>
+
+<p>再次启动客户端, 链接至sentinel, 查询master, 注意根据上面的设置, 我们需要等待<code>60000</code>ms, 也就是1min之后, 无响应的master会被转为slave, 并处于<code>down</code>的状态.</p>
+<p>之后重启master</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker restart master</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h3><p>运行在内部网络的sentinel获得的是作为master的容器在该自定义网络中的ip地址.</p>
+<p>因此, 无法正常获得可以被外部连接的redis服务器地址, 即使进行了端口映射, 但也无法通过这个来获取外部地址. </p>
+<p>除非, 所有进行redis调用的程序也运行在该内部网络才可以正常使用.</p>
+<p>如果要在外部进行访问, 直接将多个redis容器运行在host网络的不同端口即可.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --network</span><br></pre></td></tr></table></figure>
+
+<p>另外, 每个sentinel可以监视多个master.</p>
+<hr>
+<h3 id="其他使用过的指令"><a href="#其他使用过的指令" class="headerlink" title="其他使用过的指令"></a>其他使用过的指令</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker rmi sentinel-image</span><br><span class="line">docker stop master</span><br><span class="line">docker rm master</span><br><span class="line">docker stop slave1</span><br><span class="line">docker stop slave2</span><br><span class="line">docker stop sentinel</span><br><span class="line">docker stop sentinel2</span><br><span class="line">docker stop sentinel3</span><br><span class="line"><span class="built_in">cd</span> /redis</span><br><span class="line">rm -f sentinel.conf</span><br><span class="line">rm -f dockerfile</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://medium.com/@mustafa.ileri/redis-clustering-with-redis-sentinel-on-docker-1090ab876f97" target="_blank" rel="noopener">Redis Clustering With Redis Sentinel On Docker</a></p>
+]]></content>
+      <tags>
+        <tag>数据库</tag>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis基础</title>
     <url>/2019/01/25/Redis%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h3 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h3><p><code>Redis</code>的键为字符串, 而值有5种基本数据类型:</p>
@@ -4684,15 +4777,16 @@
 <h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
 <p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
 <hr>
-<h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><p>一个包含去重功能的计数器, 去重依据是设置值时的参数.</p>
+<h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><p>一个包含去重功能的计数器, 传入相同key不会增加计数, 但不太精确, 约有<code>0.81%</code>的误差.</p>
+<p>HyperLogLog在数据超过某个阈值后, 占用的存储空间为<code>12KB</code></p>
 <hr>
-<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>用以检索一个元素是否在某一个集合中, </p>
+<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p><code>Bloom Filter</code>用以检索一个元素是否在某一个集合中, </p>
 <p>值得注意的是, 布隆过滤器的数据结构中并不保存任何数据, 只是能够判断该数据是否被传入过.</p>
 <p>因此, 实例化一个布隆过滤器, 在存储一条记录时之前先添加入布隆过滤器, 之后每次请求先检验该数据是否存在</p>
 <p>如果存在, 在走缓存-&gt;数据库的查询流程, 如果不存在, 则直接返回.</p>
 <p>布隆过滤器有一定误判几率, 某个不存在的记录可能被判定为存在, 但被布隆判为不存在的元素肯定不存在.</p>
 <p>布隆过滤器所使用空间的大小与其误判率的要求相关, 当数据越来越多后, 为了维持误判率其占用空间也会上升.</p>
-<p>布隆过滤器空间利用率很高, 当维持<code>1%</code>误判率时, 每个元素的判定所需空间约为9.6比特.</p>
+<p>布隆过滤器空间利用率很高, 当维持<code>1%</code>误判率时, 每个元素的判定所需空间约为<code>9.6</code>比特.</p>
 <hr>
 <h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
 <p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
@@ -4702,10 +4796,27 @@
 
 <p>当然, 在正常情况下, 我们通过<code>del lock</code>来释放锁, 因此超时时间不应过低, 同时任务执行预期时间不应过长.</p>
 <hr>
-<h3 id="Redis为什么设计为单线程"><a href="#Redis为什么设计为单线程" class="headerlink" title="Redis为什么设计为单线程?"></a>Redis为什么设计为单线程?</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
-<p>因此, 只有在有必要进行<strong>多任务</strong>而不是增加效率的情况下, 才会启动多个线程.</p>
+<h3 id="漏斗限流"><a href="#漏斗限流" class="headerlink" title="漏斗限流"></a>漏斗限流</h3><p><code>redis-cell</code>是一个限流模块, 使用<code>cl.throttle</code>指令指定限流标准.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cl.throttle &lt;key&gt; &lt;max-burst&gt; &lt;count per period&gt; &lt;period&gt; [quantity]</span><br></pre></td></tr></table></figure>
+
+<p>例如 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cl.throttle user123 15 30 60 1</span><br></pre></td></tr></table></figure>
+
+<p><code>user123</code>在进行<code>15</code>个操作之前, 不会受到限流, 之后会受到每<code>60</code>秒<code>30</code>个请求的限流.</p>
+<p>返回值包括5个, </p>
+<ol>
+<li><code>0</code>或者<code>1</code>, 表示按照限流规则是否应该被允许(0), 或拒绝(1)</li>
+<li><code>max_burst + 1</code>, 限流的全部数量</li>
+<li>剩余的限流数量</li>
+<li>应当重试的时间间隔(如果被限流)</li>
+<li>限流被重置所需时间</li>
+</ol>
+<hr>
+<h3 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
 <p>如果想利用多核, 可以启动多个Redis实例. </p>
-<p>注: 这里的单线程指的是Redis进行数据操作的是单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
+<p>注: 这里的单线程指的是Redis进行数据操作使用单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
+<hr>
+<h3 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h3><p>在处理多个请求时, Redis单线程使用IO复用模型维持与多个客户端的链接.</p>
 <hr>
 <p>参考:</p>
 <p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
@@ -4758,7 +4869,7 @@
 <ol>
 <li>读未提交(<code>Read uncommitted</code>): 事务可以读取到其他事务未提交的数据, 这一级别可能引起脏数据</li>
 <li>读提交(<code>Read committed</code>): 事务仅可读取到其他事务已提交的数据. 这一级别解决了脏数据问题</li>
-<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了可重复度问题</li>
+<li>可重复读(<code>Repeatable read</code>): 事务两次读取的数据保持一致, 这一级别解决了不可重复读问题</li>
 <li>可串行化(<code>Serializable</code>): 所有事务的执行结果可以等价为按照某个次序<strong>串行</strong>执行, 这一级别解决了幻读问题.</li>
 </ol>
 <p>隔离级别的达成是结果. </p>
@@ -4767,7 +4878,7 @@
 <tr>
 <th>隔离级别</th>
 <th>脏读</th>
-<th>不可重复度</th>
+<th>不可重复读</th>
 <th>幻读</th>
 </tr>
 </thead>
@@ -5331,7 +5442,7 @@ IX-->IS;</pre>
 <hr>
 <h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
 <hr>
-<h3 id><a href="#" class="headerlink" title></a></h3>]]></content>
+]]></content>
       <tags>
         <tag>缓存</tag>
       </tags>

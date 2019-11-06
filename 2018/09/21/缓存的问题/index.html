@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="缓存雪崩Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉. 缓存雪崩的原因包括:  大量key在同一时间超时 缓存服务器宕机   解决方案在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期. 对热点数据, 不设置过期时间, 当内容变化时只进行更新操作. 使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-05T13:16:59.861Z">
+<meta property="og:updated_time" content="2019-11-06T08:20:58.622Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="缓存雪崩, 击穿, 穿透">
 <meta name="twitter:description" content="缓存雪崩Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉. 缓存雪崩的原因包括:  大量key在同一时间超时 缓存服务器宕机   解决方案在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期. 对热点数据, 不设置过期时间, 当内容变化时只进行更新操作. 使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之">
@@ -404,7 +404,7 @@
 <hr>
 <h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
 <hr>
-<h3 id><a href="#" class="headerlink" title></a></h3>
+
       
     </div>
     
@@ -523,7 +523,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -569,7 +569,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">1.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存穿透"><span class="nav-number">2.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-1"><span class="nav-number">2.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存击穿"><span class="nav-number">3.</span> <span class="nav-text">缓存击穿</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-2"><span class="nav-number">3.1.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用互斥锁"><span class="nav-number">3.1.1.</span> <span class="nav-text">使用互斥锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#刷新key的超时时间"><span class="nav-number">3.1.2.</span> <span class="nav-text">刷新key的超时时间</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存预热"><span class="nav-number">4.</span> <span class="nav-text">缓存预热</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text"></span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">1.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存穿透"><span class="nav-number">2.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-1"><span class="nav-number">2.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存击穿"><span class="nav-number">3.</span> <span class="nav-text">缓存击穿</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-2"><span class="nav-number">3.1.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用互斥锁"><span class="nav-number">3.1.1.</span> <span class="nav-text">使用互斥锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#刷新key的超时时间"><span class="nav-number">3.1.2.</span> <span class="nav-text">刷新key的超时时间</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存预热"><span class="nav-number">4.</span> <span class="nav-text">缓存预热</span></a></li></ol></div>
             
 
           </div>
