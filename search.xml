@@ -3397,6 +3397,71 @@
       </tags>
   </entry>
   <entry>
+    <title>Django Contenttype</title>
+    <url>/2019/07/03/Django%20contenttype/</url>
+    <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
+<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
+<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
+<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
+<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
+<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
+<hr>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
+<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
+<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
+<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
+<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
+<hr>
+<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
+<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
+<ol>
+<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
+<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
+<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
+</ol>
+<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
+<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
+<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
+<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
+<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
+<hr>
+<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
+
+<p>相关模型</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+
+<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
+
+<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
+
+<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>下面使用反向关联名和反向查询名完成相同操作:</p>
+<p>创建标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
+<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
+]]></content>
+      <tags>
+        <tag>Django</tag>
+        <tag>Contenttype</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django+Mysql实现赞踩系统</title>
     <url>/2019/07/03/Django%E7%82%B9%E8%B5%9E%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<p>主要包括两个部分: </p>
@@ -3472,71 +3537,6 @@
       <tags>
         <tag>Django</tag>
         <tag>赞踩系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Django Contenttype</title>
-    <url>/2019/07/03/Django%20contenttype/</url>
-    <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
-<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
-<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
-<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
-<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
-<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
-<hr>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
-<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
-<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
-<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
-<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
-<hr>
-<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
-<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
-<ol>
-<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
-<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
-<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
-</ol>
-<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
-<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
-<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
-<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
-<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
-<hr>
-<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
-
-<p>相关模型</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
-
-<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>下面使用反向关联名和反向查询名完成相同操作:</p>
-<p>创建标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
-<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
-]]></content>
-      <tags>
-        <tag>Django</tag>
-        <tag>Contenttype</tag>
       </tags>
   </entry>
   <entry>
@@ -3697,6 +3697,48 @@
       </tags>
   </entry>
   <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基础算法, Python描述</title>
     <url>/2019/06/01/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
@@ -3743,48 +3785,6 @@
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4642,7 +4642,7 @@
 <li>客户端连接</li>
 </ol>
 <hr>
-<h3 id="创建多个redis节点"><a href="#创建多个redis节点" class="headerlink" title="创建多个redis节点"></a>创建多个redis节点</h3><p>每个节点是一个redis实例, 官方给出作为一个<strong>节点</strong>的最小配置项如下:</p>
+<h3 id="创建多个节点"><a href="#创建多个节点" class="headerlink" title="创建多个节点"></a>创建多个节点</h3><p>每个节点是一个redis实例, 官方给出作为一个<strong>节点</strong>的最小配置项如下:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cluster-enabled yes  </span><br><span class="line">cluster-config-file nodes.conf  </span><br><span class="line">cluster-node-timeout 5000  </span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
 
 <p><code>cluster-config-file</code> 指定保存节点信息状态的文件, 我们只需要为这个文件指名, 但不需要手动管理该文件, 会由Cluster进行创建和随时更新.<br><code>cluster-node-timeout</code> 指定在一个节点在无响应多少毫秒后视为不可达.</p>

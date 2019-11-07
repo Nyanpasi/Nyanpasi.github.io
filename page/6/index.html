@@ -997,7 +997,7 @@
 <li>客户端连接</li>
 </ol>
 <hr>
-<h3 id="创建多个redis节点"><a href="#创建多个redis节点" class="headerlink" title="创建多个redis节点"></a>创建多个redis节点</h3><p>每个节点是一个redis实例, 官方给出作为一个<strong>节点</strong>的最小配置项如下:</p>
+<h3 id="创建多个节点"><a href="#创建多个节点" class="headerlink" title="创建多个节点"></a>创建多个节点</h3><p>每个节点是一个redis实例, 官方给出作为一个<strong>节点</strong>的最小配置项如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cluster-enabled yes  </span><br><span class="line">cluster-config-file nodes.conf  </span><br><span class="line">cluster-node-timeout 5000  </span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
 
 <p><code>cluster-config-file</code> 指定保存节点信息状态的文件, 我们只需要为这个文件指名, 但不需要手动管理该文件, 会由Cluster进行创建和随时更新.<br><code>cluster-node-timeout</code> 指定在一个节点在无响应多少毫秒后视为不可达.</p>
