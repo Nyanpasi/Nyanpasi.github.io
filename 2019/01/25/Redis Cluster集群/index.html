@@ -92,7 +92,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="数据库,Redis,">
 
 
 
@@ -103,16 +103,18 @@
 
 
 
-<meta name="description" content="技术">
-<meta property="og:type" content="website">
-<meta property="og:title" content="紫秋的个人博客">
-<meta property="og:url" content="http://yoursite.com/tags/django-rest-framework中文文档/page/2/index.html">
+<meta name="description" content="Redis ClusterRedis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量. Cluster提供将多个redis实例作为一个整体, 根据slot的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存. 每个被分配了一部分槽的redis实例称为一个节点, 在建立集群后, 为每个节点设置主从复制, 并在master出错时,">
+<meta name="keywords" content="数据库,Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis Cluster 集群">
+<meta property="og:url" content="http://yoursite.com/2019/01/25/Redis Cluster集群/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="技术">
+<meta property="og:description" content="Redis ClusterRedis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量. Cluster提供将多个redis实例作为一个整体, 根据slot的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存. 每个被分配了一部分槽的redis实例称为一个节点, 在建立集群后, 为每个节点设置主从复制, 并在master出错时,">
 <meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-11-07T16:30:05.303Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="紫秋的个人博客">
-<meta name="twitter:description" content="技术">
+<meta name="twitter:title" content="Redis Cluster 集群">
+<meta name="twitter:description" content="Redis ClusterRedis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量. Cluster提供将多个redis实例作为一个整体, 根据slot的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存. 每个被分配了一部分槽的redis实例称为一个节点, 在建立集群后, 为每个节点设置主从复制, 并在master出错时,">
 
 
 
@@ -142,13 +144,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/django-rest-framework中文文档/page/2/">
+  <link rel="canonical" href="http://yoursite.com/2019/01/25/Redis Cluster集群/">
 
 
 
 
 
-  <title>Tag: django-rest-framework中文文档 | 紫秋的个人博客</title>
+  <title>Redis Cluster 集群 | 紫秋的个人博客</title>
   
 
 
@@ -167,7 +169,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,290 +285,195 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block tag">
-
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>django-rest-framework中文文档<small>Tag</small>
-        </h1>
-      </div>
-
-      
-        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis Cluster集群/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/10/03/16. 分页器 Paginator/" itemprop="url">
-              
-                <span itemprop="name">16. 分页 Pagination</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">Redis Cluster 集群</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T18:01:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T18:59:21+08:00">
+                2019-01-25
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><span>该文章被访问</span>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/15. 过滤 Filter/" itemprop="url">
-              
-                <span itemprop="name">15. 过滤 Filter</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:59:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+      
 
       
-        
+        <h3 id="Redis-Cluster"><a href="#Redis-Cluster" class="headerlink" title="Redis Cluster"></a>Redis Cluster</h3><p>Redis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量.</p>
+<p>Cluster提供将多个redis实例作为一个整体, 根据<code>slot</code>的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存.</p>
+<p>每个被分配了一部分槽的redis实例称为一个节点, 在建立集群后, 为每个节点设置主从复制, 并在master出错时, 将slave提升为master.</p>
+<p>Cluster的主从切换并不需要使用Sentinel, 而是通过多个节点之间的通信协商.</p>
+<p>创建集群的流程为</p>
+<ol>
+<li>创建多个Redis节点</li>
+<li>创建集群</li>
+<li>使用客户端连接</li>
+</ol>
+<hr>
+<h3 id="创建多个redis节点"><a href="#创建多个redis节点" class="headerlink" title="创建多个redis节点"></a>创建多个redis节点</h3><p>每个节点是一个redis实例, 官方给出作为一个<strong>节点</strong>的最小配置项如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cluster-enabled yes  </span><br><span class="line">cluster-config-file nodes.conf  </span><br><span class="line">cluster-node-timeout 5000  </span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+<p><code>cluster-config-file</code> 指定保存节点信息状态的文件, 我们只需要为这个文件指名, 但不需要手动管理该文件, 会由Cluster进行创建和随时更新.<br><code>cluster-node-timeout</code> 指定在一个节点在无响应多少毫秒后视为不可达.</p>
+<p>按照推荐, 我们使用docker启动多个实例</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7000</span><br></pre></td></tr></table></figure>
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/14. 限流/" itemprop="url">
-              
-                <span itemprop="name">14. 限流 Throttling</span>
-              
-            </a>
-        
-      </h2>
+<p>启动6个实例, 端口号分布在<code>7000</code>到<code>7005</code>之间.</p>
+<hr>
+<h3 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h3><p>根据最新5.0+版本<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">官方文档</a>, 我们应该使用redis-cli创建集群.</p>
+<p>使用容器运行一个客户端, 并运行创建集群命令:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli --cluster create \</span><br><span class="line">47.94.152.34:7000 \</span><br><span class="line">47.94.152.34:7001 \</span><br><span class="line">47.94.152.34:7002 \</span><br><span class="line">47.94.152.34:7003 \</span><br><span class="line">47.94.152.34:7004 \</span><br><span class="line">47.94.152.34:7005 \</span><br><span class="line">--cluster-replicas 1</span><br></pre></td></tr></table></figure>
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:58:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
+<p>其中, <code>--cluster-replicas</code>选项指定每个节点应当拥有几个从节点</p>
+<p>之后, redis-cli会给出具体配置, 例如哪几个节点作为主节点, 哪几个节点作为从节点, 每个节点的<code>ID</code>和被分配的槽的范围, 输入yes确认, 开始搭建集群</p>
+<p>直至获得输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
 
-    </header>
-  </article>
+<p>集群搭建成功.</p>
+<hr>
+<h3 id="访问集群"><a href="#访问集群" class="headerlink" title="访问集群"></a>访问集群</h3><p>访问集群的操作与访问单个redis实例不同, 因为每个节点都只负责一部分槽.</p>
+<p>可以访问任何一个节点, 但除非所读写的键正好在该节点所分配的槽的范围内, 否则节点会返回一个Moved错误, 并给出该槽被分配在节点的地址.</p>
+<p>需要一个封装良好的客户端, 来进行对集群的操作, 例如python的<code>redis-py-cluster</code>包.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> rediscluster <span class="keyword">import</span> RedisCluster</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>startup_nodes = [</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7000"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7001"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7002"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7003"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7004"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7005"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc = RedisCluster(startup_nodes=startup_nodes, decode_responses=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'hello'</span>, <span class="string">'world!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'hello'</span>)</span><br><span class="line"><span class="string">'world!'</span></span><br></pre></td></tr></table></figure>
 
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/13. 缓存/" itemprop="url">
-              
-                <span itemprop="name">13. 缓存 Cache</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:57:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/12. 权限/" itemprop="url">
-              
-                <span itemprop="name">12. 权限 Permissions</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:56:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/11. 验证器/" itemprop="url">
-              
-                <span itemprop="name">11. 序列化器 Validator</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:55:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/10.2 序列化器字段-关系字段/" itemprop="url">
-              
-                <span itemprop="name">10.2 序列化器字段:关系字段 Serializer Field</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:55:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/10.1 序列化器字段/" itemprop="url">
-              
-                <span itemprop="name">10.1 序列化器字段:非关系字段 Serializer Field</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:54:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/9.2 序列化器/" itemprop="url">
-              
-                <span itemprop="name">9.2 序列化器:内置序列化器 Serializer</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:53:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/03/9. 序列化器/" itemprop="url">
-              
-                <span itemprop="name">9.1 序列化器:数据验证 Serializer</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-10-03T17:52:47+08:00" content="2019-10-03">
-          10-03
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+<hr>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a></p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/25/Redis基础/" rel="next" title="Redis基础">
+                <i class="fa fa-chevron-left"></i> Redis基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/25/Redis 主从复制和Sentinel/" rel="prev" title="Redis主从复制和哨兵">
+                Redis主从复制和哨兵 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/tags/django-rest-framework中文文档/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/tags/django-rest-framework中文文档/">1</a><span class="page-number current">2</span><a class="page-number" href="/tags/django-rest-framework中文文档/page/3/">3</a><a class="extend next" rel="next" href="/tags/django-rest-framework中文文档/page/3/"><i class="fa fa-angle-right"></i></a>
-  </nav>
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -574,6 +481,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -594,8 +505,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -646,6 +566,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-Cluster"><span class="nav-number">1.</span> <span class="nav-text">Redis Cluster</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建多个redis节点"><span class="nav-number">2.</span> <span class="nav-text">创建多个redis节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建集群"><span class="nav-number">3.</span> <span class="nav-text">创建集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问集群"><span class="nav-number">4.</span> <span class="nav-text">访问集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -807,6 +743,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
