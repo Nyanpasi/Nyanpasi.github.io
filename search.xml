@@ -4631,7 +4631,8 @@
     <title>Redis Cluster 集群</title>
     <url>/2019/01/25/Redis%20Cluster%E9%9B%86%E7%BE%A4/</url>
     <content><![CDATA[<h3 id="Redis-Cluster"><a href="#Redis-Cluster" class="headerlink" title="Redis Cluster"></a>Redis Cluster</h3><p>Redis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量.</p>
-<p>Cluster提供将多个redis实例作为一个整体, 根据<code>slot</code>的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存.</p>
+<p>Cluster提供将多个redis实例作为一个整体, 使用哈希槽的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存.</p>
+<p>即, Cluster解决的是Redis的性能和扩展性问题.</p>
 <p>每个被分配了一部分槽的redis实例称为一个节点, 在建立集群后, 为每个节点设置主从复制, 并在master出错时, 将slave提升为master.</p>
 <p>Cluster的主从切换并不需要使用Sentinel, 而是通过多个节点之间的通信协商.</p>
 <p>创建集群的流程为</p>
@@ -4649,6 +4650,7 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7000</span><br></pre></td></tr></table></figure>
 
 <p>启动6个实例, 端口号分布在<code>7000</code>到<code>7005</code>之间.</p>
+<p>每个启动的实例会分配一个id, 用作该实例的唯一标识, 每个节点靠ID来记录每个其他节点, 而不是IP和端口, 因为IP和端口可能会变化, 但唯一的节点标识符在整个节点的生命周期中保持不变, 这个ID称之为节点ID(<code>Node ID</code>).</p>
 <hr>
 <h3 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h3><p>根据最新5.0+版本<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">官方文档</a>, 我们应该使用redis-cli创建集群.</p>
 <p>使用容器运行一个客户端, 并运行创建集群命令:</p>
@@ -4666,8 +4668,90 @@
 <p>需要一个封装良好的客户端, 来进行对集群的操作, 例如python的<code>redis-py-cluster</code>包.</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> rediscluster <span class="keyword">import</span> RedisCluster</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>startup_nodes = [</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7000"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7001"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7002"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7003"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7004"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7005"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc = RedisCluster(startup_nodes=startup_nodes, decode_responses=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'hello'</span>, <span class="string">'world!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'hello'</span>)</span><br><span class="line"><span class="string">'world!'</span></span><br></pre></td></tr></table></figure>
 
+<p>或是使用redis-cli进行读写测试, 注意启动时增加了<code>-c</code>参数以连接cluster.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 -c</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">redis 127.0.0.1:7000&gt; <span class="built_in">set</span> foo bar</span><br><span class="line">-&gt; Redirected to slot [12182] located at 127.0.0.1:7002</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:7002&gt; <span class="built_in">set</span> hello world</span><br><span class="line">-&gt; Redirected to slot [866] located at 127.0.0.1:7000</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:7000&gt; get foo</span><br><span class="line">-&gt; Redirected to slot [12182] located at 127.0.0.1:7002</span><br><span class="line"><span class="string">"bar"</span></span><br><span class="line">redis 127.0.0.1:7000&gt; get hello</span><br><span class="line">-&gt; Redirected to slot [866] located at 127.0.0.1:7000</span><br><span class="line"><span class="string">"world"</span></span><br></pre></td></tr></table></figure>
+
 <hr>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a></p>
+<h3 id="TCP连接"><a href="#TCP连接" class="headerlink" title="TCP连接"></a>TCP连接</h3><p>每个节点会打开两个TCP连接, 一个进行数据操作的端口, 另一个10000偏移量的端口则进行节点间的通信.</p>
+<p>包括检测错误, 更新配置, 故障转移授权等, 客户端不应该尝试连接第二个端口, 但要保证该端口被开放.</p>
+<hr>
+<h3 id="数据分片"><a href="#数据分片" class="headerlink" title="数据分片"></a>数据分片</h3><p>Redis不使用一致性hash, 而是使用哈希槽(hash slot)的概念, 每个集群共拥有<code>16384</code>个槽, 对键进行CRC16编码然后对16384取模即可获得该键所属槽位.</p>
+<p>集群中的每个节点负责哈希槽的一个子集, 例如在一个3个主节点的集群中, 每个节点负责的槽范围为:</p>
+<ul>
+<li>节点A 0-5500</li>
+<li>节点B 5501-11000</li>
+<li>节点C 11001-16384</li>
+</ul>
+<p>使用槽的概念让添加和移除节点非常容易, 例如增加一个节点D, 只需要从A, B, C中移动一些槽到节点D即可.</p>
+<p>而如果要删除A节点, 则将其所有的槽到B和C. 当A节点被清空之后, 就可以将其删除.</p>
+<p>移动槽的过程不需要停止操作, 所以添加移除节点, 或是更改某个节点哈希槽的百分比, 不需要任何停机时间.</p>
+<hr>
+<h3 id="键hash标签"><a href="#键hash标签" class="headerlink" title="键hash标签"></a>键hash标签</h3><p><code>Hash Tag</code>指的是一个用于计算键哈希槽的部分的标记, 默认是<code>{}</code>, 即键中包含<code>{}</code>时, 仅<code>{}</code>内的部分会用于计算槽位</p>
+<p>Redis Cluster并不支持<strong>涉及多个节点</strong>的多键操作, 因此采用<code>Hash Tag</code>可以保证采用了相同<code>Hash Tag</code>的多个键被分配至同一个槽位.</p>
+<p>当然, 如果因为键中本来就需要包含不作为键hash标志的<code>{}</code>, 根据规则也可以绕开这个机制, 详情查看<a href="https://redis.io/topics/cluster-spec" target="_blank" rel="noopener">官方文档</a></p>
+<hr>
+<h3 id="集群的主从模型"><a href="#集群的主从模型" class="headerlink" title="集群的主从模型"></a>集群的主从模型</h3><p>为集群的每个节点建立从节点, 保证了每个节点的高可用.</p>
+<p>Redis集群的主从切换并不由外置的Sentinel作为监控, 而是由集群中每个节点共同执行.</p>
+<p>自动主从切换的前提是半数以上的master存活, 这就是为什么官方推荐至少要3个以上的节点作为一个集群.</p>
+<hr>
+<h3 id="集群的一致性保证"><a href="#集群的一致性保证" class="headerlink" title="集群的一致性保证"></a>集群的一致性保证</h3><p>Redis集群并不保证强一致性, 以下情况可能发生数据不一致, 例如:</p>
+<ol>
+<li>客户端写入主节点</li>
+<li>主从复制尚未完成时主节点挂掉</li>
+<li>从节点被提升为主节点</li>
+</ol>
+<p>此时这个写操作就永久地丢失了. 又或者:</p>
+<ol>
+<li>发生了网络分割, 少数主节点被孤立,</li>
+<li>在节点超时(<code>node timeout</code>)之前, 客户端继续写入这些主节点</li>
+<li>多数主节点注意到少数主节点不可达, 于是将其附属的从节点提升为主节点</li>
+</ol>
+<p>这样, 在整个集群未确认少数主节点不可达的这段时间内, 客户端对这些异常主节点的写操作就丢失了.</p>
+<p>不过情况并不会持续, 在节点超时之后, 被分割的少数主节点仍然无法感知到集群中多数主节点, 会自动停止接受写请求.</p>
+<hr>
+<h3 id="移动哈希槽-重新分片"><a href="#移动哈希槽-重新分片" class="headerlink" title="移动哈希槽(重新分片)"></a>移动哈希槽(重新分片)</h3><p>使用<code>reshard</code>指令, 参数为集群中任意一个节点</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster reshard 47.94.152.34:7000</span><br></pre></td></tr></table></figure>
+
+<p>之后会展示现存节点的信息, 包括id, 各个主节点哈希槽分配数量和范围, 之后提示:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; How many slots do you want to move (from 1 to 16384)?</span><br><span class="line">1000</span><br><span class="line">&gt;&gt;&gt; What is the receiving node ID</span><br><span class="line">caefa18d0e4ba73914f3cf434a853a3dd6743b5f</span><br><span class="line">&gt;&gt;&gt; Please enter all the source node IDs.</span><br><span class="line">	Type &apos;all&apos; to use all the nodes as source nodes for the hash slots. </span><br><span class="line">	Type &apos;done&apos; once you entered all the source nodes IDs.</span><br><span class="line">all</span><br></pre></td></tr></table></figure>
+
+<p>移动后, 每个节点所分配的哈希槽不一定是连续的, 但在总数上是符合预期的.</p>
+<hr>
+<h3 id="客户端的数据访问"><a href="#客户端的数据访问" class="headerlink" title="客户端的数据访问"></a>客户端的数据访问</h3><p>分片之后, 盲目对节点进行读写, 大概率不会恰好命中键哈希槽所属的节点, 这意味着我们需要与redis服务器通信两次</p>
+<ol>
+<li>发起请求读写请求, 失败, 但获得了键的槽位和该槽所属的节点的地址</li>
+<li>再次发起请求, 读写成功.</li>
+</ol>
+<p>实际上, 为了避免这种情况, Cluster配置了slot表, 客户端首先通过slots命令获得slot表, 获知各个槽位由哪些节点负责, 之后的请求就可以一发中的.</p>
+<p>当然, 槽位不是一成不变的, 客户端需要在合适的时机(例如设置一个超时时间或是在多次未直接命中后)更新这个表.</p>
+<hr>
+<h3 id="添加一个新的节点"><a href="#添加一个新的节点" class="headerlink" title="添加一个新的节点"></a>添加一个新的节点</h3><p>添加一个新的主节点, 并将一些槽移至该节点, 或是将其设置为一个slave, 从节点.</p>
+<h4 id="启动一个空节点"><a href="#启动一个空节点" class="headerlink" title="启动一个空节点"></a>启动一个空节点</h4><p>使用redis-cli向集群发送消息, 让新的节点加入集群.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7006</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="作为主节点加入集群"><a href="#作为主节点加入集群" class="headerlink" title="作为主节点加入集群"></a>作为主节点加入集群</h4><p>使用 <code>add-node</code>指令, 第一个参数为空节点, 第二个参数为集群中任意一个现存节点:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster add-node 47.94.152.34:7006 47.94.152.34:7000</span><br></pre></td></tr></table></figure>
+
+<p>新添加的实例是没有被分配任何哈希槽的, 需要手动进行哈希槽的更改.</p>
+<hr>
+<h4 id="作为从节点加入集群"><a href="#作为从节点加入集群" class="headerlink" title="作为从节点加入集群"></a>作为从节点加入集群</h4><p>与作为主节点不同点为命令中添加 <code>--cluster-slave</code>选项.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster add-node 47.94.152.34:7006 47.94.152.34:7000 \</span><br><span class="line">--cluster-slave</span><br></pre></td></tr></table></figure>
+
+<p>该空节点会自动成为当前集群中拥有从节点最少的主节点的从节点.</p>
+<p>如果要指定其作为某个特定的主节点的slave, 则还需要使用<code>--cluster-master-id</code>选项指定:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster add-node 47.94.152.34:7006 47.94.152.34:7000 \</span><br><span class="line">--cluster-slave \</span><br><span class="line">--cluster-master-id 3c3a0c74aae0b56170ccb03a76b60cfe7dc1912e</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="移除一个节点"><a href="#移除一个节点" class="headerlink" title="移除一个节点"></a>移除一个节点</h3><p>使用命令<code>del-node</code>即可, 第一个参数为集群中任意一个节点, 第二个参数则是想要移除的节点的ID</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster del-node 47.94.152.34:7000 8b7810a4087f0a6e6cac390c950e5d9c9108dae3</span><br></pre></td></tr></table></figure>
+
+<p>注意一个被移除的主节点必须是空节点, 即需要将其哈希槽分配至其他主节点, 或者使用手动故障转移, 将该节点先降为salve.</p>
+<hr>
+<hr>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a><br><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a><br><a href="https://my.oschina.net/neuront/blog/758622" target="_blank" rel="noopener">https://my.oschina.net/neuront/blog/758622</a><br><a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">https://redis.io/topics/cluster-tutorial</a><br><a href="https://juejin.im/post/5c1bb40a6fb9a049f36211b0" target="_blank" rel="noopener">https://juejin.im/post/5c1bb40a6fb9a049f36211b0</a><br><a href="https://wiki.jikexueyuan.com/project/redis/cluster-down.html" target="_blank" rel="noopener">https://wiki.jikexueyuan.com/project/redis/cluster-down.html</a></p>
 ]]></content>
       <tags>
         <tag>数据库</tag>
@@ -4769,13 +4853,14 @@
 <li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
 <li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
 </ol>
+<p>RDB为全量持久化, AOF为增量持久化.</p>
 <hr>
 <p>RDB的优势在于:</p>
 <ol>
 <li>只包含一个文件, 方便备份.</li>
 <li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
 <li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
-<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行保存工作, 父进程无需执行任何<code>IO</code>.</li>
+<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行使用写时复制的方式进行保存工作, 父进程不执行任何持久化工作.</li>
 </ol>
 <p>RDB的劣势在于:</p>
 <ol>
@@ -4839,6 +4924,10 @@
 <p>注: 这里的单线程指的是Redis进行数据操作使用单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
 <hr>
 <h3 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h3><p>在处理多个请求时, Redis单线程使用IO复用模型维持与多个客户端的链接.</p>
+<hr>
+<h3 id="Pipe"><a href="#Pipe" class="headerlink" title="Pipe"></a>Pipe</h3><p>将多个独立的命令一次性发送, 然后一次性获得结果.</p>
+<p>通过减少与Redis服务器的通信次数来实现降低往返时延, 最大程度利用服务端处理能力.</p>
+<p>pipe的实现是在客户端, redis执行命令仍然是逐条进行的.</p>
 <hr>
 <p>参考:</p>
 <p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>

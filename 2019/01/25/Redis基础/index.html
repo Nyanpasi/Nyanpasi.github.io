@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-07T16:30:44.587Z">
+<meta property="og:updated_time" content="2019-11-07T19:36:33.530Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis基础">
 <meta name="twitter:description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
@@ -463,13 +463,14 @@
 <li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
 <li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
 </ol>
+<p>RDB为全量持久化, AOF为增量持久化.</p>
 <hr>
 <p>RDB的优势在于:</p>
 <ol>
 <li>只包含一个文件, 方便备份.</li>
 <li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
 <li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
-<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行保存工作, 父进程无需执行任何<code>IO</code>.</li>
+<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行使用写时复制的方式进行保存工作, 父进程不执行任何持久化工作.</li>
 </ol>
 <p>RDB的劣势在于:</p>
 <ol>
@@ -533,6 +534,10 @@
 <p>注: 这里的单线程指的是Redis进行数据操作使用单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
 <hr>
 <h3 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h3><p>在处理多个请求时, Redis单线程使用IO复用模型维持与多个客户端的链接.</p>
+<hr>
+<h3 id="Pipe"><a href="#Pipe" class="headerlink" title="Pipe"></a>Pipe</h3><p>将多个独立的命令一次性发送, 然后一次性获得结果.</p>
+<p>通过减少与Redis服务器的通信次数来实现降低往返时延, 最大程度利用服务端处理能力.</p>
+<p>pipe的实现是在客户端, redis执行命令仍然是逐条进行的.</p>
 <hr>
 <p>参考:</p>
 <p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
@@ -703,7 +708,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本数据类型"><span class="nav-number">1.</span> <span class="nav-text">基本数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串"><span class="nav-number">1.1.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列表-List"><span class="nav-number">1.2.</span> <span class="nav-text">列表(List)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字典-hash"><span class="nav-number">1.3.</span> <span class="nav-text">字典(hash)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#渐进式rehash"><span class="nav-number">1.3.1.</span> <span class="nav-text">渐进式rehash</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合-set"><span class="nav-number">1.4.</span> <span class="nav-text">集合(set)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有序集合-zset"><span class="nav-number">1.5.</span> <span class="nav-text">有序集合(zset)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#跳跃列表-skiplist"><span class="nav-number">1.5.1.</span> <span class="nav-text">跳跃列表(skiplist)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis淘汰策略"><span class="nav-number">2.</span> <span class="nav-text">Redis淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-持久化机制"><span class="nav-number">3.</span> <span class="nav-text">Redis 持久化机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">4.</span> <span class="nav-text">Redis事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">5.</span> <span class="nav-text">HyperLogLog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">6.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis实现分布式锁"><span class="nav-number">7.</span> <span class="nav-text">Redis实现分布式锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏斗限流"><span class="nav-number">8.</span> <span class="nav-text">漏斗限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程"><span class="nav-number">9.</span> <span class="nav-text">单线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非阻塞IO"><span class="nav-number">10.</span> <span class="nav-text">非阻塞IO</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本数据类型"><span class="nav-number">1.</span> <span class="nav-text">基本数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串"><span class="nav-number">1.1.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列表-List"><span class="nav-number">1.2.</span> <span class="nav-text">列表(List)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字典-hash"><span class="nav-number">1.3.</span> <span class="nav-text">字典(hash)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#渐进式rehash"><span class="nav-number">1.3.1.</span> <span class="nav-text">渐进式rehash</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合-set"><span class="nav-number">1.4.</span> <span class="nav-text">集合(set)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有序集合-zset"><span class="nav-number">1.5.</span> <span class="nav-text">有序集合(zset)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#跳跃列表-skiplist"><span class="nav-number">1.5.1.</span> <span class="nav-text">跳跃列表(skiplist)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis淘汰策略"><span class="nav-number">2.</span> <span class="nav-text">Redis淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-持久化机制"><span class="nav-number">3.</span> <span class="nav-text">Redis 持久化机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">4.</span> <span class="nav-text">Redis事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">5.</span> <span class="nav-text">HyperLogLog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">6.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis实现分布式锁"><span class="nav-number">7.</span> <span class="nav-text">Redis实现分布式锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏斗限流"><span class="nav-number">8.</span> <span class="nav-text">漏斗限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程"><span class="nav-number">9.</span> <span class="nav-text">单线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非阻塞IO"><span class="nav-number">10.</span> <span class="nav-text">非阻塞IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pipe"><span class="nav-number">11.</span> <span class="nav-text">Pipe</span></a></li></ol></div>
             
 
           </div>
