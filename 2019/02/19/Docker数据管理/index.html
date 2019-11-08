@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求. 由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换? 答案是: 通过UnionFS将宿主机操作系统中的文件系统的文件/目录挂载到容器中, 就能够让容器和宿主机共享该文件/目录.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-18T12:04:22.522Z">
+<meta property="og:updated_time" content="2019-11-08T10:19:08.010Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker数据管理">
 <meta name="twitter:description" content="容器的生命周期与其运行的程序保持一致, 因此在运行过程中写入的数据也会在容器停止后丢失, 而数据通常有持久化的要求. 由于容器的隔离, 并不能直接从宿主机直接访问或操作容器中的数据, 那么如何进行Docker容器中的沙盒文件系统与宿主机之间的数据交换? 答案是: 通过UnionFS将宿主机操作系统中的文件系统的文件/目录挂载到容器中, 就能够让容器和宿主机共享该文件/目录.">
@@ -405,7 +405,9 @@
 <p>在开发过程中, 对于可能经常需要手动修改的配置文件, 比较适合这种挂载方式, 安全性较低, 但是方便.</p>
 <hr>
 <h3 id="Volume"><a href="#Volume" class="headerlink" title="Volume"></a>Volume</h3><hr>
-<h4 id="挂载数据卷"><a href="#挂载数据卷" class="headerlink" title="挂载数据卷"></a>挂载数据卷</h4><p>数据卷方式指定容器内哪个目录需要被挂载即可, Docker会自动将其挂载至宿主机的某个目录上. 使用<code>-v</code>或<code>--volume</code>指定容器内目录.</p>
+<h4 id="挂载数据卷"><a href="#挂载数据卷" class="headerlink" title="挂载数据卷"></a>挂载数据卷</h4><p>数据卷方式指定<strong>容器内哪个目录需要被挂载在宿主机上</strong>即可, 即容器主程序保存数据的目录.</p>
+<p>Docker会自动将其挂载至宿主机的某个位置, 由Docker进行管理.</p>
+<p>使用<code>-v</code>或<code>--volume</code>指定容器内目录.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name some-nginx -v /usr/share/nginx/html -d nginx</span><br></pre></td></tr></table></figure>
 
 <p>虽然使用的选项(<code>-v</code>)与<code>Bind Mount</code>的方式相同, 但是因为路径的格式不同, 因此可以直接区分两种方式.</p>
@@ -468,9 +470,10 @@
 <h4 id="备份数据卷"><a href="#备份数据卷" class="headerlink" title="备份数据卷"></a>备份数据卷</h4><p>创建一个数据卷容器</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /dbdata --name dbstore ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
 
-<p>假设该数据卷容器中在运行一段时间后获得了部分数据, 我们将这些数据打包, 则执行下一条命令, 包括:</p>
+<p><code>/dbdata</code>目录是容器中用来存储数据的目录, 根据各个镜像不同, 存储数据的目录也不同.</p>
+<p>假设该数据卷容器中在运行一段时间后获得了部分数据, 我们将这些数据打包, 则执行下几条命令, 包括:</p>
 <ol>
-<li>创建一个新的临时容器, 挂载<code>dbstore</code>中的数据卷</li>
+<li>创建一个新的临时容器, 挂载<code>dbstore</code>容器中的数据卷</li>
 <li>映射一个容器内目录<code>/backup</code>到宿主机当前目录</li>
 <li>使用<code>tar</code>命令, 将<code>dbstore</code>的数据卷打包至<code>/backup</code>目录</li>
 </ol>
@@ -478,7 +481,8 @@
 
 <p>之后, 我们就可以在宿主机的当前目录获得打包后的数据卷.</p>
 <hr>
-<h4 id="恢复数据卷"><a href="#恢复数据卷" class="headerlink" title="恢复数据卷"></a>恢复数据卷</h4><p>将打包后的数据恢复至一个新建容器内的数据卷内, 创建容器<code>dbstore2</code>, 同时创建一个与之相关的数据卷<code>/dbdata</code>:</p>
+<h4 id="恢复数据卷"><a href="#恢复数据卷" class="headerlink" title="恢复数据卷"></a>恢复数据卷</h4><p>一个新的容器dbstore2, 我们将上面打包的backup恢复至新容器dbstore2中</p>
+<p>在创建数据卷dbstore时, 指定数据卷 <code>/dbdata</code></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /dbdata --name dbstore2 ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
 
 <p>然后解压打包文件的内容至新容器<code>dbsotre2</code>的数据卷目录内:</p>

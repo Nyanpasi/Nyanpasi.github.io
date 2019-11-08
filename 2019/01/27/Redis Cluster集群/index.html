@@ -107,11 +107,11 @@
 <meta name="keywords" content="数据库,Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis Cluster 集群">
-<meta property="og:url" content="http://yoursite.com/2019/01/25/Redis Cluster集群/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/01/27/Redis Cluster集群/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="Redis ClusterRedis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量. Cluster提供将多个redis实例作为一个整体, 使用哈希槽的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存. 即, Cluster解决的是Redis的性能和扩展性问题. Redis集群中的每个redis实例称为一个节点, 在建立集">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-07T20:07:36.934Z">
+<meta property="og:updated_time" content="2019-11-07T20:36:05.294Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis Cluster 集群">
 <meta name="twitter:description" content="Redis ClusterRedis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量. Cluster提供将多个redis实例作为一个整体, 使用哈希槽的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存. 即, Cluster解决的是Redis的性能和扩展性问题. Redis集群中的每个redis实例称为一个节点, 在建立集">
@@ -144,7 +144,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/01/25/Redis Cluster集群/">
+  <link rel="canonical" href="http://yoursite.com/2019/01/27/Redis Cluster集群/">
 
 
 
@@ -299,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis Cluster集群/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/27/Redis Cluster集群/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -328,8 +328,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T18:59:21+08:00">
-                2019-01-25
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-27T18:59:21+08:00">
+                2019-01-27
               </time>
             
 
@@ -393,7 +393,7 @@
 <p>启动6个实例, 端口号分布在<code>7000</code>到<code>7005</code>之间.</p>
 <p>每个启动的实例会分配一个id, 用作该实例的唯一标识, 每个节点靠ID来记录每个其他节点, 而不是IP和端口, 因为IP和端口可能会变化, 但唯一的节点标识符在整个节点的生命周期中保持不变, 这个ID称之为节点ID(<code>Node ID</code>).</p>
 <hr>
-<h3 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h3><p>根据最新5.0+版本<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">官方文档</a>, 我们应该使用redis-cli创建集群.</p>
+<h3 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h3><p>根据最新5.0+版本<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">官方文档</a>, 应该使用redis-cli创建集群.</p>
 <p>使用容器运行一个客户端, 并运行创建一个3主3从的集群命令:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli --cluster create \</span><br><span class="line">47.94.152.34:7000 \</span><br><span class="line">47.94.152.34:7001 \</span><br><span class="line">47.94.152.34:7002 \</span><br><span class="line">47.94.152.34:7003 \</span><br><span class="line">47.94.152.34:7004 \</span><br><span class="line">47.94.152.34:7005 \</span><br><span class="line">--cluster-replicas 1</span><br></pre></td></tr></table></figure>
 
@@ -525,8 +525,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/25/Redis基础/" rel="next" title="Redis基础">
-                <i class="fa fa-chevron-left"></i> Redis基础
+              <a href="/2019/01/25/Redis 主从复制和Sentinel/" rel="next" title="Redis主从复制和哨兵">
+                <i class="fa fa-chevron-left"></i> Redis主从复制和哨兵
               </a>
             
           </div>
@@ -535,8 +535,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/01/25/Redis 主从复制和Sentinel/" rel="prev" title="Redis主从复制和哨兵">
-                Redis主从复制和哨兵 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/01/127.0.0.1和0.0.0.0/" rel="prev" title="127.0.0.1和0.0.0.0">
+                127.0.0.1和0.0.0.0 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
