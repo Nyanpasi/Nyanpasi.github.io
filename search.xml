@@ -93,7 +93,7 @@
 </ol>
 <hr>
 <h5 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h5><p>首先编写<code>Nginx</code>配置文件<code>nginx.conf</code>, 置于宿主机<code>/nginx/</code>目录下</p>
-<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">user</span> root;</span><br><span class="line"><span class="attribute">worker_processes</span>  <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>    mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">20m</span>;</span><br><span class="line">    <span class="attribute">gzip</span>     <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">upstream</span> uwsgi &#123;</span><br><span class="line">        <span class="attribute">server</span> uwsgi:<span class="number">8001</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">        <span class="attribute">root</span> /nginx/home;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> /media &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /static &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /api &#123;</span><br><span class="line">            <span class="attribute">uwsgi_pass</span> uwsgi;</span><br><span class="line">            <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /admin &#123;</span><br><span class="line">            <span class="attribute">uwsgi_pass</span> uwsgi;</span><br><span class="line">            <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">user</span> root;</span><br><span class="line"><span class="attribute">worker_processes</span>  <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>    mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">20m</span>;</span><br><span class="line">    <span class="attribute">gzip</span>     <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="attribute">upstream</span> uwsgi &#123;</span><br><span class="line">        <span class="attribute">server</span> uwsgi:<span class="number">8001</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">        <span class="attribute">root</span> /nginx/home;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> /media &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /static &#123;</span><br><span class="line">            <span class="attribute">root</span> /;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /api &#123;</span><br><span class="line">            <span class="attribute">uwsgi_pass</span> uwsgi;</span><br><span class="line">            <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /admin &#123;</span><br><span class="line">            <span class="attribute">uwsgi_pass</span> uwsgi;</span><br><span class="line">            <span class="attribute">include</span> uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>配置中, 上游服务器的地址使用uWSGI容器名<code>uwsgi</code>, 由Docker进行连接, 其次将vue项目build之后的index.html设为Nginx的首页文件.</p>
 <p>假设vue项目的index.html置于宿主机<code>/vueproject/</code>目录下, 在运行nginx容器时将其映射至容器内指定的nginx首页文件位置.</p>
@@ -105,7 +105,24 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --rm --name nginx -p 80:80 --link uwsgi -v /vueproject:/nginx/home -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media nginx</span><br></pre></td></tr></table></figure>
 
 <p>使用浏览器进行访问, 确认正常运行后将容器在后台启动</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --name nginx -p 80:80 --link uwsgi -v /vueproject:/nginx/home -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media nginx</span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --name nginx -p 80:80 --link uwsgi -v /vueproject:/nginx/home -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media nginx</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="开启HTTPS"><a href="#开启HTTPS" class="headerlink" title="开启HTTPS"></a>开启HTTPS</h3><p>使用let’s encrypt申请到证书, 文件放在<code>/etc/letsencrypt/</code>中,<br>包括</p>
+<ul>
+<li>accounts</li>
+<li>csr</li>
+<li>keys</li>
+<li>renewal</li>
+<li>renewal-hooks</li>
+</ul>
+<p>在申请完成后, csr文件夹中会包含一个<code>*.pem</code>文件, 即证书.</p>
+<p>而在<code>key</code>文件夹中, 包含一个<code>*.pem</code>文件, 即私钥</p>
+<p>在nginx配置文件中开启ssl, 并更改监听端口<code>443</code></p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">listen</span> <span class="number">443</span>;</span><br><span class="line"><span class="attribute">ssl</span> <span class="literal">on</span>;</span><br><span class="line"><span class="attribute">ssl_certificate</span> /etc/letsencrypt/csr/0000_csr-certbot.pem;</span><br><span class="line"><span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/keys/0000_key-certbot.pem;</span><br></pre></td></tr></table></figure>
+
+<p>更改启动nginx容器命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --rm --name nginx -p 80:80 -p 443:443 --link uwsgi -v /vueproject:/nginx/home nginx -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media -v /etc/letsencrypt:/etc/letsencrypt nginx</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>Django</tag>
         <tag>Docker</tag>
@@ -1470,93 +1487,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11. 序列化器 Validator</title>
-    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
-    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
-<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
-<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
-<a id="more"></a>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
-
-<p>运行 python manage.py shell</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
-<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset：划定唯一约束的范围</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
-</ol>
-<p>示例代码:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
-<ol>
-<li>queryset: 用于验证的查询集</li>
-<li>fields: 联合唯一约束的字段列表</li>
-<li>message: 可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
-<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
-<p>实例化时的参数</p>
-<ol>
-<li>queryset： 用于验证的查询集</li>
-<li>field： 字段名, 必须为序列化器中的字段</li>
-<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
-<li>message:可选, 验证失败时的错误消息</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
-
-<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
-<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
-<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
-<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
-
-<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
-<hr>
-<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
-<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
-<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
-<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
-<hr>
-<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
-<hr>
-<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
-<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
-<hr>
-<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
-
-<p>使用<code>set_context()</code></p>
-<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>django-rest-framework中文文档</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>10.2 序列化器字段:关系字段 Serializer Field</title>
     <url>/2019/10/03/10.2%20%E5%BA%8F%E5%88%97%E5%8C%96%E5%99%A8%E5%AD%97%E6%AE%B5-%E5%85%B3%E7%B3%BB%E5%AD%97%E6%AE%B5/</url>
     <content><![CDATA[<p>关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段.</p>
@@ -1704,6 +1634,93 @@
 <p>如果要声明一个指向使用了中间模型的<code>ManyToManyField</code>字段的序列化器关系字段, 确保设置<code>read_only=True</code>.</p>
 <p>如果想序列化包含在中间模型的额外字段的序列化结果, 可以将中间模型作为<a href="https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects" target="_blank" rel="noopener">嵌套对象</a>进行序列化. </p>
 ]]></content>
+      <tags>
+        <tag>django-rest-framework中文文档</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11. 序列化器 Validator</title>
+    <url>/2019/10/03/11.%20%E9%AA%8C%E8%AF%81%E5%99%A8/</url>
+    <content><![CDATA[<p>验证器用以确保数据的合法性.在rest-framework中, 验证器应当在字段定义时serializer的Meta中指定. </p>
+<p>如果使用的是<code>ModelSerializer</code>, 那么会自动根据<code>Model</code>的字段类型及约束自动生成相关的验证器, 因此大多数时候不太需要手写验证器.</p>
+<p>可以使用<code>repr</code>函数查看自动生成的Serializer的定义代码, 该代码包含了全部的验证逻辑, 验证逻辑也仅执行于此处.</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># models.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportRecord</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_raised = models.DateTimeField(default=timezone.now, editable=<span class="literal">False</span>)</span><br><span class="line">    reference = models.CharField(unique=<span class="literal">True</span>, max_length=<span class="number">20</span>)</span><br><span class="line">    description = models.TextField()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># serializers.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomerReportSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = CustomerReportRecord</span><br></pre></td></tr></table></figure>
+
+<p>运行 python manage.py shell</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer</span><br><span class="line">&gt;&gt;&gt; serializer = CustomerReportSerializer()</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(repr(serializer))</span><br><span class="line">CustomerReportSerializer():</span><br><span class="line">    id = IntegerField(label=<span class="string">'ID'</span>, read_only=True)</span><br><span class="line">    time_raised = DateTimeField(read_only=True)</span><br><span class="line">    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])</span><br><span class="line">    description = CharField(style=&#123;<span class="string">'type'</span>: <span class="string">'textarea'</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><hr>
+<h3 id="UniqueValidator-唯一约束验证"><a href="#UniqueValidator-唯一约束验证" class="headerlink" title="UniqueValidator 唯一约束验证"></a>UniqueValidator 唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset：划定唯一约束的范围</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+<li>lookup: 可选, 用于限定对queryset中数据的重复性定义, 默认为exact, 即该字段的值准确等于queryset中的某条数据, 视为重复</li>
+</ol>
+<p>示例代码:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueValidator</span><br><span class="line"></span><br><span class="line">slug = SlugField(</span><br><span class="line">    max_length=<span class="number">100</span>, </span><br><span class="line">    validators=[UniqueValidator(queryset=BlogPost.objects.all())]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="UniqueTogetherValidator-联合唯一约束验证"><a href="#UniqueTogetherValidator-联合唯一约束验证" class="headerlink" title="UniqueTogetherValidator 联合唯一约束验证"></a>UniqueTogetherValidator 联合唯一约束验证</h3><p>实例化时的参数:</p>
+<ol>
+<li>queryset: 用于验证的查询集</li>
+<li>fields: 联合唯一约束的字段列表</li>
+<li>message: 可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueTogetherValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># ToDo items belong to a parent list, and have an ordering defined</span></span><br><span class="line">        <span class="comment"># by the 'position' field. No two items in a given list may share</span></span><br><span class="line">        <span class="comment"># the same position.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueTogetherValidator(</span><br><span class="line">                queryset=ToDoItem.objects.all(), </span><br><span class="line">                fields=(<span class="string">'list'</span>, <span class="string">'position'</span>)</span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意：UniqueTogetherValidation类始终强制使用隐式约束, 即它所应用的所有字段始终视为required, 可以使用默认值.</p>
+<h3 id="UniqueFor-lt-Range-gt-Validator-时段内唯一约束"><a href="#UniqueFor-lt-Range-gt-Validator-时段内唯一约束" class="headerlink" title="UniqueFor&lt;Range&gt;Validator 时段内唯一约束"></a>UniqueFor&lt;Range&gt;Validator 时段内唯一约束</h3><p><code>UniqueForDateValidator</code> 当日唯一约束<br><code>UniqueForMonthValidator</code> 当月唯一约束<br><code>UniqueForYearValidator</code> 当年唯一约束</p>
+<p>实例化时的参数</p>
+<ol>
+<li>queryset： 用于验证的查询集</li>
+<li>field： 字段名, 必须为序列化器中的字段</li>
+<li>date_field： 用来判读日期的字段, 必须为序列化器中的日期相关字段</li>
+<li>message:可选, 验证失败时的错误消息</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework.validators <span class="keyword">import</span> UniqueForYearValidator</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleSerializer</span><span class="params">(serializers.Serializer)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        <span class="comment"># Blog posts should have a slug that is unique for the current year.</span></span><br><span class="line">        validators = [</span><br><span class="line">            UniqueForYearValidator(</span><br><span class="line">                queryset=BlogPostItem.objects.all(), </span><br><span class="line">                field=<span class="string">'slug'</span>, </span><br><span class="line">                date_field=<span class="string">'published'</span></span><br><span class="line">            )</span><br><span class="line">        ]</span><br></pre></td></tr></table></figure>
+
+<p>注意, <code>date_field</code>字段必须在序列化器进行验证逻辑之前传入序列化器.</p>
+<p>这意味着如果不打算从前端传入该日期字段, 则需要保证提供的默认值是在序列化器层次, 而非Model层次. 因为在验证时, Model的默认值函数尚未触发.</p>
+<p>如果使用的是ModelSerializer, 会自动将Model字段的默认值作为自己对应序列化器字段的默认值, 因此不用出现问题. </p>
+<p>而如果是手写的字段, 就必须显式地为其指定默认值, 否则该验证就无法进行.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">published = serializers.DateTimeField(required=<span class="literal">True</span>) <span class="comment">#该字段必须被前端传入</span></span><br><span class="line">published = serializers.DateTimeField(read_only=<span class="literal">True</span>, default=timezone.now) <span class="comment">#该字段不允许前端传入, 但提供默认值</span></span><br><span class="line">published = serializers.HiddenField(default=timezone.now) <span class="comment">#该字段可以由前端传入, 也提供默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>总之, 无论是限制前端必须传入该值, 抑或为其提供默认值, 保证的是当前进行验证时, 该字段已被填充.</p>
+<hr>
+<h3 id="进阶默认值用法"><a href="#进阶默认值用法" class="headerlink" title="进阶默认值用法"></a>进阶默认值用法</h3><p>当我们不希望某个字段由用户传入时, 通常将其设定为只读并指定其默认值, 不过rest-framework提供了专属字段来简化这一流程.</p>
+<p><code>CurrentUserDefault</code>: 自动填充当前用户, 在初始化时必须在context参数中传入request才可用.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">owner = serializers.HiddenField(</span><br><span class="line">    default=serializers.CurrentUserDefault()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>CreateOnlyDefault</code>: 仅当序列化器进行<strong>创建</strong>(而非更新)行为时, 生成该字段的默认值.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">created_at = serializers.DateTimeField(</span><br><span class="line">    read_only=<span class="literal">True</span>, </span><br><span class="line">    default=serializers.CreateOnlyDefault(timezone.now)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="验证器的限制"><a href="#验证器的限制" class="headerlink" title="验证器的限制"></a>验证器的限制</h2><p>在一些情况下, 必须要手写验证器, 而不是使用<code>ModelSerializer</code>自动生成的验证器.</p>
+<h3 id="联合唯一约束的某个字段被设置为可选字段-required-False"><a href="#联合唯一约束的某个字段被设置为可选字段-required-False" class="headerlink" title="联合唯一约束的某个字段被设置为可选字段(required=False)"></a>联合唯一约束的某个字段被设置为可选字段(required=False)</h3><p>有的时候确实有这种需求, 而此时默认生成的联合唯一约束验证器的行为是不明确的, 因此必须将其显式排除并酌情考虑是否需要手写一个行为明确的验证器.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BillingRecordSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">validate</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># Apply custom validation either here, or in the view.</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        fields = [<span class="string">'client'</span>, <span class="string">'date'</span>, <span class="string">'amount'</span>]</span><br><span class="line">        extra_kwargs = &#123;<span class="string">'client'</span>: &#123;<span class="string">'required'</span>: <span class="literal">False</span>&#125;&#125;</span><br><span class="line">        validators = []  <span class="comment"># Remove a default "unique together" constraint.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更新嵌套序列化器"><a href="#更新嵌套序列化器" class="headerlink" title="更新嵌套序列化器"></a>更新嵌套序列化器</h3><p>当嵌套序列化器在更新数据记录时, 唯一约束验证会将当前实例(指记录)排除其进行检查的查询集, 因为当前实例在进行序列化器被实例化时是通过<code>instance=...</code>传入的, 因此在序列化器验证时是可以直接访问的, 所以排除当前实例是可以完成的.</p>
+<p>而对于嵌套序列化器的更新操作, 实例并不可用, 也就无法排除当前实例.因此, 也需要显式地移除默认生成的验证器, 并酌情考虑是否需要手写一个验证器.</p>
+<hr>
+<h3 id="在复杂情况下调试"><a href="#在复杂情况下调试" class="headerlink" title="在复杂情况下调试"></a>在复杂情况下调试</h3><p>至少应该使用repr查看自动生成的验证器的具体代码, 如果有必要, 最好不使用ModelSerializer自动生成的验证器, 而是手写验证器, 这样可以让验证行为更加透明. </p>
+<hr>
+<h2 id="自定义验证器"><a href="#自定义验证器" class="headerlink" title="自定义验证器"></a>自定义验证器</h2><hr>
+<h3 id="基于函数的验证器"><a href="#基于函数的验证器" class="headerlink" title="基于函数的验证器"></a>基于函数的验证器</h3><p>该函数需要一个参数用以接收字段的值, 并保证在验证失败时抛出一个<code>serializers.ValidationError</code>.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">even_number</span><span class="params">(value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> value % <span class="number">2</span> != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> serializers.ValidationError(<span class="string">'This field must be an even number.'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>基于函数的验证器也可以通过直接在序列化器中定义<code>validate_&lt;field_name&gt;</code>方法的方式提供.</p>
+<hr>
+<h3 id="基于类的验证器"><a href="#基于类的验证器" class="headerlink" title="基于类的验证器"></a>基于类的验证器</h3><p>基于类的验证器需要实现<strong>call</strong>方法.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleOf</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, base)</span>:</span></span><br><span class="line">        self.base = base</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value % self.base != <span class="number">0</span>:</span><br><span class="line">            message = <span class="string">'This field must be a multiple of %d.'</span> % self.base</span><br><span class="line">            <span class="keyword">raise</span> serializers.ValidationError(message)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>set_context()</code></p>
+<p>进阶情况下, 验证器可能需要传入序列化器字段来进行验证, 可以通过声明<code>set_context()</code>方法</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_context</span><span class="params">(self, serializer_field)</span>:</span></span><br><span class="line">    <span class="comment"># Determine if this is an update or a create operation.</span></span><br><span class="line">    <span class="comment"># In `__call__` we can then use that information to modify the validation behavior.</span></span><br><span class="line">    self.is_update = serializer_field.parent.instance <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>django-rest-framework中文文档</tag>
       </tags>
@@ -3134,6 +3151,29 @@
       </tags>
   </entry>
   <entry>
+    <title>使用Paramiko通过SSH传输文件</title>
+    <url>/2019/09/22/Paramiko%E9%80%9A%E8%BF%87SSH%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>创建连接端口和SFTP客户端</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> paramiko</span><br><span class="line"></span><br><span class="line">transport = paramiko.Transport((<span class="string">'47.94.152.34'</span>, <span class="number">22</span>))</span><br><span class="line">transport.connect(username=<span class="string">'root'</span>, password=<span class="string">'7sILSioAySk7tgNWB'</span>)</span><br><span class="line">sftp = paramiko.SFTPClient.from_transport(transport)</span><br></pre></td></tr></table></figure>
+
+<p>上传文件</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sftp.put(<span class="string">'Windows.txt'</span>, <span class="string">'/root/Windows.txt'</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>获取文件</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sftp.get(<span class="string">'/root/Linux.zip'</span>, <span class="string">'Linux.zip'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>完成后关闭端口</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">transport.close()</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://www.cnblogs.com/sch01ar/p/8024744.html" target="_blank" rel="noopener">https://www.cnblogs.com/sch01ar/p/8024744.html</a><br><a href="https://www.jianshu.com/p/5ee84be6e3c8" target="_blank" rel="noopener">https://www.jianshu.com/p/5ee84be6e3c8</a></p>
+]]></content>
+      <tags>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo+Next添加访问统计</title>
     <url>/2019/08/25/Hexo%E6%B7%BB%E5%8A%A0%E8%AE%BF%E9%97%AE%E7%BB%9F%E8%AE%A1/</url>
     <content><![CDATA[<p>如果使用的是Next主题的话, 已经集成了busuanzi统计, 但默认处于禁用状态.</p>
@@ -3273,6 +3313,30 @@
       <tags>
         <tag>数据库</tag>
         <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx更改root无效</title>
+    <url>/2019/07/23/Nginx%E6%9B%B4%E6%94%B9root%E8%AE%BE%E7%BD%AE%E9%A1%B9%E6%97%A0%E6%95%88/</url>
+    <content><![CDATA[<p>之前一直用Docker部署Nginx, 从来没有遇见过这个问题.</p>
+<p>这次因为要申请<code>Let&#39;s Entrypt</code>的SSL证书, 所以不得不在宿主机上构建一个能够返回静态文件的网站.</p>
+<p>使用Nginx返回文件需要设定目录, Nginx的默认根目录为<code>/usr/share/nginx/html</code>, 而我想更改这个目录</p>
+<p>打算更改为<code>/nginx/home</code>, 于是修改<code>nginx.conf</code>中的root选项, 不过之后却一直<code>404</code>.</p>
+<p>打开错误日志</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo tail -n 20 /var/<span class="built_in">log</span>/nginx/error.log</span><br></pre></td></tr></table></figure>
+
+<p>显示Nginx一直在默认目录下查找文件, 对root的更改未生效.</p>
+<p>原因是因为设置项中包含了这一项</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">include /etc/nginx/conf.d/*.conf;</span><br></pre></td></tr></table></figure>
+
+<p>该项所指定的包含项中有<code>default.conf</code>, 而其中设置了root, 也就是更改的设置又被该文件给覆盖了.</p>
+<p>我实在无法理解这样设计的意义是什么, 不过解决方案倒是很简单, 直接将<code>include</code>行注释掉即可.</p>
+<hr>
+<p>参考</p>
+<p><a href="https://blog.csdn.net/yin138/article/details/79267169" target="_blank" rel="noopener">https://blog.csdn.net/yin138/article/details/79267169</a></p>
+]]></content>
+      <tags>
+        <tag>Nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -3697,6 +3761,48 @@
       </tags>
   </entry>
   <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基础算法, Python描述</title>
     <url>/2019/06/01/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>二分查找算法(<code>binary search algorithm</code>), 也称折半搜索算法, 用于在一个<strong>有序序列</strong>查找目标元素.</p>
@@ -3743,48 +3849,6 @@
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4542,7 +4606,7 @@
   </entry>
   <entry>
     <title>127.0.0.1和0.0.0.0</title>
-    <url>/2019/02/01/127.0.0.1%E5%92%8C0.0.0.0/</url>
+    <url>/2019/02/01/%E7%8E%AF%E5%9B%9E%E5%9C%B0%E5%9D%80%20127.0.0.1%E5%92%8C0.0.0.0/</url>
     <content><![CDATA[<p><code>127.0.0.1</code> 是环回地址, 通常分配给<code>loopback</code>处理, 对<code>127.0.0.1</code>的访问都会指向本机, 所以通常用于<strong>本机</strong>应用之间的交互, </p>
 <p>对<code>127.0.0.1</code>的请求不会出入网卡, 网络设备也不会对其路由.</p>
 <p>操作系统初始化本机的<code>TCP/IP</code>协议栈时, 设置协议栈本身的IP地址为<code>127.0.0.1</code>, 并注入路由表, 当IP层接到目的地址为该地址的的数据包时, 直接转发到本机的IP层进行处理.</p>
