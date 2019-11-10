@@ -5886,7 +5886,7 @@ IX-->IS;</pre>
 </tr>
 <tr>
 <td><code>/usr</code></td>
-<td>Unix System Resource 用于存放系统应用程序</td>
+<td><strong>U</strong>nix <strong>S</strong>ystem <strong>R</strong>esource 用于存放系统应用程序</td>
 </tr>
 <tr>
 <td><code>/srv</code></td>
@@ -6039,6 +6039,43 @@ IX-->IS;</pre>
 ]]></content>
       <tags>
         <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux Swap</title>
+    <url>/2018/05/21/Linux%20Swap%E5%88%86%E5%8C%BA/</url>
+    <content><![CDATA[<h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>通过置换功能, 将内存中暂时用不上的数据调至硬盘上, 腾出足够的内存后再将要访问的数据调入内存, 使程序继续执行下去.<br>这样, 一个大的用户程序能在较小的内存空间中运行, 也可以在内存中同时装入更多的进程使它们并发执行.<br>在用户感知中, 系统拥有的内存容量比实际内存容量大得多, 但实际上这些多出来的内存是不存在的, 是虚的.<br>因此将这样的<strong>逻辑上</strong>容量很大的主存系统称之为<strong>虚拟存储器</strong>, 即平时所称的虚拟内存.</p>
+<hr>
+<h3 id="Swap"><a href="#Swap" class="headerlink" title="Swap"></a>Swap</h3><p>Linux中, Swap分区就是划分给系统调出暂时不用的数据的磁盘区域. </p>
+<p>在内存不足时, 划分swap分区是十分有必要的, 否则OS必须结束掉某些进程来释放内存空间, 引起进程异常结束. </p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mkswap</code> file</td>
+<td>将指定文件格式化为Swap文件</td>
+</tr>
+<tr>
+<td><code>swapon</code> file</td>
+<td>启用指定的Swap文件</td>
+</tr>
+</tbody></table>
+<p>使用示例, 添加一个1G大小的swap分区:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dd <span class="keyword">if</span>=/dev/zero of=/root/swapfile bs=1M count=1024</span><br><span class="line">mkswap /root/swapfile</span><br><span class="line">swapon /root/swapfile</span><br></pre></td></tr></table></figure>
+
+<p>Swap分区不会在重启系统后自动启用, 可以使用fstab让系统自动挂载分区.</p>
+<p>打开/etc/fstab文件, 添加一行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/root/swapfile        swap       swap       defaults        0 0</span><br></pre></td></tr></table></figure>
+
+<p>第一列为分区名, 第二列为挂载点, 第三类列为文件系统类型, 第四列为选项, 第五列为备份设置, 第六列是检查优先级.</p>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Swap</tag>
       </tags>
   </entry>
   <entry>

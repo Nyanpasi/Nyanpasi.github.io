@@ -92,7 +92,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Linux,Swap,">
 
 
 
@@ -103,16 +103,18 @@
 
 
 
-<meta name="description" content="技术">
-<meta property="og:type" content="website">
-<meta property="og:title" content="紫秋的个人博客">
-<meta property="og:url" content="http://yoursite.com/archives/2019/03/index.html">
+<meta name="description" content="虚拟内存通过置换功能, 将内存中暂时用不上的数据调至硬盘上, 腾出足够的内存后再将要访问的数据调入内存, 使程序继续执行下去.这样, 一个大的用户程序能在较小的内存空间中运行, 也可以在内存中同时装入更多的进程使它们并发执行.在用户感知中, 系统拥有的内存容量比实际内存容量大得多, 但实际上这些多出来的内存是不存在的, 是虚的.因此将这样的逻辑上容量很大的主存系统称之为虚拟存储器, 即平时所称的虚">
+<meta name="keywords" content="Linux,Swap">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux Swap">
+<meta property="og:url" content="http://yoursite.com/2018/05/21/Linux Swap分区/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="技术">
+<meta property="og:description" content="虚拟内存通过置换功能, 将内存中暂时用不上的数据调至硬盘上, 腾出足够的内存后再将要访问的数据调入内存, 使程序继续执行下去.这样, 一个大的用户程序能在较小的内存空间中运行, 也可以在内存中同时装入更多的进程使它们并发执行.在用户感知中, 系统拥有的内存容量比实际内存容量大得多, 但实际上这些多出来的内存是不存在的, 是虚的.因此将这样的逻辑上容量很大的主存系统称之为虚拟存储器, 即平时所称的虚">
 <meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-11-10T19:43:23.049Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="紫秋的个人博客">
-<meta name="twitter:description" content="技术">
+<meta name="twitter:title" content="Linux Swap">
+<meta name="twitter:description" content="虚拟内存通过置换功能, 将内存中暂时用不上的数据调至硬盘上, 腾出足够的内存后再将要访问的数据调入内存, 使程序继续执行下去.这样, 一个大的用户程序能在较小的内存空间中运行, 也可以在内存中同时装入更多的进程使它们并发执行.在用户感知中, 系统拥有的内存容量比实际内存容量大得多, 但实际上这些多出来的内存是不存在的, 是虚的.因此将这样的逻辑上容量很大的主存系统称之为虚拟存储器, 即平时所称的虚">
 
 
 
@@ -142,13 +144,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/archives/2019/03/">
+  <link rel="canonical" href="http://yoursite.com/2018/05/21/Linux Swap分区/">
 
 
 
 
 
-  <title>Archive | 紫秋的个人博客</title>
+  <title>Linux Swap | 紫秋的个人博客</title>
   
 
 
@@ -167,7 +169,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,176 +285,185 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux Swap分区/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
-         
+          <h1 class="post-title" itemprop="name headline">Linux Swap</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:04:17+08:00">
+                2018-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
           
-        Nice! 74 posts in total. Keep on posting.
-      </span>
 
-      
-
-        
-        
-        
-
-        
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2019">2019</h1>
-          </div>
-        
-        
+            
+          
 
-        
+          
+          
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><span>该文章被访问</span>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
+            </span>
+          
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/03/21/Django CBV/" itemprop="url">
-              
-                <span itemprop="name">DjangoCBV 处理流程及源码分析</span>
-              
-            </a>
-        
-      </h2>
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-21T11:15:03+08:00" content="2019-03-21">
-          03-21
-        </time>
-      </div>
+          
 
-    </header>
-  </article>
+        </div>
+      </header>
+    
 
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/03/20/Django请求生命周期/" itemprop="url">
-              
-                <span itemprop="name">Django请求处理流程</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-20T11:15:03+08:00" content="2019-03-20">
-          03-20
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
+      
+        <h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>通过置换功能, 将内存中暂时用不上的数据调至硬盘上, 腾出足够的内存后再将要访问的数据调入内存, 使程序继续执行下去.<br>这样, 一个大的用户程序能在较小的内存空间中运行, 也可以在内存中同时装入更多的进程使它们并发执行.<br>在用户感知中, 系统拥有的内存容量比实际内存容量大得多, 但实际上这些多出来的内存是不存在的, 是虚的.<br>因此将这样的<strong>逻辑上</strong>容量很大的主存系统称之为<strong>虚拟存储器</strong>, 即平时所称的虚拟内存.</p>
+<hr>
+<h3 id="Swap"><a href="#Swap" class="headerlink" title="Swap"></a>Swap</h3><p>Linux中, Swap分区就是划分给系统调出暂时不用的数据的磁盘区域. </p>
+<p>在内存不足时, 划分swap分区是十分有必要的, 否则OS必须结束掉某些进程来释放内存空间, 引起进程异常结束. </p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mkswap</code> file</td>
+<td>将指定文件格式化为Swap文件</td>
+</tr>
+<tr>
+<td><code>swapon</code> file</td>
+<td>启用指定的Swap文件</td>
+</tr>
+</tbody></table>
+<p>使用示例, 添加一个1G大小的swap分区:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dd <span class="keyword">if</span>=/dev/zero of=/root/swapfile bs=1M count=1024</span><br><span class="line">mkswap /root/swapfile</span><br><span class="line">swapon /root/swapfile</span><br></pre></td></tr></table></figure>
 
-        
-        
+<p>Swap分区不会在重启系统后自动启用, 可以使用fstab让系统自动挂载分区.</p>
+<p>打开/etc/fstab文件, 添加一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/root/swapfile        swap       swap       defaults        0 0</span><br></pre></td></tr></table></figure>
 
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/03/18/Django缓存/" itemprop="url">
-              
-                <span itemprop="name">Django缓存系统</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-18T11:15:03+08:00" content="2019-03-18">
-          03-18
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+<p>第一列为分区名, 第二列为挂载点, 第三类列为文件系统类型, 第四列为选项, 第五列为备份设置, 第六列是检查优先级.</p>
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/03/17/Django信号系统/" itemprop="url">
-              
-                <span itemprop="name">Django信号系统</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-17T11:15:03+08:00" content="2019-03-17">
-          03-17
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Linux/" rel="tag"># Linux</a>
+          
+            <a href="/tags/Swap/" rel="tag"># Swap</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/18/URL基础/" rel="next" title="URL基础">
+                <i class="fa fa-chevron-left"></i> URL基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/21/Linux基础/" rel="prev" title="Linux基础命令">
+                Linux基础命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -460,6 +471,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -480,8 +495,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -532,6 +556,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟内存"><span class="nav-number">1.</span> <span class="nav-text">虚拟内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Swap"><span class="nav-number">2.</span> <span class="nav-text">Swap</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -693,6 +733,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
