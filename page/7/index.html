@@ -298,6 +298,186 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis 主从复制和Sentinel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/25/Redis 主从复制和Sentinel/" itemprop="url">Redis主从复制和哨兵</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T19:59:21+08:00">
+                2019-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><p>配置<strong>主从复制</strong>与master的设置无关, 在启动另一个redis实例时指定为<code>salve</code>, 指明其master即可.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --name master --network host redis redis-server --port 6379 --requirepass your-password</span><br></pre></td></tr></table></figure>
+
+<p>然后使用<code>slaveof</code>选项启动slave实例</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --name slave_1 --network host redis redis-server --port 6380 \</span><br><span class="line">--requirepass your-password --slaveof 47.94.152.34 6379 --masterauth your-password</span><br><span class="line"></span><br><span class="line">docker run -d --rm --name slave_2 --network host redis redis-server --port 6381 \</span><br><span class="line">--requirepass your-password --slaveof 47.94.152.34 6379 --masterauth your-password</span><br></pre></td></tr></table></figure>
+
+<p>使用python测试</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"></span><br><span class="line">master = redis.Redis(host=<span class="string">'47.94.152.34'</span>, port=<span class="number">6379</span>, db=<span class="number">0</span>, password=<span class="string">'your-password'</span>)</span><br><span class="line">slave_1 = redis.Redis(host=<span class="string">'47.94.152.34'</span>, port=<span class="number">6380</span>, db=<span class="number">0</span>, password=<span class="string">'your-password'</span>)</span><br><span class="line">slave_2 = redis.Redis(host=<span class="string">'47.94.152.34'</span>, port=<span class="number">6381</span>, db=<span class="number">0</span>, password=<span class="string">'your-password'</span>)</span><br><span class="line"></span><br><span class="line">master.set(<span class="string">'hello'</span>, <span class="string">'world!'</span>)</span><br><span class="line">print(master.get(<span class="string">'hello'</span>))</span><br><span class="line">print(slave_1.get(<span class="string">'hello'</span>))</span><br><span class="line">print(slave_2.get(<span class="string">'hello'</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># b'world!'</span></span><br><span class="line"><span class="comment"># b'world!'</span></span><br><span class="line"><span class="comment"># b'world!'</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h3><p>哨兵是一个以特殊模式启动的redis服务器, 默认运行在<code>26379</code>端口.</p>
+<p><code>sentinel</code>执行四项任务:</p>
+<ol>
+<li>监控(<code>Monitoring</code>): 不断检查主从服务器是否正常运行.</li>
+<li>通知(<code>Notification</code>): 被监控的主从服务器出现问题时发送通知</li>
+<li>自动迁移(<code>Automatic failover</code>): 在主服务器出错时切换主服务器, 并将请求导向新的<code>master</code></li>
+<li>提供设置(<code>Configuration Provider</code>): 当新的slave加入时提供master的信息.</li>
+</ol>
+<p>sentinel的设置只与master有关, 通过master获得slave的信息.</p>
+<p>当master设置了密码时:</p>
+<ol>
+<li>sentinel的设置项需要给出该password以连接master</li>
+<li>slave的密码必须与master保持一致, 否则无法通过sentinel提升master</li>
+</ol>
+<p>一个sentinel启动时必须给出配置文件<code>sentinel.conf</code>, 且该配置文件必须可写, 配置文件示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sentinel monitor your-master 47.94.152.34 6379 2</span><br><span class="line">sentinel down-after-milliseconds your-master 60000</span><br><span class="line">sentinel failover-timeout your-master 180000</span><br><span class="line">sentinel parallel-syncs your-master 1</span><br><span class="line">sentinel auth-pass your-master your-password</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>your-master</code>是指定要监听的master的别名, 在之后的命令中, 我们使用该别名来指定该主从服务器组.</p>
+<p>如果有必要, 更改权限 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 sentinel.conf</span><br></pre></td></tr></table></figure>
+
+<p>每个sentinel都要维持自己的sentinel.conf, 且在运行时更改, 所以我们将其复制进镜像内.</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> redis</span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> sentinel.conf /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> chmod 777 /usr/<span class="built_in">local</span>/etc/redis/sentinel.conf</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [ <span class="string">"redis-server"</span>, <span class="string">"/usr/local/etc/redis/sentinel.conf"</span>, <span class="string">"--sentinel"</span>]</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"--port"</span>, <span class="string">"26379"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>置于<code>/redis</code>目录下,  然后构建镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t sentinel .</span><br></pre></td></tr></table></figure>
+
+<p>运行容器:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --name sentinel_1 --network host sentinel --port 26379</span><br></pre></td></tr></table></figure>
+
+<p>启动多个sentinel</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --name sentinel_2 --network host sentinel --port 26380</span><br><span class="line">docker run -d --rm --name sentinel_3 --network host sentinel --port 26381</span><br></pre></td></tr></table></figure>
+
+<p>启动客户端</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 26379</span><br></pre></td></tr></table></figure>
+
+<p>测试命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; sentinel masters <span class="comment"># 查看当前所监控的所有master</span></span><br><span class="line">&gt; sentinel slaves your-master <span class="comment"># 查看指定master的slaves</span></span><br><span class="line">&gt; sentinel failover your-master <span class="comment"># 手动更换指定master, 让其某个slave提升为master</span></span><br></pre></td></tr></table></figure>
+
+<p>然后挂掉master, 以测试是否能进行主从切换:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop master</span><br></pre></td></tr></table></figure>
+
+<p>再次进入客户端, 查询master地址</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; sentinel masters</span><br></pre></td></tr></table></figure>
+
+<p>master的地址已经发生了变化, 当前是运行在6380端口的redis实例.</p>
+<p>而原来的master已经被降级为slave, 并且处于<code>down</code>的状态.</p>
+<hr>
+<p>值得注意的是, 即使sentinel和master, 或者master和slave在同一台机器上, 也不能使用环回地址作为host.</p>
+<p>一旦使用环回地址连接, 两方都会认为对方的host为<code>127.0.0.1</code>, 这样sentinel就无法获得正确的能被外部访问的master的ip地址, 也就无法正常工作了.</p>
+<hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis基础/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1777,179 +1957,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux文件权限修改/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/21/Linux文件权限修改/" itemprop="url">Linux文件权限修改</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:58:21+08:00">
-                2018-05-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="文件权限与查看"><a href="#文件权限与查看" class="headerlink" title="文件权限与查看"></a>文件权限与查看</h3><p>使用<code>ls</code>查看文件信息, 常用参数为</p>
-<ul>
-<li><code>a</code> 查看所有文件</li>
-<li><code>l</code> 查看详细信息</li>
-<li><code>d</code> 查看目录信息</li>
-</ul>
-<hr>
-<p>文件包括以下类型:</p>
-<ul>
-<li><code>-</code> 普通文件</li>
-<li><code>d</code> 目录文件</li>
-<li><code>l</code> 链接文件</li>
-<li><code>b</code> 块设备文件</li>
-<li><code>c</code> 字符设备文件</li>
-<li><code>p</code> 管道文件</li>
-</ul>
-<hr>
-<p>每个文件都有所属的用户和组, 文件的基本权限有三个:</p>
-<ul>
-<li><code>r</code> 读</li>
-<li><code>w</code> 写</li>
-<li><code>x</code> 执行</li>
-</ul>
-<p>对于一个目录文件来说, 这三项的含义为:</p>
-<ul>
-<li><code>r</code>: 可以读取目录内文件列表</li>
-<li><code>w</code>: 可以在该目录增删改文件</li>
-<li><code>x</code>: 可以进入该目录</li>
-</ul>
-<hr>
-<p>权限与数字的对应关系为</p>
-<ul>
-<li><code>r</code> – <code>4</code></li>
-<li><code>w</code> – <code>2</code></li>
-<li><code>x</code> – <code>1</code></li>
-</ul>
-<p>所以一个rwx权限可以等价表示为4+2+1=7, 依次类推，可读可写为4+2=6，只读为4</p>
-<hr>
-<p>在ls命名列出的文件列表中, 权限从左到右分为三组, 分别是</p>
-<ol>
-<li>文件所有者</li>
-<li>文件所属组</li>
-<li>其他用户</li>
-</ol>
-<p>对该文件具有的权限.</p>
-<hr>
-<h3 id="修改文件权限指令"><a href="#修改文件权限指令" class="headerlink" title="修改文件权限指令"></a>修改文件权限指令</h3><p><code>chmod [选项] 权限 文件</code></p>
-<p>例如将某个文件修改为所有用户可读可写可执行</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 dunp.rdb</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="用户和用户组"><a href="#用户和用户组" class="headerlink" title="用户和用户组"></a>用户和用户组</h3><p>每个用户在创建时都会自动创建一个同名的基本用户组, 该基本用户组只包含该用户.</p>
-<p>如果用户以后纳入其他用户组, 则对于该用户来说属于扩展用户组.</p>
-<p>一个用户只能有一个基本用户组, 但可以有多个扩展用户组.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2000,7 +2007,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">74</span>
+                  <span class="site-state-item-count">75</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

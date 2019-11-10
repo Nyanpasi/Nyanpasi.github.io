@@ -92,7 +92,7 @@
 
 
 
-  <meta name="keywords" content="缓存,">
+  <meta name="keywords" content="Nginx,SSL,">
 
 
 
@@ -103,18 +103,18 @@
 
 
 
-<meta name="description" content="缓存雪崩Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉. 缓存雪崩的原因包括:  大量key在同一时间超时 缓存服务器宕机   解决方案在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期. 对热点数据, 不设置过期时间, 当内容变化时只进行更新操作. 使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之">
-<meta name="keywords" content="缓存">
+<meta name="description" content="selectors模块提供高度封装和高效的I/O复用, 建立在底层的I/O复用模块select之上. 在绝大多数情况下, 用户应当使用selector而非select.  类的继承关系 BaseSelector+– SelectSelector+– PollSelector+– EpollSelector+– DevpollSelector+– KqueueSelector events是一个位掩">
+<meta name="keywords" content="Nginx,SSL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="缓存雪崩, 击穿, 穿透">
-<meta property="og:url" content="http://yoursite.com/2018/09/21/缓存的问题/index.html">
+<meta property="og:title" content="Python Selectors模块">
+<meta property="og:url" content="http://yoursite.com/2019/07/22/Python Selectors模块/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="缓存雪崩Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉. 缓存雪崩的原因包括:  大量key在同一时间超时 缓存服务器宕机   解决方案在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期. 对热点数据, 不设置过期时间, 当内容变化时只进行更新操作. 使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之">
+<meta property="og:description" content="selectors模块提供高度封装和高效的I/O复用, 建立在底层的I/O复用模块select之上. 在绝大多数情况下, 用户应当使用selector而非select.  类的继承关系 BaseSelector+– SelectSelector+– PollSelector+– EpollSelector+– DevpollSelector+– KqueueSelector events是一个位掩">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-06T08:20:58.622Z">
+<meta property="og:updated_time" content="2019-11-10T20:02:00.700Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="缓存雪崩, 击穿, 穿透">
-<meta name="twitter:description" content="缓存雪崩Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉. 缓存雪崩的原因包括:  大量key在同一时间超时 缓存服务器宕机   解决方案在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期. 对热点数据, 不设置过期时间, 当内容变化时只进行更新操作. 使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之">
+<meta name="twitter:title" content="Python Selectors模块">
+<meta name="twitter:description" content="selectors模块提供高度封装和高效的I/O复用, 建立在底层的I/O复用模块select之上. 在绝大多数情况下, 用户应当使用selector而非select.  类的继承关系 BaseSelector+– SelectSelector+– PollSelector+– EpollSelector+– DevpollSelector+– KqueueSelector events是一个位掩">
 
 
 
@@ -144,13 +144,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/21/缓存的问题/">
+  <link rel="canonical" href="http://yoursite.com/2019/07/22/Python Selectors模块/">
 
 
 
 
 
-  <title>缓存雪崩, 击穿, 穿透 | 紫秋的个人博客</title>
+  <title>Python Selectors模块 | 紫秋的个人博客</title>
   
 
 
@@ -299,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/21/缓存的问题/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/22/Python Selectors模块/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -316,7 +316,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">缓存雪崩, 击穿, 穿透</h1>
+          <h1 class="post-title" itemprop="name headline">Python Selectors模块</h1>
         
 
         <div class="post-meta">
@@ -328,8 +328,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-21T11:04:17+08:00">
-                2018-09-21
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-22T17:53:47+08:00">
+                2019-07-22
               </time>
             
 
@@ -371,40 +371,109 @@
       
 
       
-        <h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>Redis大量key同一时间大面积失效, 导致请求直接打到数据库上, 而导致数据库挂掉.</p>
-<p>缓存雪崩的原因包括:</p>
+        <p>selectors模块提供高度封装和高效的I/O复用, 建立在底层的I/O复用模块select之上.</p>
+<p>在绝大多数情况下, 用户应当使用selector而非select.</p>
+<hr>
+<p>类的继承关系</p>
+<p>BaseSelector<br>+– SelectSelector<br>+– PollSelector<br>+– EpollSelector<br>+– DevpollSelector<br>+– KqueueSelector</p>
+<p><code>events</code>是一个位掩码,用于指定某个文件对象应当监听什么事件, 并可与以下的常量联合使用</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EVENT_READ</td>
+<td>可读</td>
+</tr>
+<tr>
+<td>EVENT_WRITE</td>
+<td>可写</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="核心类"><a href="#核心类" class="headerlink" title="核心类"></a>核心类</h3><p><code>selectors.SelectorKey</code>类</p>
+<p>一个<code>SelectorKey</code>是一个命名元组, 用于联系文件、文件的描述符、选定的事件掩码、以及相关联的数据.</p>
 <ol>
-<li>大量key在同一时间超时</li>
-<li>缓存服务器宕机</li>
+<li><code>fileobj</code> 已登记的文件对象.</li>
+<li><code>fd</code> 已登记文件对象的文件描述符 <strong>f</strong>ile <strong>d</strong>escriptor.</li>
+<li><code>events</code> 该文件正在等待的事件.</li>
+<li><code>data</code> 可选的用于储存相关信息的变量, 例如可以用来储存当该事件发生后应当调用的函数.</li>
 </ol>
 <hr>
-<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在批量向Redis存数据时, 将每个key的失效时间都添加一个随机数, 这样保证key不会在同一时间过期.</p>
-<p>对热点数据, 不设置过期时间, 当内容变化时只进行更新操作.</p>
-<p>使用集群缓存, 保证缓存服务的高可用. 在服务器宕掉之后, 对请求进行限流, 并尽快重建缓存.</p>
+<p><code>selectors.BaseSelector</code>类</p>
+<p>一个BaseSelector用于等待多个文件的I/O就绪事件, 它实现或定义了以下方法:</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>register(fileobj, events, data=None)</code></td>
+<td>登记一个文件对象, 监听其I/O事件.</td>
+</tr>
+<tr>
+<td><code>unregister(fileobj)</code></td>
+<td>取消对某个文件对象的监听.</td>
+</tr>
+<tr>
+<td><code>modify(fileobj, events, data=None)</code></td>
+<td>更改文件对象的监听事件或相关数据.</td>
+</tr>
+<tr>
+<td><code>select(timeout=None)</code></td>
+<td>尝试获得可用文件, 返回一个<code>(key, events)</code>元组的列表.</td>
+</tr>
+<tr>
+<td><code>close()</code></td>
+<td>关闭selector</td>
+</tr>
+<tr>
+<td><code>get_key(fileobj)</code></td>
+<td>返回与该文件关联的<code>SelectorKey</code>实例</td>
+</tr>
+<tr>
+<td><code>get_map()</code></td>
+<td>返回一个文件对象和其关联的<code>SelectorKey</code>实例的mapping对象</td>
+</tr>
+</tbody></table>
+<p>BaseSelector对于与平台相关的一些方法只定义了其抽象实现, 而具体的实现则在以下的几个类中:</p>
+<table>
+<thead>
+<tr>
+<th>具体实现</th>
+<th>底层IO复用模型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>selectors.SelectSelector</code></td>
+<td>基于<code>slect</code>实现</td>
+</tr>
+<tr>
+<td><code>selectors.PollSelector</code></td>
+<td>基于<code>poll</code>实现</td>
+</tr>
+<tr>
+<td><code>selectors.EpollSelector</code></td>
+<td>基于<code>epoll</code>实现</td>
+</tr>
+<tr>
+<td><code>selectors.DevpollSelector</code></td>
+<td>基于<code>devpoll</code>实现</td>
+</tr>
+<tr>
+<td><code>selectors.KqueueSelector</code></td>
+<td>基于<code>kqueue</code>实现</td>
+</tr>
+</tbody></table>
+<p>在绝大多数情况下都应当使用 <code>selectors.DefaultSelector</code> 类来自动获得当前平台合适的Selector类</p>
 <hr>
-<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>用户对数据库中不存在的数据发起频繁请求.</p>
-<p>由于该数据不存在, 因此缓存中肯定不包含该数据, 这样仍然必须到数据库层次进行查询.</p>
-<p>相当于用户请求直接穿透了缓存到达数据库, 如果频繁进行穿透, 数据库会很快挂掉</p>
-<hr>
-<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><ol>
-<li>缓存空值, 将请求的不存在的key设置为null并置于缓存中.</li>
-<li>布隆过滤器, 首先判断该key的存在与否, 然后再决定是否进行<strong>缓存-&gt;数据库</strong>的查询.</li>
-</ol>
-<p>以上两者可以结合进行.</p>
-<hr>
-<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某个key被大规模请求, 每时每刻都承受着大量的压力. </p>
-<p>当这个key失效的瞬间, 由于并发请求的数量极多, 因此该key还未来及重建的时候, 大量的请求就已经到达数据库.</p>
-<hr>
-<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="使用互斥锁"><a href="#使用互斥锁" class="headerlink" title="使用互斥锁"></a>使用互斥锁</h5><p>在从缓存中取数据失败时, 并不直接请求数据库, 而是设置一个与该key相关的lock(例如使用redis分布式锁).</p>
-<p>所有请求必须先请求到这个锁, 然后才能访问数据库. 如果抢锁失败, 就重新请求缓存.</p>
-<p>这样, 大量的请求只有一个能到达数据库, 等缓存重新建立起来之后, 这些请求重新从缓存中获得数据.</p>
-<hr>
-<h5 id="刷新key的超时时间"><a href="#刷新key的超时时间" class="headerlink" title="刷新key的超时时间"></a>刷新key的超时时间</h5><p>在<code>key</code>的<code>value</code>中保存一个值, 这个值指示着key的超时时间, 每次获得value的时候都检查这个值.</p>
-<p>如果该值少于某个阈值, 立即刷新其超时时间, 这样保证热点数据能够一直存在于缓存.</p>
-<hr>
-<h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>在系统上线后先将一些热点数据直接放进缓存中, 而不是等到被请求时才放入缓存</p>
-<hr>
-
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><p>一个简单的 echo server 实现.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> selectors</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">sel = selectors.DefaultSelector()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">accept</span><span class="params">(sock, mask)</span>:</span></span><br><span class="line">    conn, addr = sock.accept()  <span class="comment"># 接受连接并返回新连接套接字和地址</span></span><br><span class="line">    print(<span class="string">'accepted'</span>, conn, <span class="string">'from'</span>, addr)</span><br><span class="line">    conn.setblocking(<span class="literal">False</span>)</span><br><span class="line">    sel.register(conn, selectors.EVENT_READ, read)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(conn, mask)</span>:</span></span><br><span class="line">    data = conn.recv(<span class="number">1000</span>)  <span class="comment"># 数据理应已可就绪</span></span><br><span class="line">    <span class="keyword">if</span> data:</span><br><span class="line">        print(<span class="string">'echoing'</span>, repr(data), <span class="string">'to'</span>, conn)</span><br><span class="line">        conn.send(data)  <span class="comment"># Hope it won't block</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(<span class="string">'closing'</span>, conn)</span><br><span class="line">        sel.unregister(conn)</span><br><span class="line">        conn.close()</span><br><span class="line"></span><br><span class="line">sock = socket.socket()</span><br><span class="line">sock.bind((<span class="string">'localhost'</span>, <span class="number">1234</span>)) <span class="comment">#指定为监听套接字</span></span><br><span class="line">sock.listen(<span class="number">100</span>)</span><br><span class="line">sock.setblocking(<span class="literal">False</span>)</span><br><span class="line">sel.register(sock, selectors.EVENT_READ, accept)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    events = sel.select()</span><br><span class="line">    <span class="keyword">for</span> key, mask <span class="keyword">in</span> events:</span><br><span class="line">        callback = key.data</span><br><span class="line">        callback(key.fileobj, mask)</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -421,7 +490,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/缓存/" rel="tag"># 缓存</a>
+            <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          
+            <a href="/tags/SSL/" rel="tag"># SSL</a>
           
         </div>
       
@@ -434,8 +505,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/21/Linux定时任务/" rel="next" title="Linux定时任务">
-                <i class="fa fa-chevron-left"></i> Linux定时任务
+              <a href="/2019/07/20/DRF为不同的action执行不同的限流/" rel="next" title="DRF为同一ViewSet的不同action执行不同限流">
+                <i class="fa fa-chevron-left"></i> DRF为同一ViewSet的不同action执行不同限流
               </a>
             
           </div>
@@ -444,8 +515,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/01/01/SSH协议/" rel="prev" title="SSH协议">
-                SSH协议 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/23/Nginx更改root设置项无效/" rel="prev" title="Nginx更改root无效">
+                Nginx更改root无效 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -569,7 +640,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">1.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存穿透"><span class="nav-number">2.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-1"><span class="nav-number">2.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存击穿"><span class="nav-number">3.</span> <span class="nav-text">缓存击穿</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-2"><span class="nav-number">3.1.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用互斥锁"><span class="nav-number">3.1.1.</span> <span class="nav-text">使用互斥锁</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#刷新key的超时时间"><span class="nav-number">3.1.2.</span> <span class="nav-text">刷新key的超时时间</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存预热"><span class="nav-number">4.</span> <span class="nav-text">缓存预热</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#核心类"><span class="nav-number">1.</span> <span class="nav-text">核心类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例"><span class="nav-number">2.</span> <span class="nav-text">代码示例</span></a></li></ol></div>
             
 
           </div>
