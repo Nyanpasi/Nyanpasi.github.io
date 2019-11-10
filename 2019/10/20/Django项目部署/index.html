@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="使用Docker部署Django项目, 一共四个容器  MySQL容器 Redis容器 uWSGI容器 Nginx容器">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-09T14:51:32.731Z">
+<meta property="og:updated_time" content="2019-11-09T18:29:48.895Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Django项目部署">
 <meta name="twitter:description" content="使用Docker部署Django项目, 一共四个容器  MySQL容器 Redis容器 uWSGI容器 Nginx容器">
@@ -476,21 +476,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name nginx -p 80:80 --link uwsgi -v /vueproject:/nginx/home -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media nginx</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h3 id="开启HTTPS"><a href="#开启HTTPS" class="headerlink" title="开启HTTPS"></a>开启HTTPS</h3><p>使用let’s encrypt申请到证书, 文件放在<code>/etc/letsencrypt/</code>中,<br>包括</p>
-<ul>
-<li>accounts</li>
-<li>csr</li>
-<li>keys</li>
-<li>renewal</li>
-<li>renewal-hooks</li>
-</ul>
-<p>在申请完成后, csr文件夹中会包含一个<code>*.pem</code>文件, 即证书.</p>
-<p>而在<code>key</code>文件夹中, 包含一个<code>*.pem</code>文件, 即私钥</p>
-<p>在nginx配置文件中开启ssl, 并更改监听端口<code>443</code></p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">listen</span> <span class="number">443</span>;</span><br><span class="line"><span class="attribute">ssl</span> <span class="literal">on</span>;</span><br><span class="line"><span class="attribute">ssl_certificate</span> /etc/letsencrypt/csr/0000_csr-certbot.pem;</span><br><span class="line"><span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/keys/0000_key-certbot.pem;</span><br></pre></td></tr></table></figure>
 
-<p>更改启动nginx容器命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm --name nginx -p 80:80 -p 443:443 --link uwsgi -v /vueproject:/nginx/home nginx -v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /webapp/static:/static -v /webapp/media:/media -v /etc/letsencrypt:/etc/letsencrypt nginx</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -531,6 +517,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/01/申请SSL证书/" rel="prev" title="Let's encrypt申请SSL证书">
+                Let's encrypt申请SSL证书 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -607,7 +597,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-count">69</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -620,7 +610,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -653,7 +643,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL容器"><span class="nav-number">1.</span> <span class="nav-text">MySQL容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis容器"><span class="nav-number">2.</span> <span class="nav-text">Redis容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uWSGI容器"><span class="nav-number">3.</span> <span class="nav-text">uWSGI容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构建镜像"><span class="nav-number">3.1.</span> <span class="nav-text">构建镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动uwsgi容器"><span class="nav-number">3.2.</span> <span class="nav-text">启动uwsgi容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修复异常"><span class="nav-number">3.3.</span> <span class="nav-text">修复异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正式运行uwsgi容器"><span class="nav-number">3.4.</span> <span class="nav-text">正式运行uwsgi容器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx容器"><span class="nav-number">4.</span> <span class="nav-text">Nginx容器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#配置文件"><span class="nav-number">4.0.1.</span> <span class="nav-text">配置文件</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#开启HTTPS"><span class="nav-number">5.</span> <span class="nav-text">开启HTTPS</span></a></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL容器"><span class="nav-number">1.</span> <span class="nav-text">MySQL容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis容器"><span class="nav-number">2.</span> <span class="nav-text">Redis容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uWSGI容器"><span class="nav-number">3.</span> <span class="nav-text">uWSGI容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构建镜像"><span class="nav-number">3.1.</span> <span class="nav-text">构建镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动uwsgi容器"><span class="nav-number">3.2.</span> <span class="nav-text">启动uwsgi容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修复异常"><span class="nav-number">3.3.</span> <span class="nav-text">修复异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正式运行uwsgi容器"><span class="nav-number">3.4.</span> <span class="nav-text">正式运行uwsgi容器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx容器"><span class="nav-number">4.</span> <span class="nav-text">Nginx容器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#配置文件"><span class="nav-number">4.0.1.</span> <span class="nav-text">配置文件</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -298,6 +298,312 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/03/Nginx开启HTTPS并强制https/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/03/Nginx开启HTTPS并强制https/" itemprop="url">Nginx开启HTTPS并强制将http请求转发至https</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-03T17:53:47+08:00">
+                2019-11-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>开启SSL首先需要证书文件和对应的私钥文件, 这里使用<code>Let&#39;s Encrypt</code>申请的证书</p>
+<ul>
+<li><em>/etc/letsencrypt/live/<a href="http://www.example.com/fullchain.pem" target="_blank" rel="noopener">www.example.com/fullchain.pem</a></em> 证书文件</li>
+<li><em>/etc/letsencrypt/live/<a href="http://www.example.com/privkey.pem" target="_blank" rel="noopener">www.example.com/privkey.pem</a></em> 私钥文件</li>
+</ul>
+<p>Nginx开启SSL, 配置项至少包括:</p>
+<table>
+<thead>
+<tr>
+<th>设置项</th>
+<th>数据格式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ssl</code></td>
+<td><code>bool</code></td>
+<td>是否开启SSL</td>
+</tr>
+<tr>
+<td><code>ssl-certificate</code></td>
+<td><code>*.pem</code></td>
+<td>证书文件</td>
+</tr>
+<tr>
+<td><code>ssl-certificate_key</code></td>
+<td><code>*.pem</code></td>
+<td>私钥文件</td>
+</tr>
+</tbody></table>
+<p>在新版本中, ssl可以作为listen项的参数, 配置示例:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">443</span> ssl;</span><br><span class="line">	<span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/www.example.com/fullchain.pem;</span><br><span class="line">	<span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/www.example.com/privkey.pem;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>http协议默认访问80端口, 所以将http请求转发至https端口443, 使用<code>rewrite</code>配置示例:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">rewrite</span><span class="regexp"> ^(.*)$</span>  https://<span class="variable">$host</span><span class="variable">$1</span> <span class="literal">permanent</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">443</span> ssl;</span><br><span class="line">	<span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/www.example.com/fullchain.pem;</span><br><span class="line">	<span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/www.example.com/privkey.pem;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者返回301状态码进行重定向, 用来跳转的虚拟服务器部分更改为</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">return</span> <span class="number">301</span> https://<span class="variable">$host</span><span class="variable">$request_uri</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/申请SSL证书/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/01/申请SSL证书/" itemprop="url">Let's encrypt申请SSL证书</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-01T18:12:47+08:00">
+                2019-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>申请<code>Let&#39;s Encrypt</code>发放的SSL证书, 过程也相当简单, 使用官方提供的<code>Certbot</code>客户端即可</p>
+<p>我的os是centos7, 用Nginx作为服务器, Nginx根目录被设置为<code>/nginx/home</code>.</p>
+<p>在进行如下步骤之前, Nginx已在80端口运行, 且持有的域名的DNS解析地址为当前主机的网络地址.</p>
+<p>根据官方文档, 首先要启用<code>EPEL</code>, 即<code>Extra Packages for Enterprise Linux</code>, 可以视为一个第三方高质量npm库.</p>
+<p>直接通过命令安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install epel-release</span><br></pre></td></tr></table></figure>
+
+<p>订阅<code>Optional Channel</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum -y install yum-utils</span><br><span class="line">yum-config-manager --<span class="built_in">enable</span> rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional</span><br></pre></td></tr></table></figure>
+
+<p>安装Certbot</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install certbot</span><br></pre></td></tr></table></figure>
+
+<p>接下来选择webroot的方式, 进行证书的申请</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo certbot certonly --webroot</span><br></pre></td></tr></table></figure>
+
+<p>然后按提示输入<strong>域名</strong>, 然后输入<strong>根目录</strong>, 在我们这里就是Nginx的根目录</p>
+<p>之后会开始验证过程, certbot在根目录下放置一个静态文件, 然后远程主机通过网址+路径访问尝试获取这个文件. </p>
+<p>如果成功, 就确认了正在请求的主机确实是该域名的持有者, 下发证书, 如果失败, 会输出错误信息.</p>
+<p>其中包括csr文件的生成和提交等过程都是自动完成.</p>
+<p>在签发证书成功后, 会生成两个文件</p>
+<ul>
+<li><p><code>/etc/letsencrypt/live/www.chonglangtv.com/fullchain.pem</code></p>
+</li>
+<li><p><code>/etc/letsencrypt/live/www.chonglangtv.com/privkey.pem</code></p>
+</li>
+</ul>
+<p>前者是下发的证书文件, 后者是对应的私钥文件.</p>
+<p>更新Nginx的<code>ssl_certificate</code>和<code>ssl_certificate_key</code>设置项, 并监听443端口, 即可开启https.</p>
+<p>证书会在三个月之后过期, 可以使用<code>certbot renew</code>命令更新证书</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/20/Django项目部署/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1310,260 +1616,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/19. 元数据/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/03/19. 元数据/" itemprop="url">19. 元数据 Metadata</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T18:04:47+08:00">
-                2019-10-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>OPTIONS方法允许客户端在不要求资源动作或启动资源检索的前提下, 确定资源相关的选项, 需求或服务端的能力, </p>
-</blockquote>
-<p>REST framework包含一个可配置的机制, 用于确定API应如何响应<code>OPTIONS</code>请求, 返回API构架或其他资源信息。</p>
-<p>目前还没有任何广泛采用的约定, 以确切地为<code>HTTP OPTIONS</code>请求返回什么样的响应, 因此我们提供了一种返回一些有用信息的ad-hoc样式。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/03/19. 元数据/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/18. 内容协商/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/03/18. 内容协商/" itemprop="url">18. 内容协商 Content negotiation</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T18:03:47+08:00">
-                2019-10-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>内容协商的结果会在选择解析器和渲染器阶段使用.</p>
-<p>REST使用简单的内容协商方式来确定应该返回给客户端什么媒体类型的响应, 并根据可用的渲染器, 各个渲染器的优先级以及客户端的<code>Accpet</code>标头来选择渲染器, 部分由客户端驱动, 部分由服务端驱动. </p>
-<p>在进行内容协商时:</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/03/18. 内容协商/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1614,7 +1666,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-count">69</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1627,7 +1679,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

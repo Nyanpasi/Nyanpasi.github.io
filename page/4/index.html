@@ -298,6 +298,270 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/1. 请求 request/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/03/1. 请求 request/" itemprop="url">1. 请求 Requests</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T17:44:47+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>APIView的子类中的request不是django标准的HttpRequest类，而是经由rest_framework扩展的Request类</p>
+<p>相较于HttpRequest添加的属性如下</p>
+<p>请求解析相关:</p>
+<ul>
+<li><code>.data</code>类似于Django中request的<code>.POST</code>或者<code>.files</code>, 但在REST API中, put方法和putch方法也会被经常使用,因此这样可以避免命名带来的歧义.</li>
+<li><code>.query_params</code>请求的查询参数, 等同于Django中的request.GET, 但命名更加准确.</li>
+<li><code>.parsers</code>该请求所使用的parsers类,具体参看parsers一节.</li>
+</ul>
+<p>内容协商相关:</p>
+<ul>
+<li><code>.accepted_renderer</code>由内容协商阶段选择的renderer实例</li>
+<li><code>.accepted_media_type</code>由内容协商阶段接受的媒体类型的字符串</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/03/1. 请求 request/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/uWSGI设置项/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/24/uWSGI设置项/" itemprop="url">uWSGI设置项</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-24T17:47:47+08:00">
+                2019-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="通过不同方式进行设置"><a href="#通过不同方式进行设置" class="headerlink" title="通过不同方式进行设置"></a>通过不同方式进行设置</h3><ol>
+<li>在启动时添加命令行参数</li>
+<li>使用.ini文件</li>
+<li>使用xml文件</li>
+<li>使用yaml格式文件
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/24/uWSGI设置项/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </li></ol></div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/22/Paramiko通过SSH传输文件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1302,310 +1566,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/03/Django contenttype/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/03/Django contenttype/" itemprop="url">Django Contenttype</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-03T17:55:47+08:00">
-                2019-07-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
-<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
-<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
-<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
-<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
-<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
-<hr>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
-<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
-<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
-<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
-<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
-<hr>
-<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
-<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
-<ol>
-<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
-<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
-<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
-</ol>
-<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
-<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
-<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
-<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
-<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
-<hr>
-<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
-
-<p>相关模型</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
-
-<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>下面使用反向关联名和反向查询名完成相同操作:</p>
-<p>创建标签记录</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
-<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/03/Django点赞系统/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/03/Django点赞系统/" itemprop="url">Django+Mysql实现赞踩系统</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-03T17:55:47+08:00">
-                2019-07-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>主要包括两个部分: </p>
-<ol>
-<li>通用赞踩模型, 可以记录多个不同模型实例的赞同/反对记录</li>
-<li>通用赞踩混合类, 任何希望提供赞踩功能的模型应当混入该混合类</li>
-</ol>
-<p>前者提供了对赞同/反对操作进行记录的Model, 会生成一个数据表<br>后者提供了统计字段和赞同/反对的实例方法, Abstract模型, 只用于继承.</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/03/Django点赞系统/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1656,7 +1616,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-count">69</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1669,7 +1629,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
