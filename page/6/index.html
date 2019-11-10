@@ -298,6 +298,130 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/20/Django请求生命周期/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/20/Django请求生命周期/" itemprop="url">Django请求处理流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-20T11:15:03+08:00">
+                2019-03-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>每收到一次请求, Django生成一个<code>WSGIHander</code>类型的handler, 然后由其控制请求的处理流程:</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/20/Django请求生命周期/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/18/Django缓存/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1644,300 +1768,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis基础/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/25/Redis基础/" itemprop="url">Redis基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T12:59:21+08:00">
-                2019-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h3><p><code>Redis</code>的键为字符串, 而值有5种基本数据类型:</p>
-<ol>
-<li>字符串(<code>String</code>)</li>
-<li>列表(<code>List</code>)</li>
-<li>字典(<code>Hash</code>)</li>
-<li>集合(<code>Set</code>)</li>
-<li>有序集合(<code>Sorted Set</code>)</li>
-</ol>
-<hr>
-<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>Redis</code>字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配.</p>
-<p>当字符串长度小于<code>1M</code>时, 扩容都是加倍现有的空间, 如果超过<code>1M</code>, 扩容时一次只会多扩1M的空间.</p>
-<p>需要注意的是字符串最大长度为<code>512M</code>.</p>
-<p>另外, 字符串的索引从<code>0</code>开始。</p>
-<hr>
-<h4 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h4><p><code>Redis</code>的列表为双向链表, 首尾插入和删除较快, 而定位操作慢.</p>
-<p>数据较少时, 使用连续内存存储, 这个结构是<code>ziplist</code>, 数据较多时, 使用多个链接起来的ziplist组成的quicklist.</p>
-<p>使用列表可以方便地实现队列或者栈.</p>
-<hr>
-<h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
-<p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
-<hr>
-<h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
-<p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
-<p>因此, <code>rehash</code>动作并不是一次性、集中式地完成, 而是<strong>分多次</strong>、<strong>渐进式</strong>地完成的.</p>
-<hr>
-<h4 id="集合-set"><a href="#集合-set" class="headerlink" title="集合(set)"></a>集合(set)</h4><p>一个值为<code>null</code>的字典.</p>
-<hr>
-<h4 id="有序集合-zset"><a href="#有序集合-zset" class="headerlink" title="有序集合(zset)"></a>有序集合(zset)</h4><p>每个元素都关联一个double类型的分数, redis通过分数进行集合成员的排序</p>
-<p>键与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
-<p>查询某个元素的score, 直接通过dict查询, 时间复杂度为O(1)</p>
-<hr>
-<h5 id="跳跃列表-skiplist"><a href="#跳跃列表-skiplist" class="headerlink" title="跳跃列表(skiplist)"></a>跳跃列表(skiplist)</h5><p>zset内部排序功能是通过<strong>跳跃列表</strong>实现, </p>
-<p>跳跃列表本质上是一种查找结构, 用于解决查找问题.</p>
-<p>具体的实现是一个多层链表, 分为不同的层级, 相同层级的元素都使用指针进行连接.</p>
-<p>因此某些节点同时归属于不同层级, 该节点也就包含多个后向指针.</p>
-<p>每个节点至少包含一个前向指针, 并包含至少一个(可能多个)后向指针, 具体取决于该节点究竟同时在多少层.</p>
-<ol>
-<li>最底层即<code>L0</code>层, 包含所有的元素</li>
-<li>次底层即<code>L1</code>层, 每个元素有<code>50%</code>的机会进入这一层</li>
-<li>第三层即<code>L2</code>层, 每个元素有<code>25%</code>的机会进入这一层</li>
-<li>以此类推, 最多有32层.</li>
-</ol>
-<p>显然, 最底层是一个<strong>双向链表</strong>, 而上层则不然.</p>
-<p>每次的搜索过程从<strong>现存的</strong>最高层开始, 向下逐级搜索.</p>
-<p>由于所有节点的晋升依赖于概率, 无需维持各层之间的数量约束关系, 因此插入效率比平衡树类型的索引要高.</p>
-<p>而查找的平均时间复杂度是O(logn), 与平衡树类型相当.</p>
-<p>查询元素名次, 通过分数反查元素范围等, 因为要使用<code>skiplist</code>, 所以时间复杂度为<code>O(logn+M)</code>, <code>M</code>是要返回的元素的个数.</p>
-<hr>
-<h3 id="Redis淘汰策略"><a href="#Redis淘汰策略" class="headerlink" title="Redis淘汰策略"></a>Redis淘汰策略</h3><p>六种淘汰机制, 使用<code>maxmemory-policy</code>设置项进行设置</p>
-<table>
-<thead>
-<tr>
-<th>maxmemory-policy</th>
-<th>执行策略</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>noeviction</code></td>
-<td>不进行淘汰</td>
-</tr>
-<tr>
-<td><code>allkeys-lru</code></td>
-<td>对<strong>所有</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
-</tr>
-<tr>
-<td><code>allkeys-random</code></td>
-<td>对<strong>所有</strong><code>key</code>进行随机淘汰</td>
-</tr>
-<tr>
-<td><code>volatile-lru</code></td>
-<td>对<strong>易失</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
-</tr>
-<tr>
-<td><code>volatile-random</code></td>
-<td>对<strong>易失</strong><code>key</code>进行随机淘汰</td>
-</tr>
-<tr>
-<td><code>volatile-ttl</code></td>
-<td>对<strong>易失</strong><code>key</code>按照生存时间最少进行淘汰</td>
-</tr>
-</tbody></table>
-<p>注:</p>
-<ol>
-<li><code>LRU</code>(Least Recently Used) 最近最少使用</li>
-<li><code>TTL</code>(Time To Live) 生存时间</li>
-<li><code>volatile</code>: 设置了超时的<code>key</code>被视为<code>volatile</code>, 即<strong>易失的</strong></li>
-</ol>
-<hr>
-<h3 id="Redis-持久化机制"><a href="#Redis-持久化机制" class="headerlink" title="Redis 持久化机制"></a>Redis 持久化机制</h3><ol>
-<li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
-<li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
-</ol>
-<p>RDB为全量持久化, AOF为增量持久化.</p>
-<hr>
-<p>RDB的优势在于:</p>
-<ol>
-<li>只包含一个文件, 方便备份.</li>
-<li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
-<li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
-<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行使用写时复制的方式进行保存工作, 父进程不执行任何持久化工作.</li>
-</ol>
-<p>RDB的劣势在于:</p>
-<ol>
-<li>保存一份<code>RDB</code>总是要间隔一段时间, 例如<code>5</code>分钟, 如果发生故障, 这段时间的数据会被丢失.</li>
-<li>当数据集非常大的时候, <code>fork</code>过程可能非常耗时, 会在一段时间(<code>n</code>毫秒到<code>1</code>秒)内停止处理客户端请求.</li>
-</ol>
-<hr>
-<p>AOF的优势在于:</p>
-<ol>
-<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔<code>1s</code>), 这样在故障时丢失数据量更少.</li>
-<li>如果<code>AOF</code>文件过大, Redis可以对其进行重写, 仅包含恢复当前数据集所需的最小命令集合.</li>
-<li>有序地保存了所有写入操作, 且非常容易被人读懂, 因此更容易对其进行分析.</li>
-</ol>
-<p>AOF的劣势在于:</p>
-<ol>
-<li>对于相同数据集的备份, AOF文件的体积通常要大于<code>RDB</code>文件.</li>
-<li>根据使用的<code>fsync</code>策略, Redis在使用<code>AOF</code>备份的速度可能慢于使用<code>RDB</code>的速度.</li>
-</ol>
-<p>默认的备份方式是<code>RDB</code>方式.</p>
-<hr>
-<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
-<p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
-<hr>
-<h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><p>一个包含去重功能的计数器, 传入相同key不会增加计数, 但不太精确, 约有<code>0.81%</code>的误差.</p>
-<p>HyperLogLog在数据超过某个阈值后, 占用的存储空间为<code>12KB</code></p>
-<hr>
-<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p><code>Bloom Filter</code>用以检索一个元素是否在某一个集合中, </p>
-<p>值得注意的是, 布隆过滤器的数据结构中并不保存任何数据, 只是能够判断该数据是否被传入过.</p>
-<p>因此, 实例化一个布隆过滤器, 在存储一条记录时之前先添加入布隆过滤器, 之后每次请求先检验该数据是否存在</p>
-<p>如果存在, 在走缓存-&gt;数据库的查询流程, 如果不存在, 则直接返回.</p>
-<p>布隆过滤器有一定误判几率, 某个不存在的记录可能被判定为存在, 但被布隆判为不存在的元素肯定不存在.</p>
-<p>布隆过滤器所使用空间的大小与其误判率的要求相关, 当数据越来越多后, 为了维持误判率其占用空间也会上升.</p>
-<p>布隆过滤器空间利用率很高, 当维持<code>1%</code>误判率时, 每个元素的判定所需空间约为<code>9.6</code>比特.</p>
-<hr>
-<h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
-<p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
-<p>为了确保在程序出错时, 锁一定被释放, 还应该为其设置超时时间, 并且, 抢锁和设置超时需要为原子操作.</p>
-<p>在<code>redis2.8</code>版本之后, 可以使用<code>set</code>指令的<strong>拓展参数</strong>实现:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set lock true ex 5 nx</span><br></pre></td></tr></table></figure>
-
-<p>当然, 在正常情况下, 我们通过<code>del lock</code>来释放锁, 因此超时时间不应过低, 同时任务执行预期时间不应过长.</p>
-<hr>
-<h3 id="漏斗限流"><a href="#漏斗限流" class="headerlink" title="漏斗限流"></a>漏斗限流</h3><p><code>redis-cell</code>是一个限流模块, 使用<code>cl.throttle</code>指令指定限流标准.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cl.throttle &lt;key&gt; &lt;max-burst&gt; &lt;count per period&gt; &lt;period&gt; [quantity]</span><br></pre></td></tr></table></figure>
-
-<p>例如 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cl.throttle user123 15 30 60 1</span><br></pre></td></tr></table></figure>
-
-<p><code>user123</code>在进行<code>15</code>个操作之前, 不会受到限流, 之后会受到每<code>60</code>秒<code>30</code>个请求的限流.</p>
-<p>返回值包括5个, </p>
-<ol>
-<li><code>0</code>或者<code>1</code>, 表示按照限流规则是否应该被允许(0), 或拒绝(1)</li>
-<li><code>max_burst + 1</code>, 限流的全部数量</li>
-<li>剩余的限流数量</li>
-<li>应当重试的时间间隔(如果被限流)</li>
-<li>限流被重置所需时间</li>
-</ol>
-<hr>
-<h3 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
-<p>如果想利用多核, 可以启动多个Redis实例. </p>
-<p>注: 这里的单线程指的是Redis进行数据操作使用单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
-<hr>
-<h3 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h3><p>在处理多个请求时, Redis单线程使用IO复用模型维持与多个客户端的链接.</p>
-<hr>
-<h3 id="Pipe"><a href="#Pipe" class="headerlink" title="Pipe"></a>Pipe</h3><p>将多个独立的命令一次性发送, 然后一次性获得结果.</p>
-<p>通过减少与Redis服务器的通信次数来实现降低往返时延, 最大程度利用服务端处理能力.</p>
-<p>pipe的实现是在客户端, redis执行命令仍然是逐条进行的.</p>
-<hr>
-<p>参考:</p>
-<p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1983,7 +1818,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1996,7 +1831,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

@@ -3532,71 +3532,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Django Contenttype</title>
-    <url>/2019/07/03/Django%20contenttype/</url>
-    <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
-<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
-<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
-<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
-<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
-<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
-<hr>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
-<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
-<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
-<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
-<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
-<hr>
-<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
-<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
-<ol>
-<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
-<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
-<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
-</ol>
-<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
-<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
-<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
-<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
-<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
-<hr>
-<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
-
-<p>相关模型</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
-
-<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>下面使用反向关联名和反向查询名完成相同操作:</p>
-<p>创建标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
-<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
-]]></content>
-      <tags>
-        <tag>Django</tag>
-        <tag>Contenttype</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Django+Mysql实现赞踩系统</title>
     <url>/2019/07/03/Django%E7%82%B9%E8%B5%9E%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<p>主要包括两个部分: </p>
@@ -3672,6 +3607,71 @@
       <tags>
         <tag>Django</tag>
         <tag>赞踩系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Django Contenttype</title>
+    <url>/2019/07/03/Django%20contenttype/</url>
+    <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
+<p><code>contenttypes</code>应用的核心是一个<code>ContentType</code>模型, 每个该模型每个实例记录了Django已安装app的全部Model信息.</p>
+<p>通过<code>ContentType</code>, 我们可以获得任意一个app中的<code>Model</code>.</p>
+<p>所以, <code>ContentType</code>是一个代理模型, 将外键约束至<code>ContentType</code>, 也就能通过<code>ContentType</code>访问多个不同的模型.</p>
+<p>即: 外键约束至<code>ContentType</code>, 意味着该外键的实体可能是所有Model中任一个的实例.</p>
+<p>所以, contenttypes的使用场景是, 某个模型的外键需要指向不同模型的情况.</p>
+<hr>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>我们打算建立一个标签系统, 多个Model例如书籍, 相册, 文章, 都可以添加标签, 如何建立标签模型?</p>
+<p>普通的约束关系(例如<code>ForeignKey</code>)只能建立与一个模型之间的约束关系, 所以我们的Tag模型至少需要三个外键, 约束至上述各个模型.</p>
+<p>而这三个外键中, 可能只有一个不为空, 这意味着空间的浪费, 而假如以后我们又增添了新的Model, 怎么办? 只能增加Tag模型的外键.</p>
+<p>这意味着更低的空间利用率和数据表结构的改变, 当然, 存储实例对应不同外键时, 还要写不同的存储代码.</p>
+<p>关键是, 我们压根确定到底还有多少需要使用标签的<code>Model</code>, 难道以后要为这些Model一一添加外键? </p>
+<hr>
+<h4 id="通用关系"><a href="#通用关系" class="headerlink" title="通用关系"></a>通用关系</h4><p>上述问题的关键就在于, 每个外键都只能约束至<strong>一个</strong>模型, 而实际上, 通过<code>contentypes</code>, 我们可以将外键约束至不同的模型.</p>
+<p>在我们tag模型中, 我们需要增加三个字段, 通常, 这些字段的命名和定义都是固定的.</p>
+<ol>
+<li>一个外键字段<code>ForeignKey</code>, 约束至代理模型<code>ContentType</code>的某个实例, 实际上就是某个<code>Model</code>, 该字段名通常为<code>content_type</code>.</li>
+<li>一个正整数字段<code>PositiveIntegerField</code>, 存储外模型实例的主键值, 通常为’id’字段的值, 该字段名通常为<code>object_id</code>.</li>
+<li>一个通用外键字段<code>GenericForeignKey</code>, 约束至具体的实例, 需要指定前两者的字段名, 即<code>content_type</code>和<code>object_id</code>, 并作为访问关联实例的入口, 该字段名通常为<code>content_object</code>.</li>
+</ol>
+<p>通用外键通过代理模型<code>ContentType</code>和<code>object_id</code>进行约束, 这就是为什么在定义该字段时, 要将前两者的字段名作为初始化参数.</p>
+<p>在以上三个字段中, <code>content_type</code>指定(通过代理模型)约束至哪个外模型, 而<code>object_id</code>指明该实例的主键, 而<code>content_object</code>通过前两者确保约束至指定模型的某个实例.</p>
+<p>在存储时, 以上三个字段只需要填充<code>content_object</code>即可, 其余两者会根据传入的实例自行填充.</p>
+<p>而恰恰相反的是, 以上三个字段, 只有<code>content_object</code>是实际上不存在的字段, 它只是一个操作的入口, 每个实例的<code>content_type</code>和<code>object_id</code>就包含了约束外模型实例的全部信息.</p>
+<p>也因此, <code>content_object</code>字段并不能直接作为<code>filter()</code>的参数, 因为它并不存在于数据库中.</p>
+<hr>
+<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><h3 id="Tag模型"><a href="#Tag模型" class="headerlink" title="Tag模型"></a>Tag模型</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericForeignKey</span><br><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.models <span class="keyword">import</span> ContentType</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItem</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    tag = models.SlugField() <span class="comment"># 后三个字段是模式化的定义</span></span><br><span class="line">    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)</span><br><span class="line">    object_id = models.PositiveIntegerField()</span><br><span class="line">    content_object = GenericForeignKey(<span class="string">'content_type'</span>, <span class="string">'object_id'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.tag</span><br></pre></td></tr></table></figure>
+
+<p>相关模型</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+
+<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><p>给书籍实例添加标签</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>)  <span class="comment"># 创建一个书籍实例</span></span><br><span class="line"></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"python"</span>) <span class="comment"># 创建一条标签记录</span></span><br><span class="line">TaggedItem.objects.create(content_object=python_tutorial, tag=<span class="string">"django"</span>) <span class="comment"># 再增加一个标签</span></span><br></pre></td></tr></table></figure>
+
+<p>查看书名为<code>python web tutorial</code>的这本书的标签</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book) <span class="comment"># 获取Book类在Contentype中的具体记录</span></span><br><span class="line">book = Book.object.get(title=<span class="string">'python web tutorial'</span>) <span class="comment"># 获取这本书的实例</span></span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id=book.id ) <span class="comment"># 通过两个实际存在的字段, 进行filter查询</span></span><br></pre></td></tr></table></figure>
+
+<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">book_type = ContentType.objects.get_for_model(Book)</span><br><span class="line">books = Book.objects.filter(title__contains=<span class="string">"python"</span>)</span><br><span class="line">TaggedItem.objects.filter(content_type__pk=book_type.id, object_id__in=books)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h3><p>以上的操作方法, 相较于普通的查询更复杂, 一种快捷方法是在相关的外模型中设置反向关联字段和反向查询名:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.contenttypes.fields <span class="keyword">import</span> GenericRelation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">	title = models.CharField(max_length=<span class="number">20</span>)</span><br><span class="line">	tags = GenericRelation(TaggedItem, related_query_name=<span class="string">'book'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>下面使用反向关联名和反向查询名完成相同操作:</p>
+<p>创建标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python_tutorial = Book.objects.create(title=<span class="string">"python web tutorial"</span>) </span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"python"</span>)</span><br><span class="line">python_tutorial.tags.create(tag=<span class="string">"django"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>查看书名为<code>python web tutorial</code>的这本书的标签:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__title=<span class="string">"python web tutorial"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>查看书名中包含<code>python</code>一词的所有书的标签记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">TaggedItem.objects.filter(book__titile__contains=<span class="string">'python'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到, 设置通用关系字段和反向查询名之后, 查询的复杂度大大降低.</p>
+<p>值得注意的是, 该字段也是一个接口, 并不存在于数据库中.</p>
+]]></content>
+      <tags>
+        <tag>Django</tag>
+        <tag>Contenttype</tag>
       </tags>
   </entry>
   <entry>
@@ -3829,6 +3829,75 @@
         <tag>python</tag>
         <tag>MRO</tag>
         <tag>super()</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>常用算法, Python描述</title>
+    <url>/2019/06/01/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="基本数据结构定义"><a href="#基本数据结构定义" class="headerlink" title="基本数据结构定义"></a>基本数据结构定义</h3><p>链表节点/链表</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Lnode</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data, _next=None)</span>:</span></span><br><span class="line">		self.data = data</span><br><span class="line">		self.next = _next</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinkList</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, head)</span>:</span></span><br><span class="line">		self.head = head</span><br></pre></td></tr></table></figure>
+
+<p>初始化一个链表</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">head = Lnode(<span class="number">0</span>)</span><br><span class="line">p = head</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">10</span>):</span><br><span class="line">	p.next = Lnode(i)</span><br><span class="line">	p = p.next</span><br><span class="line"></span><br><span class="line">linklist = LinkList(head)</span><br></pre></td></tr></table></figure>
+
+<p>栈</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Stack</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		self.data=[]</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self, elem)</span>:</span></span><br><span class="line">		<span class="keyword">return</span> self.data.append(elem)</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">pop</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="keyword">return</span> self.data.pop()</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">is_empty</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="keyword">return</span> self.data==[]</span><br></pre></td></tr></table></figure>
+
+<p>二叉树(节点)</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BinTNode</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data, left=None, right=None)</span>:</span></span><br><span class="line">		self.data = data</span><br><span class="line">		self.left = left</span><br><span class="line">		self.right = right</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="反向打印链表"><a href="#反向打印链表" class="headerlink" title="反向打印链表"></a>反向打印链表</h3><h4 id="使用递归实现"><a href="#使用递归实现" class="headerlink" title="使用递归实现"></a>使用递归实现</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_reverse</span><span class="params">(node)</span>:</span></span><br><span class="line">	p = node</span><br><span class="line">	<span class="keyword">if</span> p.next:</span><br><span class="line">		print_reverse(p.next)</span><br><span class="line">	print(p.data)</span><br><span class="line"></span><br><span class="line">print_reverse(linklist.head)</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用栈实现"><a href="#使用栈实现" class="headerlink" title="使用栈实现"></a>使用栈实现</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_reverse</span><span class="params">(linklist)</span>:</span></span><br><span class="line">	s = Stack()</span><br><span class="line">	p = linklist.head</span><br><span class="line">	<span class="keyword">while</span> p:</span><br><span class="line">		s.push(p.data)</span><br><span class="line">		p = p.next</span><br><span class="line">	<span class="keyword">while</span> <span class="keyword">not</span> s.is_empty():</span><br><span class="line">		print(s.pop())</span><br><span class="line"></span><br><span class="line">print_reverse(linklist)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="斐波那契数列"><a href="#斐波那契数列" class="headerlink" title="斐波那契数列"></a>斐波那契数列</h3><p>定义法:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fibonacci</span><span class="params">(n)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> n &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">elif</span> n == <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> fibonacci(n<span class="number">-1</span>) + fibonacci(n<span class="number">-2</span>)</span><br></pre></td></tr></table></figure>
+
+<p>改进, 递归改循环, 从下往上计算</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fibonacci</span><span class="params">(n)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> n &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line">	fibn_minus_two = <span class="number">0</span></span><br><span class="line">	fibn_minus_one = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, n):</span><br><span class="line">		fibn = fibn_minus_two + fibn_minus_one</span><br><span class="line">		fibn_minus_two, fibn_minus_one = fibn_minus_one, fibn</span><br><span class="line">	<span class="keyword">return</span> fabn</span><br></pre></td></tr></table></figure>
+
+<p>边界条件<code>range(1, n)</code>:</p>
+<p><code>f(0)</code>和<code>f(1)</code>直接返回, 从<code>f(2)</code>开始计算, 需要相加<code>1</code>次.</p>
+<p>即求<code>f(n)</code>时需要相加<code>n-1</code>次, <code>range(n)</code>有<code>n</code>个可迭代对象, 减去一项, 需要从1开始.</p>
+<hr>
+<h4 id="青蛙跳台阶"><a href="#青蛙跳台阶" class="headerlink" title="青蛙跳台阶"></a>青蛙跳台阶</h4><p>一只青蛙每次可以跳上1或者2级台阶, n级台阶共有多少种跳法?</p>
+<p>假设该算法名为<code>f</code>, 青蛙每次跳跃有两个选项:</p>
+<ol>
+<li>跳1级，那么剩下n-1级,有f(n-1)种跳法</li>
+<li>跳2级，那么剩下n-2级，有f(n-2)种跳法</li>
+</ol>
+<p>所以，当还剩下n阶的时候，跳法为f(n-1)+f(n-2)种, 所以这是初始条件不同的斐波那契数列</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">jump</span><span class="params">(n)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">2</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">	<span class="keyword">return</span> jump(n<span class="number">-1</span>) + jump(n<span class="number">-2</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="求链表的倒数第k个节点"><a href="#求链表的倒数第k个节点" class="headerlink" title="求链表的倒数第k个节点"></a>求链表的倒数第k个节点</h3><p>维持两个指针<code>p</code>, <code>q</code>, 初始时移动p, 直至p移动了k个节点后开始同步移动q指针, 当p移至链表尾端后返回q所在节点.</p>
+<p>需要考虑的异常包括:</p>
+<ol>
+<li>链表为空, 返回None</li>
+<li>链表长度不足k, 返回None</li>
+<li>输入k=0, 返回None</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_kth_to_tail</span><span class="params">(linklist, k)</span>:</span></span><br><span class="line">	p = linklist.head</span><br><span class="line">	<span class="keyword">if</span> k &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(k):</span><br><span class="line">		<span class="keyword">if</span> <span class="keyword">not</span> p:</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">		p = p.next</span><br><span class="line">	q = linklist.head</span><br><span class="line">	<span class="keyword">while</span> p:</span><br><span class="line">		p = p.next</span><br><span class="line">		q = q.next</span><br><span class="line">	<span class="keyword">return</span> q.data</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="合并两个有序链表"><a href="#合并两个有序链表" class="headerlink" title="合并两个有序链表"></a>合并两个有序链表</h3><p>使用简单的归并算法, 从两个链表的首元素开始比较, 并选出更小的加入辅助链表, 直至指针移动至某个链表的尾端, 将另一个链表的剩余元素添加到链表中.</p>
+<p>考虑到链表的结构, 我们可以使用递归算法:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_merge</span><span class="params">(node1, node2)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> node1 <span class="keyword">or</span> <span class="keyword">not</span> node2:</span><br><span class="line">		<span class="keyword">return</span> node1 <span class="keyword">if</span> node1 <span class="keyword">else</span> node2</span><br><span class="line">	<span class="keyword">if</span> node1.data &lt; node2.data:</span><br><span class="line">		p = node1</span><br><span class="line">		p.next = _merge(node1.next, node2)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		p = node2</span><br><span class="line">		p.next = _merge(node1, node2.next)</span><br><span class="line">	<span class="keyword">return</span> p</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge</span><span class="params">(linklist1, linklist2)</span>:</span></span><br><span class="line">	<span class="keyword">return</span> LinkList(_merge(linklist1.head, linklist2.head))</span><br><span class="line"></span><br><span class="line">new_linklist = merge(linklist1, linklist2)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="计算二叉树的深度"><a href="#计算二叉树的深度" class="headerlink" title="计算二叉树的深度"></a>计算二叉树的深度</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_depth</span><span class="params">(BinTNode)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> BinTNode:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">return</span> max(get_depth(BinTNode.left), get_depth(BinTNode.right))+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="判断平衡二叉树"><a href="#判断平衡二叉树" class="headerlink" title="判断平衡二叉树"></a>判断平衡二叉树</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_balanced</span><span class="params">(BinTNode)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> BinTNode:</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">	<span class="keyword">if</span> get_depth(BinTNode.left) - get_depth(BinTNode.right) <span class="keyword">in</span> (<span class="number">0</span>, <span class="number">-1</span>, <span class="number">1</span>):</span><br><span class="line">		<span class="keyword">return</span> is_balanced(BinTNode.left) <span class="keyword">and</span> is_balanced(BinTNode.right)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<p>以上算法会对多个节点作重复判定, 所以效率不高, 改进版, 从下到上判断</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_balanced</span><span class="params">(BinTNode)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">balance</span><span class="params">(root, height)</span>:</span></span><br><span class="line">		<span class="keyword">if</span> <span class="keyword">not</span> root:</span><br><span class="line">			height = <span class="number">0</span></span><br><span class="line">			<span class="keyword">return</span> <span class="literal">True</span>, height</span><br><span class="line">		balance_left, height_left = balance(root.left)</span><br><span class="line">		balance_right, height_right = balance(root.right)</span><br><span class="line">		<span class="keyword">if</span> balance_left <span class="keyword">and</span> balance_right:</span><br><span class="line">			<span class="keyword">if</span> abs(height_left - height_right)&lt;=<span class="number">1</span>:</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">True</span>, max(height_left, height_right) + <span class="number">1</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">False</span>, height</span><br><span class="line">	<span class="keyword">return</span> balance(BinTNode)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -5697,6 +5766,260 @@ IX-->IS;</pre>
       <tags>
         <tag>Linux</tag>
         <tag>定时任务</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编码问题</title>
+    <url>/2018/06/01/%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="编码问题"><a href="#编码问题" class="headerlink" title="编码问题"></a>编码问题</h3><p>什么是编码?从本质上说起</p>
+<p>计算机元件上存储的是电位高低, 我们可以抽象地用1和0来表示高低电位, 这是最底层的东西. </p>
+<p>通常我们称一位为bit, 代表一个电位的高低, 它只有两个状态, 高和低, 所以每一个bit可以区分两个不同信息. </p>
+<p>因为, 每个字节, 即每8个位, 最多可以表示256种不同的含义, 这是最简单不过的数学题. </p>
+<p>假如现在有一串电位 <code>01000001 01000010</code>已知这是一段文本信息, 那么代表的是什么含义?</p>
+<p>没人知道, 也不可能有人知道. </p>
+<p>唯一知道的就是, 在存储着这一串信息的内存区域, 其电位分布依次为高电平低电平低电平低电平 …..</p>
+<hr>
+<h3 id="ASCII编码"><a href="#ASCII编码" class="headerlink" title="ASCII编码"></a>ASCII编码</h3><p>为了实现从电位序列到实际语义的转换, 我们定义了一组规范. </p>
+<p>用7个连续电位代表一个字符(ASCII编码),显然, 7位能描述的是128种状态, 因此, ASCII字符最多有128个, 事实上也是如此. </p>
+<p>鉴于英文字母只有26个, 其大小写状态再加上一些其他符号, 128个位置也是能应付得来的. </p>
+<p>在建立了电位到二进制数字, 再到语义的映射, 即ASCII表之后, 我们可以理解了以上一串电位的含义了</p>
+<p>01000001根据ASCII对照表, 代表字母A, 01000010则代表字母B, 所以这串电平代表的是两个字母’AB’</p>
+<p>那么一个ASCII编码的字符在内存中占据7位吗?</p>
+<p>不是的, 字节是计算机基本的存储单元, 一个字符最低也要占据1个字节(8个bit), 所以其首位固定添加一个0以占据一个字节. </p>
+<hr>
+<h3 id="ASCII编码的局限性"><a href="#ASCII编码的局限性" class="headerlink" title="ASCII编码的局限性"></a>ASCII编码的局限性</h3><p>当计算机的发展不限于英语国家乃至西欧国家时, 128个字符位就不够用了</p>
+<p>尤其对于非字母式语言, 可能需要上万个位置来存放自己的字符, 各种语言加起来, 这个数量就更多了</p>
+<p>如果计算机仍然只使用ASCII编码的话, 那么除了英语其他语言都无法在计算机上显示</p>
+<p>为了解决这个问题, 各国都推出了解决方案, 解决了部分问题, 也在互相影响下引入了歧义, 带来了混乱. </p>
+<p>我们直接跳到最终的解决方案 <code>unicode</code>编码</p>
+<hr>
+<h3 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a>unicode</h3><p>unicode是一个编码规范. </p>
+<p>在设想中, unicode映射表极为庞大, 庞大到所有语言的字符乃至今后世界上可能出现的所有字符加起来都不足以占满它的位置. </p>
+<p>我们只需要指定一个序号, 然后根据映射表, 就确定表示的究竟是哪个字符. </p>
+<p>没有争抢, 没有歧义, 不需要任何转换技巧, 所有语言的字符一视同仁. </p>
+<p>需要说明的是:<code>unicode</code>是一个编码规范, 它定义了映射表, 但并不是实际的编码方案, 它的实际实现是<code>UTF-8</code>以及<code>utf-16</code>以及<code>utf-32</code></p>
+<hr>
+<h3 id="UTF-8、UTF-16以及UTF-32"><a href="#UTF-8、UTF-16以及UTF-32" class="headerlink" title="UTF-8、UTF-16以及UTF-32"></a>UTF-8、UTF-16以及UTF-32</h3><p>第一个版本<code>unicode 1.0</code>(1994年)中打算用两个字节表示世界上所有的字符(也就是2的16次幂一共65536个空位, 显然这是一个错误的估计)</p>
+<p><code>utf-16</code>是<code>unicode1.0</code>最自然的编码实现, 使用16位来指定一个字符, 无论这个字符的序号是多么地小, 它都占据两个字节, 而且在内存和存储中均保持一致</p>
+<p>显然这种方法存在缺陷, 对于序号较小的字符(例如字母A,序号为65即1000001), 其占用的两个字节的第一个字节中全是0, 且无法兼容ASCII. </p>
+<p>别忘了, 此时网络上绝大部分文本都是英文, 所有英文字母占用的空间翻倍, 会带来传输和存储过程效率减半的严重后果. </p>
+<p>而另一种实现<code>utf-8</code>就是为了解决这个问题：</p>
+<p>在内存中时, 仍然使用两个字节来表示一个字符, 但在转换为字节流时, utf-8使用最少8位来代表一个字符</p>
+<p>也就是说, 一个字符<strong>至少</strong>映射为1个字节, 可能是多个字节, 只需要根据其开头序列, 即可知道应将几个字节视为一个字符.</p>
+<p>那么解码的时候, 怎么确定当前的字节代表一个字符, 还是应当与之后的字节连在一起代表另一个字符呢?</p>
+<p>答案也很简单, 抛弃一些空位, 以避免出现任何歧义. </p>
+<table>
+<thead>
+<tr>
+<th>unicode编码(十六进制)</th>
+<th>utf-8字节流(二进制)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>000000-00007F</td>
+<td>0xxxxxxx</td>
+</tr>
+<tr>
+<td>000080-0007FF</td>
+<td>110xxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>000800-00FFFF</td>
+<td>1110xxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>010000-10FFFF</td>
+<td>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>我们可以看到, 在多个字节表示一个字符时, 一些空位是无法被使用的. </p>
+<p><code>unicode2.0</code>则是使用4个字节来表示一个字符的编码形式, 可用编码空间有二十多个亿个. </p>
+<p>实际中使用的unicode字符集的序号则不超过0x10FFFF, </p>
+<p>如同<code>utf-16</code>是<code>unicode1.0</code>的自然实现, <code>utf-32</code>是<code>unidoce2.0</code>的自然实现. </p>
+<p>当然, 这种编码方式很少被使用, 大家都用<code>utf-8</code>这种可变长的编码方式. </p>
+<hr>
+<h3 id="编码过程与解码过程"><a href="#编码过程与解码过程" class="headerlink" title="编码过程与解码过程"></a>编码过程与解码过程</h3><p>编码:将字符转换为字节. 从存储或字节流中将字节转换为字符, 就要进行解码</p>
+<p>解码:将字节转换为字符. 从内存中将字符转换为字节流用于存储或传输, 就要进行编码</p>
+<hr>
+<h3 id="BOM是什么"><a href="#BOM是什么" class="headerlink" title="BOM是什么"></a>BOM是什么</h3><p>(Byte Order Mark)字节序</p>
+<p>LITTLE-ENDIAN（小字节序、低字节序）,即低位字节排放在内存的低地址端, 高位字节排放在内存的高地址端.  与之对应的是：BIG-ENDIAN(大字节序、高字节序)</p>
+<p>utf-8以字节为编码单元, 无需使用这个来确定字节序, 而utf-16中以2个字节为编码单元, 因此有必要先确定字节序. </p>
+]]></content>
+      <tags>
+        <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux目录内容</title>
+    <url>/2018/05/21/Linux%E7%9B%AE%E5%BD%95%E5%86%85%E5%AE%B9/</url>
+    <content><![CDATA[<p>根据<code>FHS</code>(Filesystem Hierarchy Standard, 文件系统层次化标准)，Linux系统的目录及其内容应当如下</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>应当放置的文件内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/boot</code></td>
+<td>开机所需文件，内核、开机菜单及所需配置文件等</td>
+</tr>
+<tr>
+<td><code>/dev</code></td>
+<td>以文件形式存放的设备与接口</td>
+</tr>
+<tr>
+<td><code>/etc</code></td>
+<td>配置文件，所有的配置文件都应当放在这个目录</td>
+</tr>
+<tr>
+<td><code>/bin</code></td>
+<td>二进制可执行文件，用户指令，常用命令一般都在此处</td>
+</tr>
+<tr>
+<td><code>/sbin</code></td>
+<td>开机过程中需要的命令，只有超级用户能访问的二进制可执行文件</td>
+</tr>
+<tr>
+<td><code>/usr</code></td>
+<td>Unix System Resource 用于存放系统应用程序</td>
+</tr>
+<tr>
+<td><code>/srv</code></td>
+<td>一些网络服务的数据文件目录</td>
+</tr>
+<tr>
+<td><code>/var</code></td>
+<td>运行时会改变的文件，例如日志等</td>
+</tr>
+<tr>
+<td><code>/root</code></td>
+<td>超级用户的主目录</td>
+</tr>
+<tr>
+<td><code>/home</code></td>
+<td>存放用户的根目录，用户主目录的基点</td>
+</tr>
+<tr>
+<td><code>/media</code></td>
+<td>用于挂载设备文件的目录</td>
+</tr>
+<tr>
+<td><code>/opt</code></td>
+<td>额外可选的应用程序包</td>
+</tr>
+<tr>
+<td><code>/temp</code></td>
+<td>临时文件的存储目录</td>
+</tr>
+<tr>
+<td><code>/mnt</code></td>
+<td>系统管理员安装临时文件系统的安装点</td>
+</tr>
+</tbody></table>
+<hr>
+<p>另外, <code>/usr</code>目录中各子目录和应当放置的文件内容</p>
+<table>
+<thead>
+<tr>
+<th>/usr子目录</th>
+<th>应当放置的文件内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/bin</code></td>
+<td>众多的应用程序</td>
+</tr>
+<tr>
+<td><code>/lib</code></td>
+<td>常用的动态链接库和软件包的配置文件</td>
+</tr>
+<tr>
+<td><code>/src</code></td>
+<td>源代码</td>
+</tr>
+<tr>
+<td><code>/local</code></td>
+<td>用户自行安装的软件</td>
+</tr>
+<tr>
+<td><code>/local/bin</code></td>
+<td>本地增加的命令</td>
+</tr>
+<tr>
+<td><code>/local/lib</code></td>
+<td>本地增加的库</td>
+</tr>
+</tbody></table>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux文件权限修改</title>
+    <url>/2018/05/21/Linux%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%BF%AE%E6%94%B9/</url>
+    <content><![CDATA[<h3 id="文件权限与查看"><a href="#文件权限与查看" class="headerlink" title="文件权限与查看"></a>文件权限与查看</h3><p>使用<code>ls</code>查看文件信息, 常用参数为</p>
+<ul>
+<li><code>a</code> 查看所有文件</li>
+<li><code>l</code> 查看详细信息</li>
+<li><code>d</code> 查看目录信息</li>
+</ul>
+<hr>
+<p>文件包括以下类型:</p>
+<ul>
+<li><code>-</code> 普通文件</li>
+<li><code>d</code> 目录文件</li>
+<li><code>l</code> 链接文件</li>
+<li><code>b</code> 块设备文件</li>
+<li><code>c</code> 字符设备文件</li>
+<li><code>p</code> 管道文件</li>
+</ul>
+<hr>
+<p>每个文件都有所属的用户和组, 文件的基本权限有三个:</p>
+<ul>
+<li><code>r</code> 读</li>
+<li><code>w</code> 写</li>
+<li><code>x</code> 执行</li>
+</ul>
+<p>对于一个目录文件来说, 这三项的含义为:</p>
+<ul>
+<li><code>r</code>: 可以读取目录内文件列表</li>
+<li><code>w</code>: 可以在该目录增删改文件</li>
+<li><code>x</code>: 可以进入该目录</li>
+</ul>
+<hr>
+<p>权限与数字的对应关系为</p>
+<ul>
+<li><code>r</code> – <code>4</code></li>
+<li><code>w</code> – <code>2</code></li>
+<li><code>x</code> – <code>1</code></li>
+</ul>
+<p>所以一个rwx权限可以等价表示为4+2+1=7, 依次类推，可读可写为4+2=6，只读为4</p>
+<hr>
+<p>在ls命名列出的文件列表中, 权限从左到右分为三组, 分别是</p>
+<ol>
+<li>文件所有者</li>
+<li>文件所属组</li>
+<li>其他用户</li>
+</ol>
+<p>对该文件具有的权限.</p>
+<hr>
+<h3 id="修改文件权限指令"><a href="#修改文件权限指令" class="headerlink" title="修改文件权限指令"></a>修改文件权限指令</h3><p><code>chmod [选项] 权限 文件</code></p>
+<p>例如将某个文件修改为所有用户可读可写可执行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chmod 777 dunp.rdb</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="用户和用户组"><a href="#用户和用户组" class="headerlink" title="用户和用户组"></a>用户和用户组</h3><p>每个用户在创建时都会自动创建一个同名的基本用户组, 该基本用户组只包含该用户.</p>
+<p>如果用户以后纳入其他用户组, 则对于该用户来说属于扩展用户组.</p>
+<p>一个用户只能有一个基本用户组, 但可以有多个扩展用户组.</p>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>

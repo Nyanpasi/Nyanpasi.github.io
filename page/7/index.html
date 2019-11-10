@@ -298,6 +298,295 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/25/Redis基础/" itemprop="url">Redis基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T12:59:21+08:00">
+                2019-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h3><p><code>Redis</code>的键为字符串, 而值有5种基本数据类型:</p>
+<ol>
+<li>字符串(<code>String</code>)</li>
+<li>列表(<code>List</code>)</li>
+<li>字典(<code>Hash</code>)</li>
+<li>集合(<code>Set</code>)</li>
+<li>有序集合(<code>Sorted Set</code>)</li>
+</ol>
+<hr>
+<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>Redis</code>字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配.</p>
+<p>当字符串长度小于<code>1M</code>时, 扩容都是加倍现有的空间, 如果超过<code>1M</code>, 扩容时一次只会多扩1M的空间.</p>
+<p>需要注意的是字符串最大长度为<code>512M</code>.</p>
+<p>另外, 字符串的索引从<code>0</code>开始。</p>
+<hr>
+<h4 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h4><p><code>Redis</code>的列表为双向链表, 首尾插入和删除较快, 而定位操作慢.</p>
+<p>数据较少时, 使用连续内存存储, 这个结构是<code>ziplist</code>, 数据较多时, 使用多个链接起来的ziplist组成的quicklist.</p>
+<p>使用列表可以方便地实现队列或者栈.</p>
+<hr>
+<h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
+<p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
+<hr>
+<h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
+<p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
+<p>因此, <code>rehash</code>动作并不是一次性、集中式地完成, 而是<strong>分多次</strong>、<strong>渐进式</strong>地完成的.</p>
+<hr>
+<h4 id="集合-set"><a href="#集合-set" class="headerlink" title="集合(set)"></a>集合(set)</h4><p>一个值为<code>null</code>的字典.</p>
+<hr>
+<h4 id="有序集合-zset"><a href="#有序集合-zset" class="headerlink" title="有序集合(zset)"></a>有序集合(zset)</h4><p>每个元素都关联一个double类型的分数, redis通过分数进行集合成员的排序</p>
+<p>键与分数之间的关系是用字典来实现的, 即分数作为元素的<strong>值</strong>, 但因为这个<strong>值</strong>只能是一个double类型的分数, 所以我们称之为set, 而非dict.</p>
+<p>查询某个元素的score, 直接通过dict查询, 时间复杂度为O(1)</p>
+<hr>
+<h5 id="跳跃列表-skiplist"><a href="#跳跃列表-skiplist" class="headerlink" title="跳跃列表(skiplist)"></a>跳跃列表(skiplist)</h5><p>zset内部排序功能是通过<strong>跳跃列表</strong>实现, </p>
+<p>跳跃列表本质上是一种查找结构, 用于解决查找问题.</p>
+<p>具体的实现是一个多层链表, 分为不同的层级, 相同层级的元素都使用指针进行连接.</p>
+<p>因此某些节点同时归属于不同层级, 该节点也就包含多个后向指针.</p>
+<p>每个节点至少包含一个前向指针, 并包含至少一个(可能多个)后向指针, 具体取决于该节点究竟同时在多少层.</p>
+<ol>
+<li>最底层即<code>L0</code>层, 包含所有的元素</li>
+<li>次底层即<code>L1</code>层, 每个元素有<code>50%</code>的机会进入这一层</li>
+<li>第三层即<code>L2</code>层, 每个元素有<code>25%</code>的机会进入这一层</li>
+<li>以此类推, 最多有32层.</li>
+</ol>
+<p>显然, 最底层是一个<strong>双向链表</strong>, 而上层则不然.</p>
+<p>每次的搜索过程从<strong>现存的</strong>最高层开始, 向下逐级搜索.</p>
+<p>由于所有节点的晋升依赖于概率, 无需维持各层之间的数量约束关系, 因此插入效率比平衡树类型的索引要高.</p>
+<p>而查找的平均时间复杂度是O(logn), 与平衡树类型相当.</p>
+<p>查询元素名次, 通过分数反查元素范围等, 因为要使用<code>skiplist</code>, 所以时间复杂度为<code>O(logn+M)</code>, <code>M</code>是要返回的元素的个数.</p>
+<hr>
+<h3 id="Redis淘汰策略"><a href="#Redis淘汰策略" class="headerlink" title="Redis淘汰策略"></a>Redis淘汰策略</h3><p>六种淘汰机制, 使用<code>maxmemory-policy</code>设置项进行设置</p>
+<table>
+<thead>
+<tr>
+<th>maxmemory-policy</th>
+<th>执行策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>noeviction</code></td>
+<td>不进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-lru</code></td>
+<td>对<strong>所有</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>allkeys-random</code></td>
+<td>对<strong>所有</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-lru</code></td>
+<td>对<strong>易失</strong><code>key</code>按照<code>LRU</code>原则进行淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-random</code></td>
+<td>对<strong>易失</strong><code>key</code>进行随机淘汰</td>
+</tr>
+<tr>
+<td><code>volatile-ttl</code></td>
+<td>对<strong>易失</strong><code>key</code>按照生存时间最少进行淘汰</td>
+</tr>
+</tbody></table>
+<p>注:</p>
+<ol>
+<li><code>LRU</code>(Least Recently Used) 最近最少使用</li>
+<li><code>TTL</code>(Time To Live) 生存时间</li>
+<li><code>volatile</code>: 设置了超时的<code>key</code>被视为<code>volatile</code>, 即<strong>易失的</strong></li>
+</ol>
+<hr>
+<h3 id="Redis-持久化机制"><a href="#Redis-持久化机制" class="headerlink" title="Redis 持久化机制"></a>Redis 持久化机制</h3><ol>
+<li><code>RDB</code>机制, 指定时间间隔内将内存中的快照集快照写入磁盘. 默认为<code>dump.rdb</code></li>
+<li><code>AOF</code>机制, Append Only File, 每个写命令都通过<code>write</code>追加到文件中. 默认为<code>appendonly.aof</code></li>
+</ol>
+<p>RDB为全量持久化, AOF为增量持久化.</p>
+<hr>
+<p>RDB的优势在于:</p>
+<ol>
+<li>只包含一个文件, 方便备份.</li>
+<li>方便转移, 直接将<code>RDB</code>文件移动到其他的存储介质上.</li>
+<li>在数据量较多时, 使用<code>RDB</code>文件恢复速度比<code>AOF</code>快.</li>
+<li>RBD可以最大化<code>Redis</code>的性能, 父进程<code>fork</code>出一个子进程进行使用写时复制的方式进行保存工作, 父进程不执行任何持久化工作.</li>
+</ol>
+<p>RDB的劣势在于:</p>
+<ol>
+<li>保存一份<code>RDB</code>总是要间隔一段时间, 例如<code>5</code>分钟, 如果发生故障, 这段时间的数据会被丢失.</li>
+<li>当数据集非常大的时候, <code>fork</code>过程可能非常耗时, 会在一段时间(<code>n</code>毫秒到<code>1</code>秒)内停止处理客户端请求.</li>
+</ol>
+<hr>
+<p>AOF的优势在于:</p>
+<ol>
+<li>更能保证耐久性, 因为每次需要追加的命令并不多, 因此可以频繁进行<code>fsync</code>(例如间隔<code>1s</code>), 这样在故障时丢失数据量更少.</li>
+<li>如果<code>AOF</code>文件过大, Redis可以对其进行重写, 仅包含恢复当前数据集所需的最小命令集合.</li>
+<li>有序地保存了所有写入操作, 且非常容易被人读懂, 因此更容易对其进行分析.</li>
+</ol>
+<p>AOF的劣势在于:</p>
+<ol>
+<li>对于相同数据集的备份, AOF文件的体积通常要大于<code>RDB</code>文件.</li>
+<li>根据使用的<code>fsync</code>策略, Redis在使用<code>AOF</code>备份的速度可能慢于使用<code>RDB</code>的速度.</li>
+</ol>
+<p>默认的备份方式是<code>RDB</code>方式.</p>
+<hr>
+<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><p>使用<code>MULTI</code>指令开始一个事务, 之后所有命令被添加入事务队列, 直至使用<code>EXEC</code>触发事务或使用<code>DISCARD</code>取消事务.</p>
+<p><code>WATCH</code>指令可以被用于事务开始之前用以监测指定键, 如果在事务被触发前, 该键被更改, 则<code>EXEC</code>操作直接失败.</p>
+<hr>
+<h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><p>一个包含去重功能的计数器, 传入相同key不会增加计数, 但不太精确, 约有<code>0.81%</code>的误差.</p>
+<p>HyperLogLog在数据超过某个阈值后, 占用的存储空间为<code>12KB</code></p>
+<hr>
+<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p><code>Bloom Filter</code>用以检索一个元素是否在某一个集合中, </p>
+<p>值得注意的是, 布隆过滤器的数据结构中并不保存任何数据, 只是能够判断该数据是否被传入过.</p>
+<p>因此, 实例化一个布隆过滤器, 在存储一条记录时之前先添加入布隆过滤器, 之后每次请求先检验该数据是否存在</p>
+<p>如果存在, 在走缓存-&gt;数据库的查询流程, 如果不存在, 则直接返回.</p>
+<p>布隆过滤器有一定误判几率, 某个不存在的记录可能被判定为存在, 但被布隆判为不存在的元素肯定不存在.</p>
+<p>布隆过滤器所使用空间的大小与其误判率的要求相关, 当数据越来越多后, 为了维持误判率其占用空间也会上升.</p>
+<p>布隆过滤器空间利用率很高, 当维持<code>1%</code>误判率时, 每个元素的判定所需空间约为<code>9.6</code>比特.</p>
+<hr>
+<h3 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h3><p>实现思路: 使用<code>setnx</code>(set if not exists)指令来设置某个键, 如果成功, 则视为抢到了锁.</p>
+<p>在执行完代码后, 使用<code>del</code>指令释放锁.</p>
+<p>为了确保在程序出错时, 锁一定被释放, 还应该为其设置超时时间, 并且, 抢锁和设置超时需要为原子操作.</p>
+<p>在<code>redis2.8</code>版本之后, 可以使用<code>set</code>指令的<strong>拓展参数</strong>实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set lock true ex 5 nx</span><br></pre></td></tr></table></figure>
+
+<p>当然, 在正常情况下, 我们通过<code>del lock</code>来释放锁, 因此超时时间不应过低, 同时任务执行预期时间不应过长.</p>
+<hr>
+<h3 id="漏斗限流"><a href="#漏斗限流" class="headerlink" title="漏斗限流"></a>漏斗限流</h3><p><code>redis-cell</code>是一个限流模块, 使用<code>cl.throttle</code>指令指定限流标准.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cl.throttle &lt;key&gt; &lt;max-burst&gt; &lt;count per period&gt; &lt;period&gt; [quantity]</span><br></pre></td></tr></table></figure>
+
+<p>例如 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cl.throttle user123 15 30 60 1</span><br></pre></td></tr></table></figure>
+
+<p><code>user123</code>在进行<code>15</code>个操作之前, 不会受到限流, 之后会受到每<code>60</code>秒<code>30</code>个请求的限流.</p>
+<p>返回值包括5个, </p>
+<ol>
+<li><code>0</code>或者<code>1</code>, 表示按照限流规则是否应该被允许(0), 或拒绝(1)</li>
+<li><code>max_burst + 1</code>, 限流的全部数量</li>
+<li>剩余的限流数量</li>
+<li>应当重试的时间间隔(如果被限流)</li>
+<li>限流被重置所需时间</li>
+</ol>
+<hr>
+<h3 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h3><p>Redis的数据在内存中, 因此操作极快, 相较而言, 切换线程所耗费的时间就不容忽视, 并不能提高效率.</p>
+<p>如果想利用多核, 可以启动多个Redis实例. </p>
+<p>注: 这里的单线程指的是Redis进行数据操作使用单线程, 作为一个完整的服务, Redis本身包含多个线程.</p>
+<hr>
+<h3 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h3><p>在处理多个请求时, Redis单线程使用IO复用模型维持与多个客户端的链接.</p>
+<hr>
+<h3 id="Pipe"><a href="#Pipe" class="headerlink" title="Pipe"></a>Pipe</h3><p>将多个独立的命令一次性发送, 然后一次性获得结果.</p>
+<p>通过减少与Redis服务器的通信次数来实现降低往返时延, 最大程度利用服务端处理能力.</p>
+<p>pipe的实现是在客户端, redis执行命令仍然是逐条进行的.</p>
+<hr>
+<p>参考:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/23370124" target="_blank" rel="noopener">Redis为什么用跳表而不用平衡树？</a><br><a href="https://www.cnblogs.com/xingzc/p/5988080.html" target="_blank" rel="noopener">Redis提供的持久化机制　</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Mysql基础/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1087,7 +1376,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux基础/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/01/编码问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -1106,7 +1395,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/21/Linux基础/" itemprop="url">Linux基础命令</a></h1>
+                <a class="post-title-link" href="/2018/06/01/编码问题/" itemprop="url">编码问题</a></h1>
         
 
         <div class="post-meta">
@@ -1118,7 +1407,203 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:04:17+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-01T12:19:47+08:00">
+                2018-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="编码问题"><a href="#编码问题" class="headerlink" title="编码问题"></a>编码问题</h3><p>什么是编码?从本质上说起</p>
+<p>计算机元件上存储的是电位高低, 我们可以抽象地用1和0来表示高低电位, 这是最底层的东西. </p>
+<p>通常我们称一位为bit, 代表一个电位的高低, 它只有两个状态, 高和低, 所以每一个bit可以区分两个不同信息. </p>
+<p>因为, 每个字节, 即每8个位, 最多可以表示256种不同的含义, 这是最简单不过的数学题. </p>
+<p>假如现在有一串电位 <code>01000001 01000010</code>已知这是一段文本信息, 那么代表的是什么含义?</p>
+<p>没人知道, 也不可能有人知道. </p>
+<p>唯一知道的就是, 在存储着这一串信息的内存区域, 其电位分布依次为高电平低电平低电平低电平 …..</p>
+<hr>
+<h3 id="ASCII编码"><a href="#ASCII编码" class="headerlink" title="ASCII编码"></a>ASCII编码</h3><p>为了实现从电位序列到实际语义的转换, 我们定义了一组规范. </p>
+<p>用7个连续电位代表一个字符(ASCII编码),显然, 7位能描述的是128种状态, 因此, ASCII字符最多有128个, 事实上也是如此. </p>
+<p>鉴于英文字母只有26个, 其大小写状态再加上一些其他符号, 128个位置也是能应付得来的. </p>
+<p>在建立了电位到二进制数字, 再到语义的映射, 即ASCII表之后, 我们可以理解了以上一串电位的含义了</p>
+<p>01000001根据ASCII对照表, 代表字母A, 01000010则代表字母B, 所以这串电平代表的是两个字母’AB’</p>
+<p>那么一个ASCII编码的字符在内存中占据7位吗?</p>
+<p>不是的, 字节是计算机基本的存储单元, 一个字符最低也要占据1个字节(8个bit), 所以其首位固定添加一个0以占据一个字节. </p>
+<hr>
+<h3 id="ASCII编码的局限性"><a href="#ASCII编码的局限性" class="headerlink" title="ASCII编码的局限性"></a>ASCII编码的局限性</h3><p>当计算机的发展不限于英语国家乃至西欧国家时, 128个字符位就不够用了</p>
+<p>尤其对于非字母式语言, 可能需要上万个位置来存放自己的字符, 各种语言加起来, 这个数量就更多了</p>
+<p>如果计算机仍然只使用ASCII编码的话, 那么除了英语其他语言都无法在计算机上显示</p>
+<p>为了解决这个问题, 各国都推出了解决方案, 解决了部分问题, 也在互相影响下引入了歧义, 带来了混乱. </p>
+<p>我们直接跳到最终的解决方案 <code>unicode</code>编码</p>
+<hr>
+<h3 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a>unicode</h3><p>unicode是一个编码规范. </p>
+<p>在设想中, unicode映射表极为庞大, 庞大到所有语言的字符乃至今后世界上可能出现的所有字符加起来都不足以占满它的位置. </p>
+<p>我们只需要指定一个序号, 然后根据映射表, 就确定表示的究竟是哪个字符. </p>
+<p>没有争抢, 没有歧义, 不需要任何转换技巧, 所有语言的字符一视同仁. </p>
+<p>需要说明的是:<code>unicode</code>是一个编码规范, 它定义了映射表, 但并不是实际的编码方案, 它的实际实现是<code>UTF-8</code>以及<code>utf-16</code>以及<code>utf-32</code></p>
+<hr>
+<h3 id="UTF-8、UTF-16以及UTF-32"><a href="#UTF-8、UTF-16以及UTF-32" class="headerlink" title="UTF-8、UTF-16以及UTF-32"></a>UTF-8、UTF-16以及UTF-32</h3><p>第一个版本<code>unicode 1.0</code>(1994年)中打算用两个字节表示世界上所有的字符(也就是2的16次幂一共65536个空位, 显然这是一个错误的估计)</p>
+<p><code>utf-16</code>是<code>unicode1.0</code>最自然的编码实现, 使用16位来指定一个字符, 无论这个字符的序号是多么地小, 它都占据两个字节, 而且在内存和存储中均保持一致</p>
+<p>显然这种方法存在缺陷, 对于序号较小的字符(例如字母A,序号为65即1000001), 其占用的两个字节的第一个字节中全是0, 且无法兼容ASCII. </p>
+<p>别忘了, 此时网络上绝大部分文本都是英文, 所有英文字母占用的空间翻倍, 会带来传输和存储过程效率减半的严重后果. </p>
+<p>而另一种实现<code>utf-8</code>就是为了解决这个问题：</p>
+<p>在内存中时, 仍然使用两个字节来表示一个字符, 但在转换为字节流时, utf-8使用最少8位来代表一个字符</p>
+<p>也就是说, 一个字符<strong>至少</strong>映射为1个字节, 可能是多个字节, 只需要根据其开头序列, 即可知道应将几个字节视为一个字符.</p>
+<p>那么解码的时候, 怎么确定当前的字节代表一个字符, 还是应当与之后的字节连在一起代表另一个字符呢?</p>
+<p>答案也很简单, 抛弃一些空位, 以避免出现任何歧义. </p>
+<table>
+<thead>
+<tr>
+<th>unicode编码(十六进制)</th>
+<th>utf-8字节流(二进制)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>000000-00007F</td>
+<td>0xxxxxxx</td>
+</tr>
+<tr>
+<td>000080-0007FF</td>
+<td>110xxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>000800-00FFFF</td>
+<td>1110xxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>010000-10FFFF</td>
+<td>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>我们可以看到, 在多个字节表示一个字符时, 一些空位是无法被使用的. </p>
+<p><code>unicode2.0</code>则是使用4个字节来表示一个字符的编码形式, 可用编码空间有二十多个亿个. </p>
+<p>实际中使用的unicode字符集的序号则不超过0x10FFFF, </p>
+<p>如同<code>utf-16</code>是<code>unicode1.0</code>的自然实现, <code>utf-32</code>是<code>unidoce2.0</code>的自然实现. </p>
+<p>当然, 这种编码方式很少被使用, 大家都用<code>utf-8</code>这种可变长的编码方式. </p>
+<hr>
+<h3 id="编码过程与解码过程"><a href="#编码过程与解码过程" class="headerlink" title="编码过程与解码过程"></a>编码过程与解码过程</h3><p>编码:将字符转换为字节. 从存储或字节流中将字节转换为字符, 就要进行解码</p>
+<p>解码:将字节转换为字符. 从内存中将字符转换为字节流用于存储或传输, 就要进行编码</p>
+<hr>
+<h3 id="BOM是什么"><a href="#BOM是什么" class="headerlink" title="BOM是什么"></a>BOM是什么</h3><p>(Byte Order Mark)字节序</p>
+<p>LITTLE-ENDIAN（小字节序、低字节序）,即低位字节排放在内存的低地址端, 高位字节排放在内存的高地址端.  与之对应的是：BIG-ENDIAN(大字节序、高字节序)</p>
+<p>utf-8以字节为编码单元, 无需使用这个来确定字节序, 而utf-16中以2个字节为编码单元, 因此有必要先确定字节序. </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux目录内容/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/21/Linux目录内容/" itemprop="url">Linux目录内容</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T12:58:21+08:00">
                 2018-05-21
               </time>
             
@@ -1158,262 +1643,105 @@
       
         
           
-            <ol>
-<li>重命名文件?</li>
-</ol>
-<p>没有重命名的命令, 直接使用<code>mv filename &lt;newname&gt;</code>即可.</p>
-<ol start="2">
-<li>如何删除文件和文件夹?</li>
-</ol>
-<p><code>rm -fr &lt;dirname&gt;</code> 免确认递归删除文件夹<br><code>rm -f &lt;filename&gt;</code> 免确认删除文件</p>
-<ol start="3">
-<li>更改文件权限</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/18/URL基础/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/18/URL基础/" itemprop="url">URL基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-18T11:15:03+08:00">
-                2018-02-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="URL的一般格式"><a href="#URL的一般格式" class="headerlink" title="URL的一般格式"></a>URL的一般格式</h3><p><code>&lt;scheme&gt;://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;path&gt;;&lt;params&gt;?&lt;query&gt;#&lt;frag&gt;</code></p>
+            <p>根据<code>FHS</code>(Filesystem Hierarchy Standard, 文件系统层次化标准)，Linux系统的目录及其内容应当如下</p>
 <table>
 <thead>
 <tr>
-<th>组件</th>
-<th>含义</th>
-<th>说明</th>
+<th>目录</th>
+<th>应当放置的文件内容</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><code>scheme</code></td>
-<td>方案</td>
-<td>指定获取资源时使用的协议</td>
+<td><code>/boot</code></td>
+<td>开机所需文件，内核、开机菜单及所需配置文件等</td>
 </tr>
 <tr>
-<td><code>user</code></td>
-<td>用户</td>
-<td>某些方案访问资源时需要的用户名</td>
+<td><code>/dev</code></td>
+<td>以文件形式存放的设备与接口</td>
 </tr>
 <tr>
-<td><code>password</code></td>
-<td>密码</td>
-<td>用户名对应的密码</td>
+<td><code>/etc</code></td>
+<td>配置文件，所有的配置文件都应当放在这个目录</td>
 </tr>
 <tr>
-<td><code>host</code></td>
-<td>主机</td>
-<td>资源宿主服务器的主机名或点分ip地址</td>
+<td><code>/bin</code></td>
+<td>二进制可执行文件，用户指令，常用命令一般都在此处</td>
 </tr>
 <tr>
-<td><code>port</code></td>
-<td>端口</td>
-<td>资源宿主服务器正在监听的端口号, 很多方案都指定了默认的端口号,</td>
+<td><code>/sbin</code></td>
+<td>开机过程中需要的命令，只有超级用户能访问的二进制可执行文件</td>
 </tr>
 <tr>
-<td><code>path</code></td>
-<td>路径</td>
-<td>服务器上资源的本地名</td>
+<td><code>/usr</code></td>
+<td>Unix System Resource 用于存放系统应用程序</td>
 </tr>
 <tr>
-<td><code>params</code></td>
-<td>参数</td>
-<td>某些方案用这个组件来指定输入参数, 形式<code>key=value</code>,分隔符<code>;</code></td>
+<td><code>/srv</code></td>
+<td>一些网络服务的数据文件目录</td>
 </tr>
 <tr>
-<td><code>query</code></td>
-<td>查询</td>
-<td>某些方案用这个组件来指定查询参数, 形式<code>?key=value</code>,分隔符<code>&amp;</code></td>
+<td><code>/var</code></td>
+<td>运行时会改变的文件，例如日志等</td>
 </tr>
 <tr>
-<td><code>frag</code></td>
-<td>片段</td>
-<td>一小片或一部分资源的名字(fragment), 仅在本地浏览器生效</td>
+<td><code>/root</code></td>
+<td>超级用户的主目录</td>
+</tr>
+<tr>
+<td><code>/home</code></td>
+<td>存放用户的根目录，用户主目录的基点</td>
+</tr>
+<tr>
+<td><code>/media</code></td>
+<td>用于挂载设备文件的目录</td>
+</tr>
+<tr>
+<td><code>/opt</code></td>
+<td>额外可选的应用程序包</td>
+</tr>
+<tr>
+<td><code>/temp</code></td>
+<td>临时文件的存储目录</td>
+</tr>
+<tr>
+<td><code>/mnt</code></td>
+<td>系统管理员安装临时文件系统的安装点</td>
 </tr>
 </tbody></table>
 <hr>
-<p>方案(<code>scheme</code>)</p>
-<ol>
-<li>大小写无关</li>
-<li>必须以字母作为开头</li>
-</ol>
-<hr>
-<p>主机和端口(<code>host</code>&amp;<code>port</code>)</p>
-<ol>
-<li>主机可以用主机名或者ip地址两种形式表示  </li>
-<li>在不指定端口时, 根据方案使用默认端口  </li>
-</ol>
-<hr>
-<p>用户名和密码(<code>user</code>&amp;<code>password</code>)</p>
-<ol>
-<li>这两个组件的需要与否取决于服务器, 例如<strong>FTP服务器</strong>通常需求这个组件</li>
-<li>在需要这个组件而没有提供时, 通常会插入一个默认的用户和密码</li>
-</ol>
-<hr>
-<p>路径(<code>path</code>)</p>
-<ol>
-<li>路径使用<code>/</code>划分为多个路径段, 每个路径段都可以有自己的参数组件  </li>
-</ol>
-<hr>
-<p>参数(<code>params</code>)</p>
-<ol>
-<li>使用<code>;</code>与其他组件以及互相之间进行分隔</li>
-<li>提供访问资源所需的所有附加信息, </li>
-</ol>
-<p>示例：<em><code>https://example.com/path;type=1;date=2</code></em></p>
-<hr>
-<p>查询(<code>query</code>)</p>
-<ol>
-<li>使用<code>?</code>与其他组件进行分隔, 使用<code>&amp;</code>互相之间进行分隔.</li>
-<li>查询意在缩小请求资源类型范围.</li>
-</ol>
-<p>示例：<em><code>https://example.com/path?item=mirror&amp;color=bule</code></em></p>
-<hr>
-<p>片段(<code>frag</code>)</p>
-<ol>
-<li>片段使用<code>#</code>与其他组件进行分隔</li>
-<li>片段仅在html文档使用了锚点时有效</li>
-<li>片段仅仅在<strong>本地</strong>生效, 被<strong>浏览器</strong>所处理</li>
-<li>浏览器在请求到<strong>整个资源</strong>后, 再通过片段来定位到指定的一段</li>
-</ol>
-<hr>
-<h3 id="安全字符集-amp-编码机制-amp-字符限制"><a href="#安全字符集-amp-编码机制-amp-字符限制" class="headerlink" title="安全字符集&amp;编码机制&amp;字符限制"></a>安全字符集&amp;编码机制&amp;字符限制</h3><p><code>安全字符集</code>:</p>
-<p>各种协议都可能有自己的危险字符, 而作为通用资源定位的URL则必须避开所有的这些字符, 因此, URL能使用的字符集比US-ASCII还要小得多, 能被安全使用的字符集称之为安全字符集</p>
-<p><code>编码机制</code>:</p>
-<p>为了能用安全字符集来表示更多的字符, 通过<strong>转义</strong>表示法来表示不安全的字符, 这样, 出现在URL中的字符都是安全的, 又能表示更多的信息, 这种转义表示法包含一个百分号, 后面跟着两个字符来表示字符ASCII码的十六进制数, </p>
-<p>例如, 波浪号<code>~</code>的ASCII码为<code>126(0x7E)</code>, 所以波浪号在出现在URL中应当被替换为<code>%7E</code>, 同理, <code>空格</code>被替换为<code>%20</code>, <code>百分号</code>本身则被替换为<code>%25</code></p>
-<p>显然, 这种转义表示法对于在ASCII中的所有字符都可以简单地应用(这意味这你可以转义一些本来就很安全的字符, 一样不会引起误解)</p>
-<p>但是对于不在ASCII字符集中的字符, 编码的机制就复杂的多, 也没有统一的标准, 但通常会在URL中附加相关信息.</p>
-<p><code>字符限制</code>：</p>
-<ul>
-<li>本身含有不安全因素的字符出现在URL中, 必须进行转义</li>
-<li>一些保留字符, 如果不是用于保留用途之外的场合时, 必须对其进行转义  </li>
-</ul>
-<p>例如<code>.</code>这个保留在路径组件中使用的符号, 如果用在URL中而不表示其路径组件中的含义时, 就需要转义,<br>常见的保留字符包括<code>. .. / # ? ; : $ + @ &amp; = { } | \ ^ ~ [ ] &lt; &gt; &quot;</code><br>另外还有一些ASCII中不可打印区间内的字符, URL不可使用</p>
-<hr>
-<h3 id="URL快捷方式"><a href="#URL快捷方式" class="headerlink" title="URL快捷方式"></a>URL快捷方式</h3><p>URL的表示方式有两种：绝对URL(<code>Absolute URL</code>), 和相对URL(<code>Relative URL</code>)</p>
-<p>绝对URL包含访问资源所需的全部信息, 包含URL所有组件</p>
-<p>相对URL则只是完整URL的一部分, 想得到完整的URL, 必须相对另一个基础URL(<code>Base URL</code>)进行解析</p>
-<p>基础URL的提供方式</p>
-<ul>
-<li>使用HTML标记<code>&lt;BASE&gt;</code>显式提供  </li>
-<li>使用当前URL</li>
-</ul>
-<p>基础URL + 相对URL = 绝对URL</p>
-<hr>
-<p>参考：<br><a href="http://shop.oreilly.com/product/9781565925090.do" target="_blank" rel="noopener">HTTP权威指南</a><br><a href="http://www.ruanyifeng.com/blog/2010/02/URL_encoding.html" target="_blank" rel="noopener">阮一峰：关于URL编码</a></p>
+<p>另外, <code>/usr</code>目录中各子目录和应当放置的文件内容</p>
+<table>
+<thead>
+<tr>
+<th>/usr子目录</th>
+<th>应当放置的文件内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/bin</code></td>
+<td>众多的应用程序</td>
+</tr>
+<tr>
+<td><code>/lib</code></td>
+<td>常用的动态链接库和软件包的配置文件</td>
+</tr>
+<tr>
+<td><code>/src</code></td>
+<td>源代码</td>
+</tr>
+<tr>
+<td><code>/local</code></td>
+<td>用户自行安装的软件</td>
+</tr>
+<tr>
+<td><code>/local/bin</code></td>
+<td>本地增加的命令</td>
+</tr>
+<tr>
+<td><code>/local/lib</code></td>
+<td>本地增加的库</td>
+</tr>
+</tbody></table>
 
           
         
@@ -1462,7 +1790,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux文件权限修改/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -1481,7 +1809,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/" itemprop="url">神吧人员清单(技术无关)</a></h1>
+                <a class="post-title-link" href="/2018/05/21/Linux文件权限修改/" itemprop="url">Linux文件权限修改</a></h1>
         
 
         <div class="post-meta">
@@ -1493,8 +1821,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2011-07-31T00:00:00+08:00">
-                2011-07-31
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:58:21+08:00">
+                2018-05-21
               </time>
             
 
@@ -1532,14 +1860,63 @@
 
       
         
-          <p>别看你▧▧▧▧▧, 小心啊▧▧▧▧▧!</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
+            <h3 id="文件权限与查看"><a href="#文件权限与查看" class="headerlink" title="文件权限与查看"></a>文件权限与查看</h3><p>使用<code>ls</code>查看文件信息, 常用参数为</p>
+<ul>
+<li><code>a</code> 查看所有文件</li>
+<li><code>l</code> 查看详细信息</li>
+<li><code>d</code> 查看目录信息</li>
+</ul>
+<hr>
+<p>文件包括以下类型:</p>
+<ul>
+<li><code>-</code> 普通文件</li>
+<li><code>d</code> 目录文件</li>
+<li><code>l</code> 链接文件</li>
+<li><code>b</code> 块设备文件</li>
+<li><code>c</code> 字符设备文件</li>
+<li><code>p</code> 管道文件</li>
+</ul>
+<hr>
+<p>每个文件都有所属的用户和组, 文件的基本权限有三个:</p>
+<ul>
+<li><code>r</code> 读</li>
+<li><code>w</code> 写</li>
+<li><code>x</code> 执行</li>
+</ul>
+<p>对于一个目录文件来说, 这三项的含义为:</p>
+<ul>
+<li><code>r</code>: 可以读取目录内文件列表</li>
+<li><code>w</code>: 可以在该目录增删改文件</li>
+<li><code>x</code>: 可以进入该目录</li>
+</ul>
+<hr>
+<p>权限与数字的对应关系为</p>
+<ul>
+<li><code>r</code> – <code>4</code></li>
+<li><code>w</code> – <code>2</code></li>
+<li><code>x</code> – <code>1</code></li>
+</ul>
+<p>所以一个rwx权限可以等价表示为4+2+1=7, 依次类推，可读可写为4+2=6，只读为4</p>
+<hr>
+<p>在ls命名列出的文件列表中, 权限从左到右分为三组, 分别是</p>
+<ol>
+<li>文件所有者</li>
+<li>文件所属组</li>
+<li>其他用户</li>
+</ol>
+<p>对该文件具有的权限.</p>
+<hr>
+<h3 id="修改文件权限指令"><a href="#修改文件权限指令" class="headerlink" title="修改文件权限指令"></a>修改文件权限指令</h3><p><code>chmod [选项] 权限 文件</code></p>
+<p>例如将某个文件修改为所有用户可读可写可执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 dunp.rdb</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="用户和用户组"><a href="#用户和用户组" class="headerlink" title="用户和用户组"></a>用户和用户组</h3><p>每个用户在创建时都会自动创建一个同名的基本用户组, 该基本用户组只包含该用户.</p>
+<p>如果用户以后纳入其他用户组, 则对于该用户来说属于扩展用户组.</p>
+<p>一个用户只能有一个基本用户组, 但可以有多个扩展用户组.</p>
+
+          
         
       
     </div>
@@ -1577,7 +1954,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1623,7 +2000,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1636,7 +2013,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
