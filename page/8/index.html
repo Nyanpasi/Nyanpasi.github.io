@@ -298,6 +298,420 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/01/编码问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/01/编码问题/" itemprop="url">编码问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-01T12:19:47+08:00">
+                2018-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="编码问题"><a href="#编码问题" class="headerlink" title="编码问题"></a>编码问题</h3><p>什么是编码?从本质上说起</p>
+<p>计算机元件上存储的是电位高低, 我们可以抽象地用1和0来表示高低电位, 这是最底层的东西. </p>
+<p>通常我们称一位为bit, 代表一个电位的高低, 它只有两个状态, 高和低, 所以每一个bit可以区分两个不同信息. </p>
+<p>因为, 每个字节, 即每8个位, 最多可以表示256种不同的含义, 这是最简单不过的数学题. </p>
+<p>假如现在有一串电位 <code>01000001 01000010</code>已知这是一段文本信息, 那么代表的是什么含义?</p>
+<p>没人知道, 也不可能有人知道. </p>
+<p>唯一知道的就是, 在存储着这一串信息的内存区域, 其电位分布依次为高电平低电平低电平低电平 …..</p>
+<hr>
+<h3 id="ASCII编码"><a href="#ASCII编码" class="headerlink" title="ASCII编码"></a>ASCII编码</h3><p>为了实现从电位序列到实际语义的转换, 我们定义了一组规范. </p>
+<p>用7个连续电位代表一个字符(ASCII编码),显然, 7位能描述的是128种状态, 因此, ASCII字符最多有128个, 事实上也是如此. </p>
+<p>鉴于英文字母只有26个, 其大小写状态再加上一些其他符号, 128个位置也是能应付得来的. </p>
+<p>在建立了电位到二进制数字, 再到语义的映射, 即ASCII表之后, 我们可以理解了以上一串电位的含义了</p>
+<p>01000001根据ASCII对照表, 代表字母A, 01000010则代表字母B, 所以这串电平代表的是两个字母’AB’</p>
+<p>那么一个ASCII编码的字符在内存中占据7位吗?</p>
+<p>不是的, 字节是计算机基本的存储单元, 一个字符最低也要占据1个字节(8个bit), 所以其首位固定添加一个0以占据一个字节. </p>
+<hr>
+<h3 id="ASCII编码的局限性"><a href="#ASCII编码的局限性" class="headerlink" title="ASCII编码的局限性"></a>ASCII编码的局限性</h3><p>当计算机的发展不限于英语国家乃至西欧国家时, 128个字符位就不够用了</p>
+<p>尤其对于非字母式语言, 可能需要上万个位置来存放自己的字符, 各种语言加起来, 这个数量就更多了</p>
+<p>如果计算机仍然只使用ASCII编码的话, 那么除了英语其他语言都无法在计算机上显示</p>
+<p>为了解决这个问题, 各国都推出了解决方案, 解决了部分问题, 也在互相影响下引入了歧义, 带来了混乱. </p>
+<p>我们直接跳到最终的解决方案 <code>unicode</code>编码</p>
+<hr>
+<h3 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a>unicode</h3><p>unicode是一个编码规范. </p>
+<p>在设想中, unicode映射表极为庞大, 庞大到所有语言的字符乃至今后世界上可能出现的所有字符加起来都不足以占满它的位置. </p>
+<p>我们只需要指定一个序号, 然后根据映射表, 就确定表示的究竟是哪个字符. </p>
+<p>没有争抢, 没有歧义, 不需要任何转换技巧, 所有语言的字符一视同仁. </p>
+<p>需要说明的是:<code>unicode</code>是一个编码规范, 它定义了映射表, 但并不是实际的编码方案, 它的实际实现是<code>UTF-8</code>以及<code>utf-16</code>以及<code>utf-32</code></p>
+<hr>
+<h3 id="UTF-8、UTF-16以及UTF-32"><a href="#UTF-8、UTF-16以及UTF-32" class="headerlink" title="UTF-8、UTF-16以及UTF-32"></a>UTF-8、UTF-16以及UTF-32</h3><p>第一个版本<code>unicode 1.0</code>(1994年)中打算用两个字节表示世界上所有的字符(也就是2的16次幂一共65536个空位, 显然这是一个错误的估计)</p>
+<p><code>utf-16</code>是<code>unicode1.0</code>最自然的编码实现, 使用16位来指定一个字符, 无论这个字符的序号是多么地小, 它都占据两个字节, 而且在内存和存储中均保持一致</p>
+<p>显然这种方法存在缺陷, 对于序号较小的字符(例如字母A,序号为65即1000001), 其占用的两个字节的第一个字节中全是0, 且无法兼容ASCII. </p>
+<p>别忘了, 此时网络上绝大部分文本都是英文, 所有英文字母占用的空间翻倍, 会带来传输和存储过程效率减半的严重后果. </p>
+<p>而另一种实现<code>utf-8</code>就是为了解决这个问题：</p>
+<p>在内存中时, 仍然使用两个字节来表示一个字符, 但在转换为字节流时, utf-8使用最少8位来代表一个字符</p>
+<p>也就是说, 一个字符<strong>至少</strong>映射为1个字节, 可能是多个字节, 只需要根据其开头序列, 即可知道应将几个字节视为一个字符.</p>
+<p>那么解码的时候, 怎么确定当前的字节代表一个字符, 还是应当与之后的字节连在一起代表另一个字符呢?</p>
+<p>答案也很简单, 抛弃一些空位, 以避免出现任何歧义. </p>
+<table>
+<thead>
+<tr>
+<th>unicode编码(十六进制)</th>
+<th>utf-8字节流(二进制)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>000000-00007F</td>
+<td>0xxxxxxx</td>
+</tr>
+<tr>
+<td>000080-0007FF</td>
+<td>110xxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>000800-00FFFF</td>
+<td>1110xxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>010000-10FFFF</td>
+<td>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>我们可以看到, 在多个字节表示一个字符时, 一些空位是无法被使用的. </p>
+<p><code>unicode2.0</code>则是使用4个字节来表示一个字符的编码形式, 可用编码空间有二十多个亿个. </p>
+<p>实际中使用的unicode字符集的序号则不超过0x10FFFF, </p>
+<p>如同<code>utf-16</code>是<code>unicode1.0</code>的自然实现, <code>utf-32</code>是<code>unidoce2.0</code>的自然实现. </p>
+<p>当然, 这种编码方式很少被使用, 大家都用<code>utf-8</code>这种可变长的编码方式. </p>
+<hr>
+<h3 id="编码过程与解码过程"><a href="#编码过程与解码过程" class="headerlink" title="编码过程与解码过程"></a>编码过程与解码过程</h3><p>编码:将字符转换为字节. 从存储或字节流中将字节转换为字符, 就要进行解码</p>
+<p>解码:将字节转换为字符. 从内存中将字符转换为字节流用于存储或传输, 就要进行编码</p>
+<hr>
+<h3 id="BOM是什么"><a href="#BOM是什么" class="headerlink" title="BOM是什么"></a>BOM是什么</h3><p>(Byte Order Mark)字节序</p>
+<p>LITTLE-ENDIAN（小字节序、低字节序）,即低位字节排放在内存的低地址端, 高位字节排放在内存的高地址端.  与之对应的是：BIG-ENDIAN(大字节序、高字节序)</p>
+<p>utf-8以字节为编码单元, 无需使用这个来确定字节序, 而utf-16中以2个字节为编码单元, 因此有必要先确定字节序. </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux目录内容/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/21/Linux目录内容/" itemprop="url">Linux目录内容</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T12:58:21+08:00">
+                2018-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>根据<code>FHS</code>(Filesystem Hierarchy Standard, 文件系统层次化标准)，Linux系统的目录及其内容应当如下</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>应当放置的文件内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/boot</code></td>
+<td>开机所需文件，内核、开机菜单及所需配置文件等</td>
+</tr>
+<tr>
+<td><code>/dev</code></td>
+<td>以文件形式存放的设备与接口</td>
+</tr>
+<tr>
+<td><code>/etc</code></td>
+<td>配置文件，所有的配置文件都应当放在这个目录</td>
+</tr>
+<tr>
+<td><code>/bin</code></td>
+<td>二进制可执行文件，用户指令，常用命令一般都在此处</td>
+</tr>
+<tr>
+<td><code>/sbin</code></td>
+<td>开机过程中需要的命令，只有超级用户能访问的二进制可执行文件</td>
+</tr>
+<tr>
+<td><code>/usr</code></td>
+<td><strong>U</strong>nix <strong>S</strong>ystem <strong>R</strong>esource 用于存放系统应用程序</td>
+</tr>
+<tr>
+<td><code>/srv</code></td>
+<td>一些网络服务的数据文件目录</td>
+</tr>
+<tr>
+<td><code>/var</code></td>
+<td>运行时会改变的文件，例如日志等</td>
+</tr>
+<tr>
+<td><code>/root</code></td>
+<td>超级用户的主目录</td>
+</tr>
+<tr>
+<td><code>/home</code></td>
+<td>存放用户的根目录，用户主目录的基点</td>
+</tr>
+<tr>
+<td><code>/media</code></td>
+<td>用于挂载设备文件的目录</td>
+</tr>
+<tr>
+<td><code>/opt</code></td>
+<td>额外可选的应用程序包</td>
+</tr>
+<tr>
+<td><code>/temp</code></td>
+<td>临时文件的存储目录</td>
+</tr>
+<tr>
+<td><code>/mnt</code></td>
+<td>系统管理员安装临时文件系统的安装点</td>
+</tr>
+</tbody></table>
+<hr>
+<p>另外, <code>/usr</code>目录中各子目录和应当放置的文件内容</p>
+<table>
+<thead>
+<tr>
+<th>/usr子目录</th>
+<th>应当放置的文件内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/bin</code></td>
+<td>众多的应用程序</td>
+</tr>
+<tr>
+<td><code>/lib</code></td>
+<td>常用的动态链接库和软件包的配置文件</td>
+</tr>
+<tr>
+<td><code>/src</code></td>
+<td>源代码</td>
+</tr>
+<tr>
+<td><code>/local</code></td>
+<td>用户自行安装的软件</td>
+</tr>
+<tr>
+<td><code>/local/bin</code></td>
+<td>本地增加的命令</td>
+</tr>
+<tr>
+<td><code>/local/lib</code></td>
+<td>本地增加的库</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux文件权限修改/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -471,6 +885,136 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/21/Linux基础/" itemprop="url">Linux基础命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:04:17+08:00">
+                2018-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol>
+<li>重命名文件?</li>
+</ol>
+<p>没有重命名的命令, 直接使用<code>mv filename &lt;newname&gt;</code>即可.</p>
+<ol start="2">
+<li>如何删除文件和文件夹?</li>
+</ol>
+<p><code>rm -fr &lt;dirname&gt;</code> 免确认递归删除文件夹<br><code>rm -f &lt;filename&gt;</code> 免确认删除文件</p>
+<ol start="3">
+<li>更改文件权限</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux Swap分区/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -570,136 +1114,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/root/swapfile        swap       swap       defaults        0 0</span><br></pre></td></tr></table></figure>
 
 <p>第一列为分区名, 第二列为挂载点, 第三类列为文件系统类型, 第四列为选项, 第五列为备份设置, 第六列是检查优先级.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux基础/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/21/Linux基础/" itemprop="url">Linux基础命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T11:04:17+08:00">
-                2018-05-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ol>
-<li>重命名文件?</li>
-</ol>
-<p>没有重命名的命令, 直接使用<code>mv filename &lt;newname&gt;</code>即可.</p>
-<ol start="2">
-<li>如何删除文件和文件夹?</li>
-</ol>
-<p><code>rm -fr &lt;dirname&gt;</code> 免确认递归删除文件夹<br><code>rm -f &lt;filename&gt;</code> 免确认删除文件</p>
-<ol start="3">
-<li>更改文件权限</li>
-</ol>
 
           
         
@@ -980,130 +1394,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/" itemprop="url">神吧人员清单(技术无关)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2011-07-31T00:00:00+08:00">
-                2011-07-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>别看你▧▧▧▧▧, 小心啊▧▧▧▧▧!</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1154,7 +1444,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

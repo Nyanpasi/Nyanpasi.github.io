@@ -92,7 +92,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="RESTful,">
 
 
 
@@ -103,16 +103,18 @@
 
 
 
-<meta name="description" content="技术">
-<meta property="og:type" content="website">
-<meta property="og:title" content="紫秋的个人博客">
-<meta property="og:url" content="http://yoursite.com/archives/2011/07/index.html">
+<meta name="description" content="相关概念 协议族, 协议栈, 地址族协议族, 是一组协议的集合. 例：TCP/IP协议就是一个协议族, 不仅包含tcp协议和ip协议, 还有与之相关联的其他协议.  协议栈, 是各层网络协议的总和, 栈字反应了一个网络中文件传输的过程, 由上层协议到底层协议, 再由底层协议到上层协议 地址族, 是地址划分的标准集合. 例如：IPv4或IPv6对网络地址的划分, 就是两个不同的地址族, 一个地址族用">
+<meta name="keywords" content="RESTful">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket编程">
+<meta property="og:url" content="http://yoursite.com/2019/06/30/Scoket编程/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
-<meta property="og:description" content="技术">
+<meta property="og:description" content="相关概念 协议族, 协议栈, 地址族协议族, 是一组协议的集合. 例：TCP/IP协议就是一个协议族, 不仅包含tcp协议和ip协议, 还有与之相关联的其他协议.  协议栈, 是各层网络协议的总和, 栈字反应了一个网络中文件传输的过程, 由上层协议到底层协议, 再由底层协议到上层协议 地址族, 是地址划分的标准集合. 例如：IPv4或IPv6对网络地址的划分, 就是两个不同的地址族, 一个地址族用">
 <meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-11-14T08:47:58.955Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="紫秋的个人博客">
-<meta name="twitter:description" content="技术">
+<meta name="twitter:title" content="Socket编程">
+<meta name="twitter:description" content="相关概念 协议族, 协议栈, 地址族协议族, 是一组协议的集合. 例：TCP/IP协议就是一个协议族, 不仅包含tcp协议和ip协议, 还有与之相关联的其他协议.  协议栈, 是各层网络协议的总和, 栈字反应了一个网络中文件传输的过程, 由上层协议到底层协议, 再由底层协议到上层协议 地址族, 是地址划分的标准集合. 例如：IPv4或IPv6对网络地址的划分, 就是两个不同的地址族, 一个地址族用">
 
 
 
@@ -142,13 +144,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/archives/2011/07/">
+  <link rel="canonical" href="http://yoursite.com/2019/06/30/Scoket编程/">
 
 
 
 
 
-  <title>Archive | 紫秋的个人博客</title>
+  <title>Socket编程 | 紫秋的个人博客</title>
   
 
 
@@ -167,7 +169,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,71 +285,351 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
-
-      <span class="archive-page-counter">
-        
-        
-         
-          
-        Nice! 75 posts in total. Keep on posting.
-      </span>
-
-      
-
-        
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2011">2011</h1>
-          </div>
-        
-        
-
-        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/30/Scoket编程/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2011/07/31/神奈川冲浪里吧人员清单(2019.08.24)/" itemprop="url">
-              
-                <span itemprop="name">神吧人员清单(技术无关)</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">Socket编程</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2011-07-31T00:00:00+08:00" content="2011-07-31">
-          07-31
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-30T11:15:03+08:00">
+                2019-06-30
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
 
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><span>该文章被访问</span>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
+      
 
+      
+        <h3 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h3><hr>
+<h4 id="协议族-协议栈-地址族"><a href="#协议族-协议栈-地址族" class="headerlink" title="协议族, 协议栈, 地址族"></a>协议族, 协议栈, 地址族</h4><p>协议族, 是一组协议的集合. 例：TCP/IP协议就是一个协议族, 不仅包含tcp协议和ip协议, 还有与之相关联的其他协议. </p>
+<p>协议栈, 是各层网络协议的总和, 栈字反应了一个网络中文件传输的过程, 由上层协议到底层协议, 再由底层协议到上层协议</p>
+<p>地址族, 是地址划分的标准集合. 例如：IPv4或IPv6对网络地址的划分, 就是两个不同的地址族, 一个地址族用特有的方式为设备划分了其在网络中的地址. </p>
+<hr>
+<h4 id="套接字"><a href="#套接字" class="headerlink" title="套接字"></a>套接字</h4><p>套接字(Socket)是一种网络通信接口, 存在于特定的通信域(地址族)中, 只有隶属于同一地址族的套接字才能建立对话. 同时, 套接字有不同的类型, 只有相同类型的套接字才能相互传递数据. </p>
+<p>主要的两种类型为:</p>
+<ol>
+<li>流式套接字</li>
+<li>数据报套接字</li>
+</ol>
+<p>流式套接字(<code>SOCK_STREAM</code>)提供面向连接的, 可靠的, 数据无错且无重复的数据发送服务, 所有利用该套接字进行传递的数据均视为连续的字节流, 且无长度限制. TCP连接使用该类套接字.</p>
+<p>数据报式套接字(<code>SOCK_DGRAM</code>):提供面向无连接的服务. 以独立数据报的形式发送数据, 长度不能大于32KB, 不保证正确性及发送顺序, UDP使用该类套接字. </p>
+<p>另外还有原始套接字(<code>SOCK_RAW</code>):可用于构造ip头等底层功能, 通常并不使用. </p>
+<p>一个套接字是通信的一个端点, 实体是内存中一个打开的文件.</p>
+<hr>
+<h4 id="其他相关概念"><a href="#其他相关概念" class="headerlink" title="其他相关概念"></a>其他相关概念</h4><px250>
+
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>端口</td>
+<td>端口是系统的一种资源, 使用端口号作为唯一标志, 不同协议的端口号互不影响, 例如TCP的80端口号和UDP的80端口号并不会产生混淆.</td>
+</tr>
+<tr>
+<td>地址</td>
+<td>指在一个地址族里为其分配作为其网络位置的唯一标志, 例如某个ip地址(即ipv4地址)为34.92.25.50</td>
+</tr>
+<tr>
+<td>连接</td>
+<td>两个进程间的通信称之为一条连接, 在网络编程中, 通信的基础为一条实际存在的物理链路、各自的缓冲区以及相关的通信协议.</td>
+</tr>
+<tr>
+<td>半相关</td>
+<td>一个三元组(协议, 本地地址, 本地端口号)可以唯一标志一个本地进程, 作为通信的一端, 这个三元组称为半相关.</td>
+</tr>
+<tr>
+<td>全相关</td>
+<td>一个五元组(协议, 本地地址, 本地端口号, 远程地址, 远程端口号)可以唯一标识一条连接, 这个五元组称为全相关.</td>
+</tr>
+<tr>
+<td></td></tr></tbody></table></px250>
+<td></td>
+
+
+<hr>
+<h4 id="套接字的类型"><a href="#套接字的类型" class="headerlink" title="套接字的类型"></a>套接字的类型</h4><ul>
+<li>监听套接字</li>
+<li>连接套接字</li>
+</ul>
+<p>监听套接字只负责监听, 而不与任何套接字进行连接, 当检测到连接请求时, 会返回一个新的套接字, 使用新的套接字与远程套接字建立连接.</p>
+<p>连接套接字是实际上用于通信的套接字, 每个建立的连接对应于一对已连接套接字.</p>
+<p>对于单一服务端口来说, 所有建立连接的套接字来源于同一个监听套接字, 所以端口都是相同的, 这些已连接套接字区分标志是远程地址和远程端口</p>
+<p><em>每个套接字都是一个文件, 因此在OS中使用文件描述符(file descriptor, fd)来唯一标志一个已存在的socket文件.</em></p>
+<hr>
+<h3 id="Python中的socket编程"><a href="#Python中的socket编程" class="headerlink" title="Python中的socket编程"></a>Python中的socket编程</h3><p>Python中提供了socket模块来提供socket编程接口, 并保证在各个现代OS中均可用. <a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">官方文档</a></p>
+<p>使用<code>socket.socket()</code>来创建一个套接字, 并使用参数来指名其地址组, 类型, 协议编号(默认值为0).</p>
+<p>签名:<code>socket(family,type[,protocal])</code></p>
+<hr>
+<p><code>family</code>:地址族</p>
+<table>
+<thead>
+<tr>
+<th>可选项</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>socket.AF_UNIX</code></td>
+<td>unix系统进程间通信</td>
+</tr>
+<tr>
+<td><code>socket.AF_INET</code></td>
+<td>ipv4协议下的网络通信</td>
+</tr>
+<tr>
+<td><code>socket.AF_INET6</code></td>
+<td>ipv6协议下的网络通信</td>
+</tr>
+</tbody></table>
+<p><em>AF即Address Family地址族的缩写, INET为Internet的缩写</em></p>
+<p><code>type</code>:套接字类型</p>
+<table>
+<thead>
+<tr>
+<th>可选项</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>socket.SOCK_STREAM</code></td>
+<td>流式socket, 用于 tcp</td>
+</tr>
+<tr>
+<td><code>socket.SOCK_DGRAM</code></td>
+<td>数据报式socket, 用于 udp</td>
+</tr>
+<tr>
+<td><code>socket.SOCK_RAW</code></td>
+<td>原始套接字, 可用于构造ip头等底层功能</td>
+</tr>
+<tr>
+<td><code>socket.SOCK_SEQPACKET</code></td>
+<td>可靠连续数据包服务</td>
+</tr>
+</tbody></table>
+<p><code>protocal</code>:协议族. 指明要接收的协议类型, 通常为0, 根据套接字类型来自动确定. </p>
+<p><em>PF:Protocl Family 协议族</em></p>
+<hr>
+<h4 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h4><table>
+<thead>
+<tr>
+<th>签名</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sk.bind(address)</code></td>
+<td>将套接字绑定到地址. address地址的格式取决于地址族. 在AF_INET下, 以元组（host,port）的形式表示地址.</td>
+</tr>
+<tr>
+<td><code>sk.listen(backlog)</code></td>
+<td>开始监听传入连接. backlog指定在拒绝连接之前, 可以挂起的最大连接数量. backlog等于5, 表示内核已经接到了连接请求, 但服务器还没有调用accept进行处理的连接个数最大为5. 这个值不能无限大, 因为要在内核中维护连接队列</td>
+</tr>
+<tr>
+<td><code>sk.setblocking(bool)</code></td>
+<td>是否阻塞（默认True）, 如果设置False, 那么accept和recv时一旦无数据, 则报错.</td>
+</tr>
+<tr>
+<td><code>sk.accept()</code></td>
+<td>接受连接并返回（conn,address）,其中conn是新的套接字对象, 可以用来接收和发送数据. address是连接客户端的地址. 接收TCP 客户的连接（阻塞式）等待连接的到来</td>
+</tr>
+<tr>
+<td><code>sk.connect(address)</code></td>
+<td>连接到address处的套接字. 一般, address的格式为元组（hostname,port）,如果连接出错, 返回socket.error错误.</td>
+</tr>
+<tr>
+<td><code>sk.connect_ex(address)</code></td>
+<td>同上, 只不过会有返回值, 连接成功时返回 0 , 连接失败时候返回编码, 例如：10061</td>
+</tr>
+<tr>
+<td><code>sk.close()</code></td>
+<td>关闭套接字</td>
+</tr>
+<tr>
+<td><code>sk.recv(bufsize[,flag])</code></td>
+<td>接受套接字的数据. 数据以字符串形式返回, bufsize指定最多可以接收的数量. flag提供有关消息的其他信息, 通常可以忽略.</td>
+</tr>
+<tr>
+<td><code>sk.recvfrom(bufsize[.flag])</code></td>
+<td>与recv()类似, 但返回值是（data,address）. 其中data是包含接收数据的字符串, address是发送数据的套接字地址.</td>
+</tr>
+<tr>
+<td><code>sk.send(string[,flag])</code></td>
+<td>将string中的数据发送到连接的套接字. 返回值是要发送的字节数量, 该数量可能小于string的字节大小. 即：可能未将指定内容全部发送.</td>
+</tr>
+<tr>
+<td><code>sk.sendall(string[,flag])</code></td>
+<td>将string中的数据发送到连接的套接字, 但在返回之前会尝试发送所有数据. 成功返回None, 失败则抛出异常. 内部通过递归调用send, 将所有内容发送出去.</td>
+</tr>
+<tr>
+<td><code>sk.sendto(string[,flag],address)</code></td>
+<td>将数据发送到套接字, address是形式为（ipaddr, port）的元组, 指定远程地址. 返回值是发送的字节数. 该函数主要用于UDP协议.</td>
+</tr>
+<tr>
+<td><code>sk.settimeout(timeout)</code></td>
+<td>设置套接字操作的超时期, timeout是一个浮点数, 单位是秒. 值为None表示没有超时期. 一般, 超时期应该在刚创建套接字时设置, 因为它们可能用于连接的操作（如 client 连接最多等待5s ）</td>
+</tr>
+<tr>
+<td><code>sk.getpeername()</code></td>
+<td>返回连接套接字的远程地址. 返回值通常是元组（ipaddr,port）.</td>
+</tr>
+<tr>
+<td><code>sk.getsockname()</code></td>
+<td>返回套接字自己的地址. 通常是一个元组(ipaddr,port)</td>
+</tr>
+<tr>
+<td><code>sk.fileno()</code></td>
+<td>套接字的文件描述符</td>
+</tr>
+</tbody></table>
+<hr>
+<p>参考:</p>
+<p><a href="https://www.cnblogs.com/aylin/p/5572104.html" target="_blank" rel="noopener">张岩林-python socket编程</a></p>
+<style>
+
+
+px250 table th:first-of-type {
+    width: 250px;
+}
+</style>
+
+      
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RESTful/" rel="tag"># RESTful</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/01/python多继承协同任务/" rel="next" title="Python多继承协同任务">
+                <i class="fa fa-chevron-left"></i> Python多继承协同任务
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/02/CSRF攻击/" rel="prev" title="CSRF攻击原理和防御">
+                CSRF攻击原理和防御 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -355,6 +637,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -375,8 +661,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -391,7 +686,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -427,6 +722,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#相关概念"><span class="nav-number">1.</span> <span class="nav-text">相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#协议族-协议栈-地址族"><span class="nav-number">1.1.</span> <span class="nav-text">协议族, 协议栈, 地址族</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#套接字"><span class="nav-number">1.2.</span> <span class="nav-text">套接字</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他相关概念"><span class="nav-number">1.3.</span> <span class="nav-text">其他相关概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#套接字的类型"><span class="nav-number">1.4.</span> <span class="nav-text">套接字的类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python中的socket编程"><span class="nav-number">2.</span> <span class="nav-text">Python中的socket编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#常用方法"><span class="nav-number">2.1.</span> <span class="nav-text">常用方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -588,6 +899,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

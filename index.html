@@ -604,7 +604,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/20/Django项目部署/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/20/Django项目使用Docker部署/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="紫秋">
@@ -623,7 +623,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/20/Django项目部署/" itemprop="url">Django项目部署</a></h1>
+                <a class="post-title-link" href="/2019/10/20/Django项目使用Docker部署/" itemprop="url">使用Docker部署Django项目</a></h1>
         
 
         <div class="post-meta">
@@ -674,21 +674,98 @@
 
       
         
-          <p>使用Docker部署Django项目, 一共四个容器</p>
+          
+            <p>Django使用Mysql作为数据库, Redis作为缓存, uWSGI作为WSGI Server, 并使用Nginx作为反向代理, 所以一共需要四个容器:</p>
 <ol>
-<li>MySQL容器</li>
-<li>Redis容器</li>
-<li>uWSGI容器</li>
-<li>Nginx容器</li>
+<li>Mysql容器, 提供数据库服务</li>
+<li>Redis容器, 提供缓存服务</li>
+<li>uWSGI容器, 作为WSGI Server</li>
+<li>Nginx容器, 作为反向代理, 转发动态请求, 处理静态资源</li>
 </ol>
 <hr>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/20/Django项目部署/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<h3 id="创建网络"><a href="#创建网络" class="headerlink" title="创建网络"></a>创建网络</h3><p>所有容器运行在内部网络上, 通过容器间通信互相访问, 只有Nginx映射至host的80和443端口, 以供外部访问.</p>
+<p>首先创建一个网络</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create django_project</span><br></pre></td></tr></table></figure>
+
+<p>内部网络命名为<code>django_project</code>, 之后所有容器都会运行在这个网络上.</p>
+<hr>
+<h3 id="MySQL容器"><a href="#MySQL容器" class="headerlink" title="MySQL容器"></a>MySQL容器</h3><p>鉴于Django2.2+和MySQL8.0+版本在某些情况下不兼容, 所以使用MySQL5.7版本.</p>
+<p>将其链接至<code>django_project</code>网络, 设置root密码, 并暴露3306端口, 命名为<code>mysql</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run --detach \</span><br><span class="line">--name mysql \</span><br><span class="line">--expose 3306 \</span><br><span class="line">--volume /dbdata \</span><br><span class="line">--network django_project \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=your-mysql-password \</span><br><span class="line">mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<p>进入容器命令行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mysql /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>登陆MySQL, 创建django项目所使用的数据表, 然后退出MySQL, 退出容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -pyour-mysql-password</span><br><span class="line">CREATE DATABASE django_project DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;</span><br><span class="line">exit</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="Redis容器"><a href="#Redis容器" class="headerlink" title="Redis容器"></a>Redis容器</h3><p>同理, Redis容器链接至<code>django_project</code>网络, 并暴露6379端口, 无需设置密码, 命名为<code>redis</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --network django_project --name redis --expose 6379 redis</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="uwsgi容器"><a href="#uwsgi容器" class="headerlink" title="uwsgi容器"></a>uwsgi容器</h3><h4 id="前期工作"><a href="#前期工作" class="headerlink" title="前期工作"></a>前期工作</h4><p>在Docker的内部网络中, 使用容器名即可连接到指定容器, 所以django源码中, 数据库和缓存设置中host部分替换为要连接的容器名即可.</p>
+<p>例如, 缓存部分的设置可能如下所示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CACHES = &#123;</span><br><span class="line">    <span class="string">"default"</span>: &#123;</span><br><span class="line">        <span class="string">"BACKEND"</span>: <span class="string">"django_redis.cache.RedisCache"</span>,</span><br><span class="line">        <span class="string">"LOCATION"</span>: <span class="string">"redis://redis/0"</span>, <span class="comment"># 此处, 中间的redis是我们redis的容器名</span></span><br><span class="line">        <span class="string">"OPTIONS"</span>: &#123;</span><br><span class="line">            <span class="string">"CLIENT_CLASS"</span>: <span class="string">"django_redis.client.DefaultClient"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"KEY_PREFIX"</span>: <span class="string">"django_project"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而数据库部分的设置可能如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'django_project'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'root'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'your-mysql-password'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'mysql'</span>, <span class="comment">#host设置为mysql容器名, mysql</span></span><br><span class="line">        <span class="string">'PORT'</span>: <span class="string">'3306'</span>,</span><br><span class="line">        <span class="string">'OPTION'</span>: &#123;</span><br><span class="line">             <span class="comment"># 'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE,</span></span><br><span class="line">            <span class="string">'charset'</span>: <span class="string">'utf8mb4'</span></span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后, 收集静态资源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py collectstatic</span><br></pre></td></tr></table></figure>
+
+<p>假设静态资源被收集至django根目录下(即与manage.py同级的)static文件夹, 媒体文件收集至项目根目录下media文件夹</p>
+<p>项目所有第三方依赖包写在根目录下requirements.txt中, 其中至少包含django和uwsgi.</p>
+<p>之后, 准备就绪的Django项目放置在宿主机根目录下, 即<code>/django_project</code></p>
+<hr>
+<h4 id="编写Dockerfile"><a href="#编写Dockerfile" class="headerlink" title="编写Dockerfile"></a>编写Dockerfile</h4><figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span>.<span class="number">6</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /usr/src/django_project</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> requirements.txt ./</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8001</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> uwsgi --socket :8001 --<span class="built_in">chdir</span> /usr/src/django_project --wsgi-file django_project/wsgi.py</span></span><br></pre></td></tr></table></figure>
+
+<p>在CMD中, 我们指定了uwsgi容器默认以socket模式启动. 然后将dockerfile置于项目根目录之下, 构建镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t uwsgi .</span><br></pre></td></tr></table></figure>
+
+<p>构建好镜像之后, 启动uwsgi容器, 但此处要重写启动命令, 让uwsgi服务器以http模式启动, 方便调试.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm \</span><br><span class="line">-p 8001:8001 \</span><br><span class="line">--network django_project \</span><br><span class="line">--name uwsgi \</span><br><span class="line">--expose 8001 \</span><br><span class="line">-v /django_project:/usr/src/django_project \</span><br><span class="line">uwsgi \</span><br><span class="line">uwsgi --http :8001 --<span class="built_in">chdir</span> /usr/src/django_project --wsgi-file django_project/wsgi.py</span><br></pre></td></tr></table></figure>
+
+<p>这时我们可以访问尝试访问本机的8001端口, 注意在以上代码中, 我们监听的是0.0.0.0:8001, 而且进行了端口映射, 所以可以在容器间访问, 也可以在外部访问.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget 127.0.0.1:8001</span><br></pre></td></tr></table></figure>
+
+<p>当然, 八成是会失败的, 因为我们还没有进行数据库同步</p>
+<p>进入容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it uwsgi /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>进行数据库同步, 创建管理员用户</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python manage.py makemigrations &amp;&amp; python manage.py migrate</span><br><span class="line">python manage.py createsuperuser</span><br></pre></td></tr></table></figure>
+
+<p>成功说明与MySQL容器正常连通, 测试缓存</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">python manage.py shell</span><br><span class="line">&gt;&gt;&gt; from django.core.cache import cache</span><br><span class="line">&gt;&gt;&gt; cache.set(<span class="string">'my_key'</span>, <span class="string">'hello, world!'</span>, 30)</span><br><span class="line">True</span><br><span class="line">&gt;&gt;&gt; cache.get(<span class="string">'my_key'</span>)</span><br><span class="line"><span class="string">'hello, world!'</span></span><br><span class="line">&gt;&gt;&gt; <span class="built_in">exit</span>()</span><br></pre></td></tr></table></figure>
+
+<p>当然, 还可以尝试运行Django自带WSGI Server</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py runserver</span><br></pre></td></tr></table></figure>
+
+<p>确认Django项目没有遇到依赖缺失, 数据库或缓存的连接问题后, exit退出容器.</p>
+<hr>
+<h4 id="正式启动uwsgi容器"><a href="#正式启动uwsgi容器" class="headerlink" title="正式启动uwsgi容器"></a>正式启动uwsgi容器</h4><p>在启动命令中取消端口映射, 只允许以容器间通信的方式进行访问.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name uwsgi \</span><br><span class="line">--expose 8001 \</span><br><span class="line">--network django_project \</span><br><span class="line">-v /django_project:/usr/src/django_project \</span><br><span class="line">uwsgi</span><br></pre></td></tr></table></figure>
+
+<p>uWSGI服务器按照dockerfile中给出命令, 以socket模式正式启动, 此时uWSGI服务器只接收uwsgi协议而不是http协议的请求.</p>
+<hr>
+<h3 id="Nginx容器"><a href="#Nginx容器" class="headerlink" title="Nginx容器"></a>Nginx容器</h3><p>Nginx作为反向代理, 主要提供三个功能</p>
+<ol>
+<li>返回静态网页</li>
+<li>返回静态资源</li>
+<li>作为反向代理, 以uwsgi协议将动态请求转发至uWSGI服务器.</li>
+</ol>
+<p>第一项可能是静态的首页文件, 或是由前端框架生成的静态页面, 我这里是vue框架build之后的<code>index.html</code>.<br>第二项则是Django项目的<code>static</code>和<code>media</code>文件夹中的资源, 取决于django项目的设置.<br>第三项则是所有非静态资源请求, 都要转发至之前的uwsgi容器中的uWSGI服务器进行处理.</p>
+<p>具体配置文件如下, 未开启https</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">user nginx;</span><br><span class="line">worker_processes  1;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include    mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line">    sendfile        on;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line">    client_max_body_size 20m;</span><br><span class="line">    gzip     on;</span><br><span class="line"></span><br><span class="line">    upstream uwsgi &#123;</span><br><span class="line">        server uwsgi:8001;</span><br><span class="line">    &#125;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        root /nginx/home;</span><br><span class="line">        index index.html;</span><br><span class="line"></span><br><span class="line">        location /media &#123;</span><br><span class="line">            root /;</span><br><span class="line">        &#125;</span><br><span class="line">        location /static &#123;</span><br><span class="line">            root /;</span><br><span class="line">        &#125;</span><br><span class="line">        location /api &#123;</span><br><span class="line">            uwsgi_pass uwsgi;</span><br><span class="line">            include uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">        location /admin &#123;</span><br><span class="line">            uwsgi_pass uwsgi;</span><br><span class="line">            include uwsgi_params;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意一点, 上游服务器的设置中, 使用的仍然是uWSGI服务器所在容器名<code>uwsgi</code>, Docker会自动链接至正确的内部网络地址. <code>index.html</code>及其引用的文件置于宿主机的<code>/vue_project</code>目录下.</p>
+<p>之后启动nginx容器:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name nginx \</span><br><span class="line">--network django_project \</span><br><span class="line">-p 80:80 \</span><br><span class="line">-v /nginx/nginx.conf:/etc/nginx/nginx.conf:ro \</span><br><span class="line">-v /django_project/static:/static \</span><br><span class="line">-v /django_project/media:/media \</span><br><span class="line">-v /vueproject:/nginx/home \</span><br><span class="line">nginx</span><br></pre></td></tr></table></figure>
+
+<p>到此部署成功, 访问80端口即可.</p>
+
+          
         
       
     </div>
@@ -1666,7 +1743,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

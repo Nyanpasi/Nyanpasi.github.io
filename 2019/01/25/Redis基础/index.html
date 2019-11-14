@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-11-07T19:36:33.530Z">
+<meta property="og:updated_time" content="2019-11-11T02:28:39.849Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis基础">
 <meta name="twitter:description" content="基本数据类型Redis的键为字符串, 而值有5种基本数据类型:  字符串(String) 列表(List) 字典(Hash) 集合(Set) 有序集合(Sorted Set)   字符串Redis字符串为动态字符串, 采用预分配冗余空间的方式来减少内存的频繁分配. 当字符串长度小于1M时, 扩容都是加倍现有的空间, 如果超过1M, 扩容时一次只会多扩1M的空间. 需要注意的是字符串最大长度为512">
@@ -391,6 +391,7 @@
 <hr>
 <h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
 <p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
+<p>在key-value对较少时内部使用压缩列表实现.</p>
 <hr>
 <h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
 <p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
@@ -662,7 +663,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

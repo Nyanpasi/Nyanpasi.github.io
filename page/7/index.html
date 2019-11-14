@@ -298,6 +298,381 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/01/环回地址 127.0.0.1和0.0.0.0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/01/环回地址 127.0.0.1和0.0.0.0/" itemprop="url">127.0.0.1和0.0.0.0</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-01T18:09:47+08:00">
+                2019-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>127.0.0.1</code> 是环回地址, 通常分配给<code>loopback</code>处理, 对<code>127.0.0.1</code>的访问都会指向本机, 所以通常用于<strong>本机</strong>应用之间的交互, </p>
+<p>对<code>127.0.0.1</code>的请求不会出入网卡, 网络设备也不会对其路由.</p>
+<p>操作系统初始化本机的<code>TCP/IP</code>协议栈时, 设置协议栈本身的IP地址为<code>127.0.0.1</code>, 并注入路由表, 当IP层接到目的地址为该地址的的数据包时, 直接转发到本机的IP层进行处理.</p>
+<p>即, 对<code>127.0.0.1</code>的请求所使用的最底层协议栈为<code>TCP/IP</code>层,  直接在网络层和传输层之间环回, <strong>不会</strong>通过链路层和物理层.</p>
+<p>能ping通<code>127.0.0.1</code>意味着<code>TCP/IP</code>协议栈运行正常.</p>
+<p>localhost通常被设置为<code>127.0.0.1</code>的域名, 在支持<code>ipv6</code>的设备中, 同时还指向<code>[::1]</code></p>
+<p>使用localhost与127.0.0.1没有任何区别.</p>
+<hr>
+<p><code>0.0.0.0</code>指的是任意ip地址<code>IP_ADDR_ANY</code>, 也包括环回地址, 主机监听<code>0.0.0.0</code>时, 会接受目标地址为任意地址的请求.</p>
+<p><code>0.0.0.0</code>永远不能ping通.</p>
+<hr>
+<p>在<code>Docker</code>容器中, <code>127.0.0.1</code>指的是本容器的网络地址, 监听<code>127.0.0.1</code>的容器内服务, 不会接收任何非本容器内的请求, 包括其他容器的请求也不会被接收.</p>
+<hr>
+<p>参考:</p>
+<p><a href="https://www.zhihu.com/question/23940717" target="_blank" rel="noopener">知乎</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/27/Redis Cluster集群/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="紫秋">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="紫秋的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/27/Redis Cluster集群/" itemprop="url">Redis Cluster 集群</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-27T18:59:21+08:00">
+                2019-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Redis-Cluster"><a href="#Redis-Cluster" class="headerlink" title="Redis Cluster"></a>Redis Cluster</h3><p>Redis Sentinel 着眼于高可用, 但Redis实例的容量仍然受限于单机的内存容量.</p>
+<p>Cluster提供将多个redis实例作为一个整体, 使用哈希槽的概念, 将键分配在多个redis实例中, 这样redis的容量就不再受限于单个机器的内存.</p>
+<p>即, Cluster解决的是Redis的性能和扩展性问题.</p>
+<p>Redis集群中的每个redis实例称为一个节点, 在建立集群后, 为每个节点设置主从复制, 并在合适的时机进行主从切换以提高可用性.</p>
+<p>Cluster的主从切换并不需要使用Sentinel, 而是通过多个节点之间的通信协商.</p>
+<p>使用集群的流程为</p>
+<ol>
+<li>创建多个Redis节点</li>
+<li>创建集群</li>
+<li>客户端连接</li>
+</ol>
+<hr>
+<h3 id="创建多个节点"><a href="#创建多个节点" class="headerlink" title="创建多个节点"></a>创建多个节点</h3><p>每个节点是一个redis实例, 官方给出作为一个<strong>节点</strong>的最小配置项如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cluster-enabled yes  </span><br><span class="line">cluster-config-file nodes.conf  </span><br><span class="line">cluster-node-timeout 5000  </span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<p><code>cluster-config-file</code> 指定保存节点信息状态的文件, 我们只需要为这个文件指名, 但不需要手动管理该文件, 会由Cluster进行创建和随时更新.<br><code>cluster-node-timeout</code> 指定在一个节点在无响应多少毫秒后视为不可达.</p>
+<p>按照推荐, 我们使用docker启动多个实例</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7000</span><br></pre></td></tr></table></figure>
+
+<p>启动6个实例, 端口号分布在<code>7000</code>到<code>7005</code>之间.</p>
+<p>每个启动的实例会分配一个id, 用作该实例的唯一标识, 每个节点靠ID来记录每个其他节点, 而不是IP和端口, 因为IP和端口可能会变化, 但唯一的节点标识符在整个节点的生命周期中保持不变, 这个ID称之为节点ID(<code>Node ID</code>).</p>
+<hr>
+<h3 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h3><p>根据最新5.0+版本<a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">官方文档</a>, 应该使用redis-cli创建集群.</p>
+<p>使用容器运行一个客户端, 并运行创建一个3主3从的集群命令:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli --cluster create \</span><br><span class="line">47.94.152.34:7000 \</span><br><span class="line">47.94.152.34:7001 \</span><br><span class="line">47.94.152.34:7002 \</span><br><span class="line">47.94.152.34:7003 \</span><br><span class="line">47.94.152.34:7004 \</span><br><span class="line">47.94.152.34:7005 \</span><br><span class="line">--cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<p>其中, <code>--cluster-replicas</code>选项指定每个节点应当拥有几个从节点</p>
+<p>之后, redis-cli会给出具体配置, 例如哪几个节点作为主节点, 哪几个节点作为从节点, 每个节点的<code>ID</code>和被分配的槽的范围, 输入yes确认, 开始搭建集群, 直至获得输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+
+<p>集群搭建成功.</p>
+<hr>
+<h3 id="访问集群"><a href="#访问集群" class="headerlink" title="访问集群"></a>访问集群</h3><p>访问集群的操作与访问单个redis实例不同, 因为每个节点都只负责一部分槽.</p>
+<p>可以访问任何一个节点, 但除非所读写的键正好在该节点所分配的槽的范围内, 否则节点会返回一个Moved错误, 并给出该槽被分配在节点的地址.</p>
+<p>因此, 需要一个封装良好的客户端, 来进行对集群的操作, Python程序中可以使用<code>redis-py-cluster</code>包.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> rediscluster <span class="keyword">import</span> RedisCluster</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>startup_nodes = [</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7000"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7001"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7002"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7003"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7004"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>    &#123;</span><br><span class="line"><span class="meta">... </span>            <span class="string">"host"</span>: <span class="string">"47.94.152.34"</span>, </span><br><span class="line"><span class="meta">... </span>            <span class="string">"port"</span>: <span class="string">"7005"</span></span><br><span class="line"><span class="meta">... </span>    &#125;,</span><br><span class="line"><span class="meta">... </span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc = RedisCluster(startup_nodes=startup_nodes, decode_responses=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.set(<span class="string">'hello'</span>, <span class="string">'world!'</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>rc.get(<span class="string">'hello'</span>)</span><br><span class="line"><span class="string">'world!'</span></span><br></pre></td></tr></table></figure>
+
+<p>或是使用redis-cli进行读写测试, 注意启动时增加了<code>-c</code>参数以连接cluster.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 -c</span><br><span class="line">redis 127.0.0.1:7000&gt; <span class="built_in">set</span> foo bar</span><br><span class="line">-&gt; Redirected to slot [12182] located at 127.0.0.1:7002</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:7002&gt; <span class="built_in">set</span> hello world</span><br><span class="line">-&gt; Redirected to slot [866] located at 127.0.0.1:7000</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:7000&gt; get foo</span><br><span class="line">-&gt; Redirected to slot [12182] located at 127.0.0.1:7002</span><br><span class="line"><span class="string">"bar"</span></span><br><span class="line">redis 127.0.0.1:7000&gt; get hello</span><br><span class="line">-&gt; Redirected to slot [866] located at 127.0.0.1:7000</span><br><span class="line"><span class="string">"world"</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="TCP连接"><a href="#TCP连接" class="headerlink" title="TCP连接"></a>TCP连接</h3><p>每个节点会打开两个TCP连接, 一个进行数据操作的端口, 另一个10000偏移量的端口则进行节点间的通信.</p>
+<p>包括检测错误, 更新配置, 故障转移授权等, 客户端不应该尝试连接第二个端口, 但要保证该端口开放.</p>
+<hr>
+<h3 id="数据分片"><a href="#数据分片" class="headerlink" title="数据分片"></a>数据分片</h3><p>Redis不使用一致性hash, 而是使用哈希槽(hash slot)的概念, 每个集群共拥有<code>16384</code>个槽, 对键进行CRC16编码然后对16384取模即可获得该键所属槽位.</p>
+<p>集群中的每个节点负责哈希槽的一个子集, 例如在一个3个主节点的集群中, 每个节点负责的槽范围为:</p>
+<ul>
+<li>节点A: 0-5500</li>
+<li>节点B: 5501-11000</li>
+<li>节点C: 11001-16384</li>
+</ul>
+<p>使用槽的概念让添加和移除节点非常容易, 例如增加一个节点D, 只需要从A, B, C中移动一些槽到节点D即可.</p>
+<p>而如果要删除A节点, 则将其所有的槽到B和C. 当A节点被清空之后, 就可以将其删除.</p>
+<p>移动槽的过程不需要停止操作, 所以添加移除节点, 或是更改某个节点哈希槽的百分比, 不需要任何停机时间.</p>
+<hr>
+<h3 id="键hash标签"><a href="#键hash标签" class="headerlink" title="键hash标签"></a>键hash标签</h3><p><code>Hash Tag</code>指的是一个用于计算键哈希槽的部分的标记, 默认是<code>{}</code>, 即键中包含<code>{}</code>时, 仅<code>{}</code>内的部分会用于计算槽位</p>
+<p>Redis Cluster并不支持<strong>涉及多个节点</strong>的多键操作, 因此采用<code>Hash Tag</code>可以保证采用了相同<code>Hash Tag</code>的多个键被分配至同一个槽位.</p>
+<p>当然, 如果因为键中本来就需要包含不作为键hash标志的<code>{}</code>, 根据规则也可以绕开这个机制, 详情查看<a href="https://redis.io/topics/cluster-spec" target="_blank" rel="noopener">官方文档</a></p>
+<hr>
+<h3 id="客户端的数据访问"><a href="#客户端的数据访问" class="headerlink" title="客户端的数据访问"></a>客户端的数据访问</h3><p>分片之后, 盲目对节点进行读写, 大概率不会恰好命中键哈希槽所属的节点, 这意味着我们需要与redis服务器通信两次</p>
+<ol>
+<li>发起请求读写请求, 失败, 但获得了键的槽位和该槽所属的节点的地址</li>
+<li>再次发起请求, 读写成功.</li>
+</ol>
+<p>实际上, 为了避免这种情况, Cluster配置了slot表, 客户端首先通过slots命令获得slot表, 获知各个槽位由哪些节点负责, 之后的请求就可以一发中的.</p>
+<p>当然, 槽位不是一成不变的, 客户端需要在合适的时机(例如设置一个超时时间, 或是在多次未直接命中后)更新这个表.</p>
+<hr>
+<h3 id="集群的主从模型"><a href="#集群的主从模型" class="headerlink" title="集群的主从模型"></a>集群的主从模型</h3><p>为集群的每个节点建立从节点, 保证了每个节点的高可用.</p>
+<p>Redis集群的主从切换并不由外置的Sentinel作为监控, 而是由集群中每个节点共同执行.</p>
+<p>自动主从切换的前提是半数以上的master存活, 这就是为什么官方推荐至少要3个以上的节点作为一个集群.</p>
+<hr>
+<h3 id="集群的一致性保证"><a href="#集群的一致性保证" class="headerlink" title="集群的一致性保证"></a>集群的一致性保证</h3><p>Redis集群并不保证强一致性, 以下情况可能发生数据不一致, 例如:</p>
+<ol>
+<li>客户端写入主节点</li>
+<li>主从复制尚未完成时主节点挂掉</li>
+<li>从节点被提升为主节点</li>
+</ol>
+<p>此时这个写操作就永久地丢失了. 又或者:</p>
+<ol>
+<li>发生了网络分割, 少数主节点被孤立,</li>
+<li>在节点超时(<code>node timeout</code>)之前, 客户端继续写入这些主节点</li>
+<li>多数主节点注意到少数主节点不可达, 于是将其附属的从节点提升为主节点</li>
+</ol>
+<p>这样, 在整个集群未确认少数主节点不可达的这段时间内, 客户端对这些异常主节点的写操作就丢失了.</p>
+<p>不过情况并不会太糟, 在节点超时之后, 被分割的少数主节点仍然无法感知到集群中多数主节点, 会自动停止接受写请求.</p>
+<hr>
+<h3 id="移动哈希槽-重新分片"><a href="#移动哈希槽-重新分片" class="headerlink" title="移动哈希槽(重新分片)"></a>移动哈希槽(重新分片)</h3><p>使用<code>reshard</code>指令, 参数为集群中任意一个节点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster reshard 47.94.152.34:7000</span><br></pre></td></tr></table></figure>
+
+<p>之后会展示现存节点的信息, 包括id, 各个主节点哈希槽分配数量和范围, 之后提示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; How many slots do you want to move (from 1 to 16384)?</span><br><span class="line">1000</span><br><span class="line">&gt;&gt;&gt; What is the receiving node ID</span><br><span class="line">caefa18d0e4ba73914f3cf434a853a3dd6743b5f</span><br><span class="line">&gt;&gt;&gt; Please enter all the source node IDs.</span><br><span class="line">	Type &apos;all&apos; to use all the nodes as source nodes for the hash slots. </span><br><span class="line">	Type &apos;done&apos; once you entered all the source nodes IDs.</span><br><span class="line">all</span><br></pre></td></tr></table></figure>
+
+<p>移动后, 每个节点所分配的哈希槽不一定是连续的, 但在总数上是符合预期的.</p>
+<hr>
+<h3 id="添加一个新的节点"><a href="#添加一个新的节点" class="headerlink" title="添加一个新的节点"></a>添加一个新的节点</h3><p>将其作为主节点, 并将一些槽移至该节点, 或是将其作为一个slave进行数据的复制.</p>
+<h4 id="启动一个空节点"><a href="#启动一个空节点" class="headerlink" title="启动一个空节点"></a>启动一个空节点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --rm --network host redis redis-server \</span><br><span class="line">--cluster-enabled yes \</span><br><span class="line">--cluster-config-file nodes.conf \</span><br><span class="line">--cluster-node-timeout 5000 \</span><br><span class="line">--appendonly yes \</span><br><span class="line">--port 7006</span><br></pre></td></tr></table></figure>
+
+<p>之后, 使用redis-cli向集群发送消息, 让新的节点加入集群.</p>
+<hr>
+<h4 id="作为主节点加入集群"><a href="#作为主节点加入集群" class="headerlink" title="作为主节点加入集群"></a>作为主节点加入集群</h4><p>使用 <code>add-node</code>指令, 第一个参数为新建的空节点, 第二个参数为集群中任意一个节点:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster add-node 47.94.152.34:7006 47.94.152.34:7000</span><br></pre></td></tr></table></figure>
+
+<p>新添加的实例是没有被分配任何哈希槽的, 需要手动进行哈希槽的更改.</p>
+<hr>
+<h4 id="作为从节点加入集群"><a href="#作为从节点加入集群" class="headerlink" title="作为从节点加入集群"></a>作为从节点加入集群</h4><p>与作为主节点不同点为命令中添加 <code>--cluster-slave</code>选项.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster add-node 47.94.152.34:7006 47.94.152.34:7000 \</span><br><span class="line">--cluster-slave</span><br></pre></td></tr></table></figure>
+
+<p>该空节点会自动成为当前集群中<strong>拥有从节点最少的主节点</strong>的从节点.</p>
+<p>如果要指定其作为某个主节点的slave, 则还需要使用<code>--cluster-master-id</code>选项:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster add-node 47.94.152.34:7006 47.94.152.34:7000 \</span><br><span class="line">--cluster-slave \</span><br><span class="line">--cluster-master-id 3c3a0c74aae0b56170ccb03a76b60cfe7dc1912e</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="移除一个节点"><a href="#移除一个节点" class="headerlink" title="移除一个节点"></a>移除一个节点</h3><p>使用命令<code>del-node</code>即可, 第一个参数为集群中任意一个节点, 第二个参数则是想要移除的节点的ID</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --network host --name redis-cli redis redis-cli -h 47.94.152.34 -p 7000 \</span><br><span class="line">--cluster del-node 47.94.152.34:7000 8b7810a4087f0a6e6cac390c950e5d9c9108dae3</span><br></pre></td></tr></table></figure>
+
+<p>注意一个被移除的主节点必须是<strong>空节点</strong>, 即该节点不被分配任何哈希槽, 可以进行</p>
+<ol>
+<li>重新分片, 将其哈希槽分配至其他主节点</li>
+<li>手动故障转移, 进行主从切换, 将其降级为salve</li>
+</ol>
+<hr>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a><br><a href="https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html" target="_blank" rel="noopener">https://doc.yonyoucloud.com/doc/wiki/project/redis-guide/cluster-a.html</a><br><a href="https://my.oschina.net/neuront/blog/758622" target="_blank" rel="noopener">https://my.oschina.net/neuront/blog/758622</a><br><a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">https://redis.io/topics/cluster-tutorial</a><br><a href="https://juejin.im/post/5c1bb40a6fb9a049f36211b0" target="_blank" rel="noopener">https://juejin.im/post/5c1bb40a6fb9a049f36211b0</a><br><a href="https://wiki.jikexueyuan.com/project/redis/cluster-down.html" target="_blank" rel="noopener">https://wiki.jikexueyuan.com/project/redis/cluster-down.html</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Redis 主从复制和Sentinel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -569,6 +944,7 @@
 <hr>
 <h4 id="字典-hash"><a href="#字典-hash" class="headerlink" title="字典(hash)"></a>字典(hash)</h4><p>一个无序字典, 字典的值只允许是字符串. 解决键冲突的方式为拉链法.</p>
 <p>为了让负载因子维持在一个合理的范围内, 在数据增加或减少到一定程度后对其进行响应的扩展或收缩.</p>
+<p>在key-value对较少时内部使用压缩列表实现.</p>
 <hr>
 <h5 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h5><p>扩展或收缩哈希表需要将旧的hashtable里面的所有键值对<code>rehash</code>到新的hashtable里面</p>
 <p>如果键值对数量很多时, 一次性<code>rehash</code>引起的庞大的计算量导致服务器在一段时间内停止服务.</p>
@@ -845,7 +1221,7 @@
 <li>全文索引</li>
 </ol>
 <p>对于小型表, 适合全表扫描<br>对于中大型表, 使用索引最有效<br>对于超大型表, 使用分区技术合适</p>
-<h4 id="B-Tree型索引"><a href="#B-Tree型索引" class="headerlink" title="B-Tree型索引"></a>B-Tree型索引</h4>
+<h4 id="B-Tree型索引"><a href="#B-Tree型索引" class="headerlink" title="B-Tree型索引"></a>B-Tree型索引</h4><h3 id="聚簇索引和非聚簇索引"><a href="#聚簇索引和非聚簇索引" class="headerlink" title="聚簇索引和非聚簇索引"></a>聚簇索引和非聚簇索引</h3><h3 id="常用引擎"><a href="#常用引擎" class="headerlink" title="常用引擎"></a>常用引擎</h3>
           
         
       
@@ -1543,420 +1919,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/01/编码问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/01/编码问题/" itemprop="url">编码问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-01T12:19:47+08:00">
-                2018-06-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="编码问题"><a href="#编码问题" class="headerlink" title="编码问题"></a>编码问题</h3><p>什么是编码?从本质上说起</p>
-<p>计算机元件上存储的是电位高低, 我们可以抽象地用1和0来表示高低电位, 这是最底层的东西. </p>
-<p>通常我们称一位为bit, 代表一个电位的高低, 它只有两个状态, 高和低, 所以每一个bit可以区分两个不同信息. </p>
-<p>因为, 每个字节, 即每8个位, 最多可以表示256种不同的含义, 这是最简单不过的数学题. </p>
-<p>假如现在有一串电位 <code>01000001 01000010</code>已知这是一段文本信息, 那么代表的是什么含义?</p>
-<p>没人知道, 也不可能有人知道. </p>
-<p>唯一知道的就是, 在存储着这一串信息的内存区域, 其电位分布依次为高电平低电平低电平低电平 …..</p>
-<hr>
-<h3 id="ASCII编码"><a href="#ASCII编码" class="headerlink" title="ASCII编码"></a>ASCII编码</h3><p>为了实现从电位序列到实际语义的转换, 我们定义了一组规范. </p>
-<p>用7个连续电位代表一个字符(ASCII编码),显然, 7位能描述的是128种状态, 因此, ASCII字符最多有128个, 事实上也是如此. </p>
-<p>鉴于英文字母只有26个, 其大小写状态再加上一些其他符号, 128个位置也是能应付得来的. </p>
-<p>在建立了电位到二进制数字, 再到语义的映射, 即ASCII表之后, 我们可以理解了以上一串电位的含义了</p>
-<p>01000001根据ASCII对照表, 代表字母A, 01000010则代表字母B, 所以这串电平代表的是两个字母’AB’</p>
-<p>那么一个ASCII编码的字符在内存中占据7位吗?</p>
-<p>不是的, 字节是计算机基本的存储单元, 一个字符最低也要占据1个字节(8个bit), 所以其首位固定添加一个0以占据一个字节. </p>
-<hr>
-<h3 id="ASCII编码的局限性"><a href="#ASCII编码的局限性" class="headerlink" title="ASCII编码的局限性"></a>ASCII编码的局限性</h3><p>当计算机的发展不限于英语国家乃至西欧国家时, 128个字符位就不够用了</p>
-<p>尤其对于非字母式语言, 可能需要上万个位置来存放自己的字符, 各种语言加起来, 这个数量就更多了</p>
-<p>如果计算机仍然只使用ASCII编码的话, 那么除了英语其他语言都无法在计算机上显示</p>
-<p>为了解决这个问题, 各国都推出了解决方案, 解决了部分问题, 也在互相影响下引入了歧义, 带来了混乱. </p>
-<p>我们直接跳到最终的解决方案 <code>unicode</code>编码</p>
-<hr>
-<h3 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a>unicode</h3><p>unicode是一个编码规范. </p>
-<p>在设想中, unicode映射表极为庞大, 庞大到所有语言的字符乃至今后世界上可能出现的所有字符加起来都不足以占满它的位置. </p>
-<p>我们只需要指定一个序号, 然后根据映射表, 就确定表示的究竟是哪个字符. </p>
-<p>没有争抢, 没有歧义, 不需要任何转换技巧, 所有语言的字符一视同仁. </p>
-<p>需要说明的是:<code>unicode</code>是一个编码规范, 它定义了映射表, 但并不是实际的编码方案, 它的实际实现是<code>UTF-8</code>以及<code>utf-16</code>以及<code>utf-32</code></p>
-<hr>
-<h3 id="UTF-8、UTF-16以及UTF-32"><a href="#UTF-8、UTF-16以及UTF-32" class="headerlink" title="UTF-8、UTF-16以及UTF-32"></a>UTF-8、UTF-16以及UTF-32</h3><p>第一个版本<code>unicode 1.0</code>(1994年)中打算用两个字节表示世界上所有的字符(也就是2的16次幂一共65536个空位, 显然这是一个错误的估计)</p>
-<p><code>utf-16</code>是<code>unicode1.0</code>最自然的编码实现, 使用16位来指定一个字符, 无论这个字符的序号是多么地小, 它都占据两个字节, 而且在内存和存储中均保持一致</p>
-<p>显然这种方法存在缺陷, 对于序号较小的字符(例如字母A,序号为65即1000001), 其占用的两个字节的第一个字节中全是0, 且无法兼容ASCII. </p>
-<p>别忘了, 此时网络上绝大部分文本都是英文, 所有英文字母占用的空间翻倍, 会带来传输和存储过程效率减半的严重后果. </p>
-<p>而另一种实现<code>utf-8</code>就是为了解决这个问题：</p>
-<p>在内存中时, 仍然使用两个字节来表示一个字符, 但在转换为字节流时, utf-8使用最少8位来代表一个字符</p>
-<p>也就是说, 一个字符<strong>至少</strong>映射为1个字节, 可能是多个字节, 只需要根据其开头序列, 即可知道应将几个字节视为一个字符.</p>
-<p>那么解码的时候, 怎么确定当前的字节代表一个字符, 还是应当与之后的字节连在一起代表另一个字符呢?</p>
-<p>答案也很简单, 抛弃一些空位, 以避免出现任何歧义. </p>
-<table>
-<thead>
-<tr>
-<th>unicode编码(十六进制)</th>
-<th>utf-8字节流(二进制)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>000000-00007F</td>
-<td>0xxxxxxx</td>
-</tr>
-<tr>
-<td>000080-0007FF</td>
-<td>110xxxxx 10xxxxxx</td>
-</tr>
-<tr>
-<td>000800-00FFFF</td>
-<td>1110xxxx 10xxxxxx 10xxxxxx</td>
-</tr>
-<tr>
-<td>010000-10FFFF</td>
-<td>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</td>
-</tr>
-<tr>
-<td>…</td>
-<td>…</td>
-</tr>
-</tbody></table>
-<p>我们可以看到, 在多个字节表示一个字符时, 一些空位是无法被使用的. </p>
-<p><code>unicode2.0</code>则是使用4个字节来表示一个字符的编码形式, 可用编码空间有二十多个亿个. </p>
-<p>实际中使用的unicode字符集的序号则不超过0x10FFFF, </p>
-<p>如同<code>utf-16</code>是<code>unicode1.0</code>的自然实现, <code>utf-32</code>是<code>unidoce2.0</code>的自然实现. </p>
-<p>当然, 这种编码方式很少被使用, 大家都用<code>utf-8</code>这种可变长的编码方式. </p>
-<hr>
-<h3 id="编码过程与解码过程"><a href="#编码过程与解码过程" class="headerlink" title="编码过程与解码过程"></a>编码过程与解码过程</h3><p>编码:将字符转换为字节. 从存储或字节流中将字节转换为字符, 就要进行解码</p>
-<p>解码:将字节转换为字符. 从内存中将字符转换为字节流用于存储或传输, 就要进行编码</p>
-<hr>
-<h3 id="BOM是什么"><a href="#BOM是什么" class="headerlink" title="BOM是什么"></a>BOM是什么</h3><p>(Byte Order Mark)字节序</p>
-<p>LITTLE-ENDIAN（小字节序、低字节序）,即低位字节排放在内存的低地址端, 高位字节排放在内存的高地址端.  与之对应的是：BIG-ENDIAN(大字节序、高字节序)</p>
-<p>utf-8以字节为编码单元, 无需使用这个来确定字节序, 而utf-16中以2个字节为编码单元, 因此有必要先确定字节序. </p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/Linux目录内容/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="紫秋">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="紫秋的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/21/Linux目录内容/" itemprop="url">Linux目录内容</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T12:58:21+08:00">
-                2018-05-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>根据<code>FHS</code>(Filesystem Hierarchy Standard, 文件系统层次化标准)，Linux系统的目录及其内容应当如下</p>
-<table>
-<thead>
-<tr>
-<th>目录</th>
-<th>应当放置的文件内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>/boot</code></td>
-<td>开机所需文件，内核、开机菜单及所需配置文件等</td>
-</tr>
-<tr>
-<td><code>/dev</code></td>
-<td>以文件形式存放的设备与接口</td>
-</tr>
-<tr>
-<td><code>/etc</code></td>
-<td>配置文件，所有的配置文件都应当放在这个目录</td>
-</tr>
-<tr>
-<td><code>/bin</code></td>
-<td>二进制可执行文件，用户指令，常用命令一般都在此处</td>
-</tr>
-<tr>
-<td><code>/sbin</code></td>
-<td>开机过程中需要的命令，只有超级用户能访问的二进制可执行文件</td>
-</tr>
-<tr>
-<td><code>/usr</code></td>
-<td><strong>U</strong>nix <strong>S</strong>ystem <strong>R</strong>esource 用于存放系统应用程序</td>
-</tr>
-<tr>
-<td><code>/srv</code></td>
-<td>一些网络服务的数据文件目录</td>
-</tr>
-<tr>
-<td><code>/var</code></td>
-<td>运行时会改变的文件，例如日志等</td>
-</tr>
-<tr>
-<td><code>/root</code></td>
-<td>超级用户的主目录</td>
-</tr>
-<tr>
-<td><code>/home</code></td>
-<td>存放用户的根目录，用户主目录的基点</td>
-</tr>
-<tr>
-<td><code>/media</code></td>
-<td>用于挂载设备文件的目录</td>
-</tr>
-<tr>
-<td><code>/opt</code></td>
-<td>额外可选的应用程序包</td>
-</tr>
-<tr>
-<td><code>/temp</code></td>
-<td>临时文件的存储目录</td>
-</tr>
-<tr>
-<td><code>/mnt</code></td>
-<td>系统管理员安装临时文件系统的安装点</td>
-</tr>
-</tbody></table>
-<hr>
-<p>另外, <code>/usr</code>目录中各子目录和应当放置的文件内容</p>
-<table>
-<thead>
-<tr>
-<th>/usr子目录</th>
-<th>应当放置的文件内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>/bin</code></td>
-<td>众多的应用程序</td>
-</tr>
-<tr>
-<td><code>/lib</code></td>
-<td>常用的动态链接库和软件包的配置文件</td>
-</tr>
-<tr>
-<td><code>/src</code></td>
-<td>源代码</td>
-</tr>
-<tr>
-<td><code>/local</code></td>
-<td>用户自行安装的软件</td>
-</tr>
-<tr>
-<td><code>/local/bin</code></td>
-<td>本地增加的命令</td>
-</tr>
-<tr>
-<td><code>/local/lib</code></td>
-<td>本地增加的库</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2007,7 +1969,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
