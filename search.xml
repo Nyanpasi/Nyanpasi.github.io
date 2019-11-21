@@ -119,7 +119,7 @@
 <hr>
 <h3 id="uwsgi容器"><a href="#uwsgi容器" class="headerlink" title="uwsgi容器"></a>uwsgi容器</h3><h4 id="前期工作"><a href="#前期工作" class="headerlink" title="前期工作"></a>前期工作</h4><p>在Docker的内部网络中, 使用容器名即可连接到指定容器, 所以django源码中, 数据库和缓存设置中host部分替换为要连接的容器名即可.</p>
 <p>例如, 缓存部分的设置可能如下所示</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">CACHES = &#123;</span><br><span class="line">    <span class="string">"default"</span>: &#123;</span><br><span class="line">        <span class="string">"BACKEND"</span>: <span class="string">"django_redis.cache.RedisCache"</span>,</span><br><span class="line">        <span class="string">"LOCATION"</span>: <span class="string">"redis://redis/0"</span>, <span class="comment"># 此处, 中间的redis是我们redis的容器名</span></span><br><span class="line">        <span class="string">"OPTIONS"</span>: &#123;</span><br><span class="line">            <span class="string">"CLIENT_CLASS"</span>: <span class="string">"django_redis.client.DefaultClient"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"KEY_PREFIX"</span>: <span class="string">"django_project"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">CACHES = &#123;</span><br><span class="line">    <span class="string">"default"</span>: &#123;</span><br><span class="line">        <span class="string">"BACKEND"</span>: <span class="string">"django_redis.cache.RedisCache"</span>,</span><br><span class="line">        <span class="string">"LOCATION"</span>: <span class="string">"redis://redis/0"</span>, <span class="comment"># 此处, 中间的redis是redis的容器名</span></span><br><span class="line">        <span class="string">"OPTIONS"</span>: &#123;</span><br><span class="line">            <span class="string">"CLIENT_CLASS"</span>: <span class="string">"django_redis.client.DefaultClient"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"KEY_PREFIX"</span>: <span class="string">"django_project"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>而数据库部分的设置可能如下</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'django_project'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'root'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'your-mysql-password'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'mysql'</span>, <span class="comment">#host设置为mysql容器名, mysql</span></span><br><span class="line">        <span class="string">'PORT'</span>: <span class="string">'3306'</span>,</span><br><span class="line">        <span class="string">'OPTION'</span>: &#123;</span><br><span class="line">             <span class="comment"># 'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE,</span></span><br><span class="line">            <span class="string">'charset'</span>: <span class="string">'utf8mb4'</span></span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -133,13 +133,13 @@
 <hr>
 <h4 id="编写Dockerfile"><a href="#编写Dockerfile" class="headerlink" title="编写Dockerfile"></a>编写Dockerfile</h4><figure class="highlight docker"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span>.<span class="number">6</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /usr/src/django_project</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> requirements.txt ./</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8001</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> uwsgi --socket :8001 --<span class="built_in">chdir</span> /usr/src/django_project --wsgi-file django_project/wsgi.py</span></span><br></pre></td></tr></table></figure>
 
-<p>在CMD中, 我们指定了uwsgi容器默认以socket模式启动. 然后将dockerfile置于项目根目录之下, 构建镜像</p>
+<p>在CMD中, 指定了uwsgi容器默认以socket模式启动. 然后将dockerfile置于项目根目录之下, 构建镜像</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker build -t uwsgi .</span><br></pre></td></tr></table></figure>
 
 <p>构建好镜像之后, 启动uwsgi容器, 但此处要重写启动命令, 让uwsgi服务器以http模式启动, 方便调试.</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --rm \</span><br><span class="line">-p 8001:8001 \</span><br><span class="line">--network django_project \</span><br><span class="line">--name uwsgi \</span><br><span class="line">--expose 8001 \</span><br><span class="line">-v /django_project:/usr/src/django_project \</span><br><span class="line">uwsgi \</span><br><span class="line">uwsgi --http :8001 --<span class="built_in">chdir</span> /usr/src/django_project --wsgi-file django_project/wsgi.py</span><br></pre></td></tr></table></figure>
 
-<p>这时我们可以访问尝试访问本机的8001端口, 注意在以上代码中, 我们监听的是0.0.0.0:8001, 而且进行了端口映射, 所以可以在容器间访问, 也可以在外部访问.</p>
+<p>这时可以访问尝试访问本机的8001端口, 注意在以上代码中, 监听的是0.0.0.0:8001, 而且进行了端口映射, 所以可以在容器间访问, 也可以在外部访问.</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget 127.0.0.1:8001</span><br></pre></td></tr></table></figure>
 
 <p>当然, 八成是会失败的, 因为我们还没有进行数据库同步</p>
@@ -1577,7 +1577,8 @@
 <p><code>allow_null</code>: 指定<code>None</code>值是否是合法的输入, 默认为<code>False</code></p>
 <p><code>pk_field</code>: 指定一个字段以控制主键值的序列化/反序列化, 例如<code>pk_field = UUIDField(format =&#39;hex&#39;)</code>会将UUID主键序列化为其紧凑的十六进制表示. </p>
 <hr>
-<h3 id="HyperlinkedRelatedField"><a href="#HyperlinkedRelatedField" class="headerlink" title="HyperlinkedRelatedField"></a>HyperlinkedRelatedField</h3><p>对外模型的序列化结果为指向该外模型detail页面的超链接.</p>
+<h3 id="HyperlinkedRelatedField"><a href="#HyperlinkedRelatedField" class="headerlink" title="HyperlinkedRelatedField"></a>HyperlinkedRelatedField</h3><p>对外模型的序列化结果为指向该外模型detail页面的超链接. </p>
+<p>HyperlinkedModelSerializer使用该字段.</p>
 <p>示例</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.HyperlinkedRelatedField(</span><br><span class="line">        many=<span class="literal">True</span>, </span><br><span class="line">        read_only=<span class="literal">True</span>, </span><br><span class="line">        view_name=<span class="string">'track-detail'</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
 
@@ -1586,7 +1587,8 @@
 
 <p>默认为读写字段, 可以使用read_only标志来更改</p>
 <p><code>view_name</code> 必需参数, 指定关联目标的api-view, 如果使用<code>Router</code>来注册, 则为<code>&lt;modelname&gt;-detail</code><br><code>queryset</code> 用以校验输入是否合法的查询集, 如果不设定参数, 则必须置<code>read_only</code>=<code>True</code><br><code>lookup_field</code> 用以检索的关联目标的字段, 应该对应于引用视图上的URL关键字参数, 默认为<code>pk</code><br><code>lookup_url_kwarg</code> 在url conf中定义的关键字参数名, 默认使用与<code>lookup_field</code>相同的值<br><code>format</code> 如果使用格式后缀, 超链接字段将会为目标模型的url使用同样的后缀, 除非重写<code>format</code>参数</p>
-<p>注: 写操作时传入的外键字段值是目标对象的detial的超链接.</p>
+<p>注: 写操作时传入的外键字段值是目标对象的detial的超链接, 按照生成url的规则反向解析为具体的实例.</p>
+<p>使用HyperlinkedModelSerializer时指定了model, 该序列化器所有HyperlinkedRelatedField使用该model名作为view_name的basename部分.</p>
 <hr>
 <h3 id="SlugRelatedField"><a href="#SlugRelatedField" class="headerlink" title="SlugRelatedField"></a>SlugRelatedField</h3><p>使用外模型的某个字段来表示模型</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.SlugRelatedField(</span><br><span class="line">        many=<span class="literal">True</span>, </span><br><span class="line">        read_only=<span class="literal">True</span>, </span><br><span class="line">        slug_field=<span class="string">'title'</span></span><br><span class="line">     )</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
@@ -3627,6 +3629,21 @@
       </tags>
   </entry>
   <entry>
+    <title>DRF问题记录和解决方案</title>
+    <url>/2019/07/03/DRF%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95%E4%B8%8E%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h2 id="如何在嵌套序列化器中包含context"><a href="#如何在嵌套序列化器中包含context" class="headerlink" title="如何在嵌套序列化器中包含context"></a>如何在嵌套序列化器中包含context</h2><p>在使用嵌套序列化器时, 会自动将context进行内层传递, 即内层的序列化器都会自动获得最外层序列化器所获得的context, 因此只有手动实例化某个序列化器并尝试获得其中数据时才需要手动传递context.</p>
+<p>例如对一个通用关系模型的<code>content_object</code>字段进行序列化时, 必须自定义关系字段, 官方代码如下:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Serialize bookmark instances using a bookmark serializer,</span></span><br><span class="line"><span class="string">    and note instances using a note serializer.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(value, Bookmark):</span><br><span class="line">        serializer = BookmarkSerializer(value)</span><br><span class="line">    <span class="keyword">elif</span> isinstance(value, Note):</span><br><span class="line">        serializer = NoteSerializer(value)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'Unexpected type of tagged object'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> serializer.data</span><br></pre></td></tr></table></figure>
+
+<p>在以上的代码中, serializer并未获得外层序列化器的上下文, 如果这些序列化器中包含超链接关系字段, 需要使用请求的相关信息, 上下文也需要手动传入. 完整代码如下:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> .models <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> serializers</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedObjectRelatedField</span><span class="params">(serializers.RelatedField)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_representation</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Serialize bookmark instances using a bookmark serializer,</span></span><br><span class="line"><span class="string">        and note instances using a note serializer.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(value, Bookmark):</span><br><span class="line">            serializer = BookmarkSerializer(value, context=&#123;<span class="string">'request'</span>:self.context[<span class="string">"request"</span>]&#125;)</span><br><span class="line">        <span class="keyword">elif</span> isinstance(value, Note):</span><br><span class="line">            serializer = NoteSerializer(value, context=&#123;<span class="string">'request'</span>:self.context[<span class="string">"request"</span>]&#125;)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">'Unexpected type of tagged object'</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> serializer.data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaggedItemSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line"></span><br><span class="line">    content_object = TaggedObjectRelatedField()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = TaggedItem</span><br><span class="line">        fields = <span class="string">"__all__"</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>DRF</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django Contenttype</title>
     <url>/2019/07/03/Django%20contenttype/</url>
     <content><![CDATA[<p>Django包含一个<code>conntenttypes</code>应用, 可以追踪已安装app中所有的Model.</p>
@@ -4117,10 +4134,57 @@ px250 table th:first-of-type {
 <p>以上算法会对多个节点作重复判定, 所以效率不高, 改进版, 从下到上判断</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_balanced</span><span class="params">(BinTNode)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">balance</span><span class="params">(root, height)</span>:</span></span><br><span class="line">		<span class="keyword">if</span> <span class="keyword">not</span> root:</span><br><span class="line">			height = <span class="number">0</span></span><br><span class="line">			<span class="keyword">return</span> <span class="literal">True</span>, height</span><br><span class="line">		balance_left, height_left = balance(root.left)</span><br><span class="line">		balance_right, height_right = balance(root.right)</span><br><span class="line">		<span class="keyword">if</span> balance_left <span class="keyword">and</span> balance_right:</span><br><span class="line">			<span class="keyword">if</span> abs(height_left - height_right)&lt;=<span class="number">1</span>:</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">True</span>, max(height_left, height_right) + <span class="number">1</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">False</span>, height</span><br><span class="line">	<span class="keyword">return</span> balance(BinTNode)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
 
-]]></content>
+<hr>
+<h3 id="用两个栈实现队列"><a href="#用两个栈实现队列" class="headerlink" title="用两个栈实现队列"></a>用两个栈实现队列</h3><p>用两个栈, 其中一个栈用来存储数据, 这样随时能取出栈顶数据, 即队尾数据</p>
+<p>另一个栈是辅助作用, 不存储任何数据, 当主栈需要取出栈底元素时, 将所有元素出栈, 放入辅助栈</p>
+<p>待主栈为空后, 取出辅助栈的栈顶元素, 即队首元素, 再将元素全部出栈放入主栈中.</p>
+<p>这样, 取出队尾元素的时间复杂度为O(1), 而取出队首元素的复杂度为O(n)</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Stack_queue</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,*elems)</span>:</span></span><br><span class="line">		self.stack1 = Stack()</span><br><span class="line">		self.stack2 = Stack(*elems)</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">enqueue</span><span class="params">(self,ele)</span>:</span></span><br><span class="line">		self.stack2.push(ele)</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">dequeue</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="keyword">if</span> self.stack2.is_empty():</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">		<span class="keyword">while</span> <span class="keyword">not</span> self.stack2.is_empty():</span><br><span class="line">			self.stack1.push(self.stack2.pop())</span><br><span class="line"></span><br><span class="line">		head = self.stack1.pop()</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">while</span> <span class="keyword">not</span> self.stack1.is_empty():</span><br><span class="line">			self.stack2.push(self.stack1.pop())</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> head</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">is_empty</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="keyword">return</span> self.stack2.is_empty()</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python MRO及C3线性化算法</title>
+    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
+<a id="more"></a>
+
+<p>一个类的MRO应当如下确定:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
+
+<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
+<ol>
+<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
+<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
+<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
+</ol>
+<hr>
+<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
+<p>根据上述C3算法的步骤来计算其MRO</p>
+<p>首先计算B1的MRO:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>同理,计算B2的MRO(过程略):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>最终计算并得到C的MRO</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
+
+<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
+<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>与我们计算的结果是相同的. </p>
+<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
+<hr>
+<p>参考:  </p>
+<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4170,48 +4234,6 @@ px250 table th:first-of-type {
       <tags>
         <tag>python</tag>
         <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python MRO及C3线性化算法</title>
-    <url>/2019/06/01/python%20MRO%E5%8F%8AC3%E7%BA%BF%E6%80%A7%E5%8C%96%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<p>Python中的方法解析顺序(Method Resolution Order , MRO)采用C3线性化算法来确定.</p>
-<a id="more"></a>
-
-<p>一个类的MRO应当如下确定:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[object] = [object]</span><br><span class="line">L[C(B1…BN)] = [C] + merge(L[B1]…L[BN], [B1, … ,BN])</span><br></pre></td></tr></table></figure>
-
-<p>merge函数接收一组列表, 按照如下方式输出一个列表：</p>
-<ol>
-<li>检查第一个列表的头元素（如 L[B1] 的头）, 记作 H. </li>
-<li>若 H 未出现在其它列表的尾部, 则将其输出, 并将其从所有列表中删除, 然后回到步骤1；否则, 取出下一个列表的头部记作 H, 继续该步骤. </li>
-<li>重复上述步骤, 直至列表为空或者不能再找出可以输出的元素. 如果是前一种情况, 则算法结束；如果是后一种情况, 说明无法构建继承关系, Python 会抛出异常. </li>
-</ol>
-<hr>
-<h4 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h4><p>继承关系如下图<br><img src="https://img2018.cnblogs.com/blog/1249301/201905/1249301-20190524235050394-577481731.png" alt></p>
-<p>根据上述C3算法的步骤来计算其MRO</p>
-<p>首先计算B1的MRO:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B1(A1,A2)] = [B1] + merge(L[A1], L(A2), [A1, A2])</span><br><span class="line">             = [B1] + merge([A1,Obj], [A2,Obj], [A1,A2])</span><br><span class="line">             = [B1, A1] + merge([Obj], [A2,Obj], [A2])</span><br><span class="line">             = [B1, A1, A2] + merge([Obj], [Obj])</span><br><span class="line">             = [B1, A1, A2, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>同理,计算B2的MRO(过程略):</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[B2(A3)] = [B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>最终计算并得到C的MRO</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">L[C(B1,B2)] = [C] + merge(L[B1(A1,A2)], L[B2(A3)], [B1,B2])</span><br><span class="line">            = [C] + merge([B1, A1, A2, Obj], [B2, A3, Obj], [B1,B2])</span><br><span class="line">            = [C, B1] + merge([A1, A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1] + merge([A2, Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2] + merge([Obj], [B2, A3, Obj], [B2])</span><br><span class="line">            = [C, B1, A1, A2, B2] +merge([Obj], [A3, Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3] +merge([Obj], [Obj])</span><br><span class="line">            = [C, B1, A1, A2, B2, A3, Obj]</span><br></pre></td></tr></table></figure>
-
-<p>根据C3算法成功构建了MRO, 所以这个类的继承关系是被允许的, 而且根据MRO可以明确地指出应当如何去查找其父类的属性/方法, 即按照MRO列表由前向后的顺序来查找. </p>
-<p>当然, 我们完全没有必要去计算这个序列, 直接使用类方法<code>.mro()</code>即可查看该类的MRO:</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>C.mro()</span><br><span class="line"></span><br><span class="line">[&lt;class '__main__.C'&gt;, &lt;class '__main__.B1'&gt;, &lt;class '__main__.A1'&gt;, &lt;class '__main__.A2'&gt;, &lt;class '__main__.B2'&gt;, &lt;class '__main__.A3'&gt;, &lt;class 'object'&gt;]</span><br></pre></td></tr></table></figure>
-
-<p>与我们计算的结果是相同的. </p>
-<p>正确理解MRO是使用多重继承和super()完成多继承类协作任务的基础.</p>
-<hr>
-<p>参考:  </p>
-<p><a href="https://www.cnblogs.com/whatisfantasy/p/6046991.html" target="_blank" rel="noopener">Python的方法解析顺序(MRO)[转]</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>MRO</tag>
       </tags>
   </entry>
   <entry>
@@ -4405,6 +4427,98 @@ px250 table th:first-of-type {
       <tags>
         <tag>Django</tag>
         <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown(Hexo)表格如何更改列宽度</title>
+    <url>/2019/03/17/%E5%A6%82%E4%BD%95%E6%9B%B4%E6%94%B9markdown%E8%A1%A8%E6%A0%BC%E7%9A%84%E5%88%97%E5%AE%BD%E5%BA%A6/</url>
+    <content><![CDATA[<p>首先markdown要支持html标签, 这样就能添加css代码.</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;<span class="selector-tag">style</span>&gt;</span><br><span class="line"><span class="selector-tag">table</span> <span class="selector-tag">th</span><span class="selector-pseudo">:first-of-type</span> &#123;</span><br><span class="line">	<span class="attribute">width</span>: <span class="number">250px</span>;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>以上是更改列表首列宽度的代码, 如果要更改第二列第三列第n列, 使用伪类<code>nth-of-type(n)</code>指定即可.</p>
+<p>但是以上更改是全局的, 所有表格都会生效, 如果要为不同的表格区分样式, 为其设定一个外部自定义标签即可</p>
+<p>例如</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span></span><br><span class="line">px250 table th:first-of-type &#123;</span><br><span class="line"><span class="code">	width: 250px;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>然后使用表格时</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;px250&gt;</span><br><span class="line"></span><br><span class="line">|表头|表头|</span><br><span class="line">|--|--|</span><br><span class="line">|表项|说明|</span><br><span class="line"></span><br><span class="line">&lt;/px250&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这样, 生成的table标签会被包裹在px250标签中, 实际效果</p>
+<px250>
+
+<table>
+<thead>
+<tr>
+<th>表头</th>
+<th>表头</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>表项</td>
+<td>说明</td>
+</tr>
+</tbody></table>
+</px250>
+
+<p>而同理, 设定一个首列150px宽度的表格</p>
+<px150>
+
+<table>
+<thead>
+<tr>
+<th>表头</th>
+<th>表头</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>表项</td>
+<td>说明</td>
+</tr>
+</tbody></table>
+</px150>
+
+<p>如果有一个全局引用的css, 就将相关设置写入, 例如hexo的<code>costum.styl</code>, 之后就可以通过使用标签控制表格列的宽度了.</p>
+<hr>
+<style>
+px250 table th:first-of-type {
+    width: 250px;
+}
+
+px150 table th:first-of-type {
+    width: 150px;
+}
+
+</style>]]></content>
+      <tags>
+        <tag>markdown</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Django-ORM执行SQL</title>
+    <url>/2019/03/17/Django%E4%B8%AD%E6%89%A7%E8%A1%8CSQL/</url>
+    <content><![CDATA[<p><code>django.db.connection</code>对象代表着对<strong>默认数据库</strong>的连接, 使用<code>cursor()</code>方法获取游标, 并通过游标的<code>execute()</code>方法执行SQL, 使用<code>fetchone()</code>或者<code>fetchall()</code>方法来获得结果.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> connection</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_custom_sql</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> connection.cursor() <span class="keyword">as</span> cursor:</span><br><span class="line">        cursor.execute(<span class="string">"UPDATE bar SET foo = 1 WHERE baz = %s"</span>, [self.baz])</span><br><span class="line">        cursor.execute(<span class="string">"SELECT foo FROM bar WHERE baz = %s"</span>, [self.baz])</span><br><span class="line">        row = cursor.fetchone()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> row</span><br></pre></td></tr></table></figure>
+
+<p>为了避免sql注入, 不能在SQL语句中包含<code>%s</code>占位符</p>
+<p>如果要获得非默认数据库的游标, 使用<code>django.db.connections</code>, 该类是一个类字典类, 使用数据库别名获取对应游标即可:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> connections</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> connections[<span class="string">'my_db_alias'</span>].cursor <span class="keyword">as</span> cursor:</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>游标获取的多个结果, 会是一个元组, 里面的每个元素也是一个元组, 不包括任何字段名</p>
+<p>为了能够使用字段名获取对应记录的值, 有两种解决方案:</p>
+<ol>
+<li>将其元素组装为一个字典</li>
+<li>将其元素作为一个命名元组</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dictfetchall</span><span class="params">(cursor)</span>:</span></span><br><span class="line">    <span class="string">"Return all rows from a cursor as a dict"</span></span><br><span class="line">    columns = [col[<span class="number">0</span>] <span class="keyword">for</span> col <span class="keyword">in</span> cursor.description]</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">        dict(zip(columns, row))</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> cursor.fetchall()</span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> namedtuple</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">namedtuplefetchall</span><span class="params">(cursor)</span>:</span></span><br><span class="line">    <span class="string">"Return all rows from a cursor as a namedtuple"</span></span><br><span class="line">    desc = cursor.description</span><br><span class="line">    nt_result = namedtuple(<span class="string">'Result'</span>, [col[<span class="number">0</span>] <span class="keyword">for</span> col <span class="keyword">in</span> desc])</span><br><span class="line">    <span class="keyword">return</span> [nt_result(*row) <span class="keyword">for</span> row <span class="keyword">in</span> cursor.fetchall()]</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Django</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -4604,98 +4718,6 @@ px250 table th:first-of-type {
       <tags>
         <tag>Django</tag>
         <tag>Django信号系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Django-ORM执行SQL</title>
-    <url>/2019/03/17/Django%E4%B8%AD%E6%89%A7%E8%A1%8CSQL/</url>
-    <content><![CDATA[<p><code>django.db.connection</code>对象代表着对<strong>默认数据库</strong>的连接, 使用<code>cursor()</code>方法获取游标, 并通过游标的<code>execute()</code>方法执行SQL, 使用<code>fetchone()</code>或者<code>fetchall()</code>方法来获得结果.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> connection</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_custom_sql</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> connection.cursor() <span class="keyword">as</span> cursor:</span><br><span class="line">        cursor.execute(<span class="string">"UPDATE bar SET foo = 1 WHERE baz = %s"</span>, [self.baz])</span><br><span class="line">        cursor.execute(<span class="string">"SELECT foo FROM bar WHERE baz = %s"</span>, [self.baz])</span><br><span class="line">        row = cursor.fetchone()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> row</span><br></pre></td></tr></table></figure>
-
-<p>为了避免sql注入, 不能在SQL语句中包含<code>%s</code>占位符</p>
-<p>如果要获得非默认数据库的游标, 使用<code>django.db.connections</code>, 该类是一个类字典类, 使用数据库别名获取对应游标即可:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> connections</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> connections[<span class="string">'my_db_alias'</span>].cursor <span class="keyword">as</span> cursor:</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
-
-<p>游标获取的多个结果, 会是一个元组, 里面的每个元素也是一个元组, 不包括任何字段名</p>
-<p>为了能够使用字段名获取对应记录的值, 有两种解决方案:</p>
-<ol>
-<li>将其元素组装为一个字典</li>
-<li>将其元素作为一个命名元组</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dictfetchall</span><span class="params">(cursor)</span>:</span></span><br><span class="line">    <span class="string">"Return all rows from a cursor as a dict"</span></span><br><span class="line">    columns = [col[<span class="number">0</span>] <span class="keyword">for</span> col <span class="keyword">in</span> cursor.description]</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">        dict(zip(columns, row))</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> cursor.fetchall()</span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
-
-<p>或</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> namedtuple</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">namedtuplefetchall</span><span class="params">(cursor)</span>:</span></span><br><span class="line">    <span class="string">"Return all rows from a cursor as a namedtuple"</span></span><br><span class="line">    desc = cursor.description</span><br><span class="line">    nt_result = namedtuple(<span class="string">'Result'</span>, [col[<span class="number">0</span>] <span class="keyword">for</span> col <span class="keyword">in</span> desc])</span><br><span class="line">    <span class="keyword">return</span> [nt_result(*row) <span class="keyword">for</span> row <span class="keyword">in</span> cursor.fetchall()]</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>Django</tag>
-        <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>markdown(Hexo)表格如何更改列宽度</title>
-    <url>/2019/03/17/%E5%A6%82%E4%BD%95%E6%9B%B4%E6%94%B9markdown%E8%A1%A8%E6%A0%BC%E7%9A%84%E5%88%97%E5%AE%BD%E5%BA%A6/</url>
-    <content><![CDATA[<p>首先markdown要支持html标签, 这样就能添加css代码.</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;<span class="selector-tag">style</span>&gt;</span><br><span class="line"><span class="selector-tag">table</span> <span class="selector-tag">th</span><span class="selector-pseudo">:first-of-type</span> &#123;</span><br><span class="line">	<span class="attribute">width</span>: <span class="number">250px</span>;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
-
-<p>以上是更改列表首列宽度的代码, 如果要更改第二列第三列第n列, 使用伪类<code>nth-of-type(n)</code>指定即可.</p>
-<p>但是以上更改是全局的, 所有表格都会生效, 如果要为不同的表格区分样式, 为其设定一个外部自定义标签即可</p>
-<p>例如</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span></span><br><span class="line">px250 table th:first-of-type &#123;</span><br><span class="line"><span class="code">	width: 250px;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
-
-<p>然后使用表格时</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;px250&gt;</span><br><span class="line"></span><br><span class="line">|表头|表头|</span><br><span class="line">|--|--|</span><br><span class="line">|表项|说明|</span><br><span class="line"></span><br><span class="line">&lt;/px250&gt;</span><br></pre></td></tr></table></figure>
-
-<p>这样, 生成的table标签会被包裹在px250标签中, 实际效果</p>
-<px250>
-
-<table>
-<thead>
-<tr>
-<th>表头</th>
-<th>表头</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>表项</td>
-<td>说明</td>
-</tr>
-</tbody></table>
-</px250>
-
-<p>而同理, 设定一个首列150px宽度的表格</p>
-<px150>
-
-<table>
-<thead>
-<tr>
-<th>表头</th>
-<th>表头</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>表项</td>
-<td>说明</td>
-</tr>
-</tbody></table>
-</px150>
-
-<p>如果有一个全局引用的css, 就将相关设置写入, 例如hexo的<code>costum.styl</code>, 之后就可以通过使用标签控制表格列的宽度了.</p>
-<hr>
-<style>
-px250 table th:first-of-type {
-    width: 250px;
-}
-
-px150 table th:first-of-type {
-    width: 150px;
-}
-
-</style>]]></content>
-      <tags>
-        <tag>markdown</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>

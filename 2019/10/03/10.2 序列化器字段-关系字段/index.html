@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段. 所有的关系字段定义在relations.py中, 但出于方便起见, 应该在serializers模块中导出, 然后通过serializers.&amp;lt;FieldName&amp;gt;使用关系字段.">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2019-10-10T10:21:16.489Z">
+<meta property="og:updated_time" content="2019-11-16T10:27:28.127Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="10.2 序列化器字段:关系字段 Serializer Field">
 <meta name="twitter:description" content="关系字段用来表示模型之间的关系, 这些字段可用于映射外键, 多对多关系字段, 和单对单关系字段, 反向关联字段, 也可以自定义关系字段. 所有的关系字段定义在relations.py中, 但出于方便起见, 应该在serializers模块中导出, 然后通过serializers.&amp;lt;FieldName&amp;gt;使用关系字段.">
@@ -404,7 +404,8 @@
 <p><code>allow_null</code>: 指定<code>None</code>值是否是合法的输入, 默认为<code>False</code></p>
 <p><code>pk_field</code>: 指定一个字段以控制主键值的序列化/反序列化, 例如<code>pk_field = UUIDField(format =&#39;hex&#39;)</code>会将UUID主键序列化为其紧凑的十六进制表示. </p>
 <hr>
-<h3 id="HyperlinkedRelatedField"><a href="#HyperlinkedRelatedField" class="headerlink" title="HyperlinkedRelatedField"></a>HyperlinkedRelatedField</h3><p>对外模型的序列化结果为指向该外模型detail页面的超链接.</p>
+<h3 id="HyperlinkedRelatedField"><a href="#HyperlinkedRelatedField" class="headerlink" title="HyperlinkedRelatedField"></a>HyperlinkedRelatedField</h3><p>对外模型的序列化结果为指向该外模型detail页面的超链接. </p>
+<p>HyperlinkedModelSerializer使用该字段.</p>
 <p>示例</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.HyperlinkedRelatedField(</span><br><span class="line">        many=<span class="literal">True</span>, </span><br><span class="line">        read_only=<span class="literal">True</span>, </span><br><span class="line">        view_name=<span class="string">'track-detail'</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
 
@@ -413,7 +414,8 @@
 
 <p>默认为读写字段, 可以使用read_only标志来更改</p>
 <p><code>view_name</code> 必需参数, 指定关联目标的api-view, 如果使用<code>Router</code>来注册, 则为<code>&lt;modelname&gt;-detail</code><br><code>queryset</code> 用以校验输入是否合法的查询集, 如果不设定参数, 则必须置<code>read_only</code>=<code>True</code><br><code>lookup_field</code> 用以检索的关联目标的字段, 应该对应于引用视图上的URL关键字参数, 默认为<code>pk</code><br><code>lookup_url_kwarg</code> 在url conf中定义的关键字参数名, 默认使用与<code>lookup_field</code>相同的值<br><code>format</code> 如果使用格式后缀, 超链接字段将会为目标模型的url使用同样的后缀, 除非重写<code>format</code>参数</p>
-<p>注: 写操作时传入的外键字段值是目标对象的detial的超链接.</p>
+<p>注: 写操作时传入的外键字段值是目标对象的detial的超链接, 按照生成url的规则反向解析为具体的实例.</p>
+<p>使用HyperlinkedModelSerializer时指定了model, 该序列化器所有HyperlinkedRelatedField使用该model名作为view_name的basename部分.</p>
 <hr>
 <h3 id="SlugRelatedField"><a href="#SlugRelatedField" class="headerlink" title="SlugRelatedField"></a>SlugRelatedField</h3><p>使用外模型的某个字段来表示模型</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AlbumSerializer</span><span class="params">(serializers.ModelSerializer)</span>:</span></span><br><span class="line">    tracks = serializers.SlugRelatedField(</span><br><span class="line">        many=<span class="literal">True</span>, </span><br><span class="line">        read_only=<span class="literal">True</span>, </span><br><span class="line">        slug_field=<span class="string">'title'</span></span><br><span class="line">     )</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Album</span><br><span class="line">        fields = (<span class="string">'album_name'</span>, <span class="string">'artist'</span>, <span class="string">'tracks'</span>)</span><br></pre></td></tr></table></figure>
@@ -634,7 +636,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-count">77</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
