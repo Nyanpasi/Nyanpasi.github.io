@@ -106,7 +106,7 @@
 <meta name="description" content="技术">
 <meta property="og:type" content="website">
 <meta property="og:title" content="紫秋的个人博客">
-<meta property="og:url" content="http://yoursite.com/tags/Hexo/index.html">
+<meta property="og:url" content="http://yoursite.com/tags/hexo/index.html">
 <meta property="og:site_name" content="紫秋的个人博客">
 <meta property="og:description" content="技术">
 <meta property="og:locale" content="zh">
@@ -142,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/Hexo/">
+  <link rel="canonical" href="http://yoursite.com/tags/hexo/">
 
 
 
 
 
-  <title>Tag: Hexo | 紫秋的个人博客</title>
+  <title>Tag: hexo | 紫秋的个人博客</title>
   
 
 
@@ -290,7 +290,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>Hexo<small>Tag</small>
+        <h1>hexo<small>Tag</small>
         </h1>
       </div>
 
@@ -302,69 +302,17 @@
 
       <h2 class="post-title">
         
-            <a class="post-title-link" href="/2019/08/25/Hexo添加访问统计/" itemprop="url">
+            <a class="post-title-link" href="/2019/03/17/如何更改markdown表格的列宽度/" itemprop="url">
               
-                <span itemprop="name">Hexo+Next添加访问统计</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-08-25T11:58:21+08:00" content="2019-08-25">
-          08-25
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/08/23/Hexo+Github部署个人博客/" itemprop="url">
-              
-                <span itemprop="name">Hexo+Github搭建个人博客</span>
+                <span itemprop="name">markdown(Hexo)表格如何更改列宽度</span>
               
             </a>
         
       </h2>
 
       <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-08-23T11:58:21+08:00" content="2019-08-23">
-          08-23
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/08/22/Hexo自定义代码高亮/" itemprop="url">
-              
-                <span itemprop="name">Hexo自定义代码高亮</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-08-22T11:58:21+08:00" content="2019-08-22">
-          08-22
+        <time class="post-time" itemprop="dateCreated" datetime="2019-03-17T11:15:03+08:00" content="2019-03-17">
+          03-17
         </time>
       </div>
 
@@ -940,6 +888,72 @@
 
           if ('auto' === 'auto') {
             input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
+<!-- 页面点击小红心 -->
+inputEventFunction);
           } else {
             $('.search-icon').click(inputEventFunction);
             input.addEventListener('keypress', function (event) {
